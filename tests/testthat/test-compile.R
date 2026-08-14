@@ -19,6 +19,19 @@ test_that("extract_required_tokens deduplicates repeated tokens", {
   expect_equal(extract_required_tokens(tmp), "n_decedents")
 })
 
+test_that("extract_required_tokens ignores an example inside a // comment", {
+  tmp <- tempfile(fileext = ".typ")
+  writeLines(
+    c(
+      "// documented as {{{token}}} triple-brace syntax",
+      "{{{real_token}}}"
+    ),
+    tmp
+  )
+  on.exit(unlink(tmp))
+  expect_equal(extract_required_tokens(tmp), "real_token")
+})
+
 test_that("validate_template_data passes when all tokens present/non-NA", {
   tmp <- tempfile(fileext = ".typ")
   writeLines("{{{doc_title}}}", tmp)
