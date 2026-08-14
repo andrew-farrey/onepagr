@@ -2,3 +2,7 @@
 
 export(fmt_n)
 export(fmt_pct)
+export(list_templates)
+export(list_themes)
+export(resolve_template)
+export(resolve_theme)
