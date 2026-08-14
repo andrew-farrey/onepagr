@@ -11,7 +11,6 @@ Description: Generates polished, WCAG 2.2 AA and PDF/UA-1 accessible
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
 Imports:
     quarto,
     scales,
@@ -21,3 +20,4 @@ Imports:
 Suggests:
     testthat (>= 3.2.0)
 Config/testthat/edition: 3
+Config/roxygen2/version: 8.1.0
