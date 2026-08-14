@@ -1,0 +1,23 @@
+Package: onepagr
+Title: Accessible One-Page Reports from Typst Templates
+Version: 0.1.0
+Authors@R: person("Andrew", "Farrey", email = "afarrey11@outlook.com",
+    role = c("aut", "cre"), comment = "University of Kentucky / KIPRC")
+Description: Generates polished, WCAG 2.2 AA and PDF/UA-1 accessible
+    one-page (front-and-back) PDF reports from analysis output, using a
+    small set of fixed Typst report templates and a swappable design-token
+    theme system. Ships built-in report templates and themes, and lets a
+    consuming project supply its own design tokens and Typst templates.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Imports:
+    quarto,
+    scales,
+    tools,
+    utils,
+    whisker
+Suggests:
+    testthat (>= 3.2.0)
+Config/testthat/edition: 3
