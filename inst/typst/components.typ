@@ -108,6 +108,34 @@
   )
 ]
 
+// Generic labeled free-text box: a heading label plus free-form body
+// content, for sections whose content varies too much in shape to force
+// into a fixed structured layout (narrative context, recommended
+// actions, resource/response listings, cluster-detection detail). The
+// body argument can contain arbitrary Typst markup -- bullet lists,
+// #link() calls, even embedded #bar-row()/#domain-bar() calls -- since
+// it's passed through as content, not re-parsed or restricted. See
+// docs/superpowers/specs/2026-08-16-spike-alert-templates-design.md,
+// Section 5, for the full rationale for one generic component instead
+// of several narrow ones.
+//
+// Same accessible-heading fix as the LESSONS LEARNED/DISCLAIMER pattern
+// in cohort_summary/trend_snapshot: the show rule is a `set`-style rule
+// (styling only), never a content-replacing `it => ...` rule, so the
+// heading keeps tagging as a standalone /H2 rather than getting wrapped
+// in /P. Scoped locally to this box so it doesn't affect any other
+// heading elsewhere in the document.
+#let text-box(theme, theme-grad, label, body, color: none, bg: none, text-color: none) = rect(
+  fill: if bg == none { theme-grad.card-bg-grad } else { bg },
+  stroke: (top: theme.stroke-accent + (if color == none { theme.brand-midnight } else { color }), rest: theme.stroke-border + theme.box-border),
+  inset: 7pt, width: 100%,
+)[
+  #show heading: set text(size: 8pt, weight: "bold", fill: if color == none { theme.brand-midnight } else { color }, tracking: 0.5pt)
+  == #label
+  #v(theme.space-xs)
+  #text(size: 8.5pt, fill: if text-color == none { black } else { text-color })[#body]
+]
+
 // Shared document-level setup every template should apply: page metadata,
 // typography defaults, and the accessible-heading show rules. Call this
 // once near the top of a template, wrapping the ENTIRE document body

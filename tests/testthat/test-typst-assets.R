@@ -30,3 +30,14 @@ test_that("every built-in theme defines the full systemic token set", {
     }
   }
 })
+
+test_that("text-box is defined in components.typ", {
+  text <- paste(
+    readLines(
+      system.file("typst", "components.typ", package = "onepagr"),
+      warn = FALSE
+    ),
+    collapse = "\n"
+  )
+  expect_match(text, "#let text-box(", fixed = TRUE)
+})
