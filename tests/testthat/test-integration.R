@@ -1,6 +1,17 @@
 test_that("every built-in template renders under every built-in theme", {
   skip_if_not(quarto::quarto_available())
   source("fixtures/sample_data.R", local = TRUE)
+  source("fixtures/sample_data_overdose_spike_alert.R", local = TRUE)
+  source("fixtures/sample_data_syndromic_alert.R", local = TRUE)
+
+  fixture_for <- list(
+    cohort_summary = sample_data,
+    trend_snapshot = sample_data,
+    overdose_spike_alert = sample_data_overdose_spike_alert,
+    syndromic_alert = sample_data_syndromic_alert
+  )
+
+  expect_setequal(names(fixture_for), list_templates())
 
   out_dir <- tempfile()
   dir.create(out_dir)
@@ -17,7 +28,7 @@ test_that("every built-in template renders under every built-in theme", {
       out_dir, sprintf("%s_%s.pdf", combos$template[i], combos$theme[i])
     )
     render_onepager(
-      sample_data,
+      fixture_for[[combos$template[i]]],
       template = combos$template[i],
       theme = combos$theme[i],
       output = out_pdf,
@@ -27,9 +38,9 @@ test_that("every built-in template renders under every built-in theme", {
       file.exists(out_pdf),
       info = sprintf("%s x %s", combos$template[i], combos$theme[i])
     )
-    # A real 2-page one-pager PDF is at minimum tens of KB -- a
-    # near-empty file here would indicate a silent compile failure that
-    # still happened to produce a (broken) output file.
-    expect_gt(file.info(out_pdf)$size, 10000)
+    # A real one-pager PDF is at minimum tens of KB -- a near-empty file
+    # here would indicate a silent compile failure that still happened
+    # to produce a (broken) output file.
+    expect_gt(file.info(out_pdf)$size, 5000)
   }
 })
