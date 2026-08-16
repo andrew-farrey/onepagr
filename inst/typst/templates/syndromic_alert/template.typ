@@ -26,10 +26,10 @@
 
 // See overdose_spike_alert/template.typ's identical comment on this
 // pattern -- severity_level must be the literal lowercase string
-// "warning" or "critical".
-#let severity-color = if "{{{severity_level}}}" == "critical" { theme.severity-critical } else { theme.severity-warning }
-#let severity-bg = if "{{{severity_level}}}" == "critical" { theme.severity-critical-bg } else { theme.severity-warning-bg }
-#let severity-text-color = if "{{{severity_level}}}" == "critical" { theme.severity-critical-text } else { theme.severity-warning-text }
+// "warning" or "critical". severity-palette() panics loudly on anything
+// else instead of silently falling through -- see components.typ's
+// severity-palette() comment.
+#let severity = severity-palette(theme, "{{{severity_level}}}")
 
 #apply-base-styles([{{{doc_title}}}], "{{{org_full}}}", theme, footer)[
 
@@ -49,19 +49,22 @@
 #pad(x: theme.content-pad-x)[
 #v(theme.space-md)
 
-#block(breakable: false, fill: severity-bg, stroke: (left: theme.stroke-accent-left + severity-color, rest: theme.stroke-border + theme.box-border), radius: theme.radius-card, inset: (x: 10pt, y: 8pt), width: 100%)[
-  #text(size: 11pt, weight: "bold", fill: severity-text-color)[⚠ ALERT] #h(1em)
-  #text(size: 9pt, fill: severity-text-color)[{{{alert_condition}}} #sym.dot.c {{{alert_facility_region}}} #sym.dot.c issued {{{alert_issued_at}}}]
+#block(breakable: false, fill: severity.bg, stroke: (left: theme.stroke-accent-left + severity.color, rest: theme.stroke-border + theme.box-border), radius: theme.radius-card, inset: (x: 10pt, y: 8pt), width: 100%)[
+  #text(size: 11pt, weight: "bold", fill: severity.text)[⚠ ALERT] #h(1em)
+  #text(size: 9pt, fill: severity.text)[{{{alert_condition}}} #sym.dot.c {{{alert_facility_region}}} #sym.dot.c issued {{{alert_issued_at}}}]
 ]
 
 #v(theme.space-md)
 
+// The big 28pt number uses severity.text (the darker text-optimized
+// variant), not the vivid severity.color -- same contrast fix as
+// overdose_spike_alert's HEADLINE STATS block, see that file's comment.
 #block(breakable: false)[
   #grid(columns: (1fr, 1fr), column-gutter: 8pt,
     fill: theme-grad.card-bg-grad, inset: 10pt,
-    stroke: (x, ..) => (top: theme.stroke-accent + severity-color, rest: theme.stroke-border + theme.box-border),
+    stroke: (x, ..) => (top: theme.stroke-accent + severity.color, rest: theme.stroke-border + theme.box-border),
     [
-      #text(size: 28pt, weight: "bold", fill: severity-color)[{{{n_observed}}}] \
+      #text(size: 28pt, weight: "bold", fill: severity.text)[{{{n_observed}}}] \
       #text(size: 8.5pt, fill: theme.text-secondary)[observed, vs. expected {{{n_expected}}}]
     ],
     [
@@ -89,11 +92,21 @@
     stat-card(theme, [{{{trend_d3}}}], [3 days ago]),
     stat-card(theme, [{{{trend_d2}}}], [2 days ago]),
     stat-card(theme, [{{{trend_d1}}}], [Yesterday]),
-    stat-card(theme, [{{{trend_d0}}}], [Today], color: severity-color),
+    stat-card(theme, [{{{trend_d0}}}], [Today], color: severity.color),
   )
 ]
 
 #v(theme.space-md)
+
+// ============================================================
+// ALERT DETAILS -- H1 heading required for PDF/UA-1 structure: without
+// this, the five sections below (WHAT'S HAPPENING through RESOURCES)
+// would improperly nest as children of "TREND LEADING TO ALERT" in the
+// document's accessibility outline instead of being siblings of it. See
+// overdose_spike_alert/template.typ's identical heading.
+// ============================================================
+= ALERT DETAILS
+#v(theme.space-sm)
 
 #text-box(theme, theme-grad, [WHAT'S HAPPENING], [{{{narrative_text}}}])
 
@@ -102,7 +115,7 @@
 // Optional -- see overdose_spike_alert/template.typ's identical comment
 // on show_resources for why cluster_text still needs a value ("") even
 // when show_cluster is false.
-#if "{{{show_cluster}}}" == "true" [
+#if bool-token("show_cluster", "{{{show_cluster}}}") [
   #text-box(theme, theme-grad, [CLUSTER DETECTION], [{{{cluster_text}}}], color: theme.brand-accent)
   #v(theme.space-sm)
 ]
@@ -113,7 +126,7 @@
 
 #text-box(theme, theme-grad, [RECOMMENDED ACTIONS], [{{{actions_text}}}], color: theme.brand-accent)
 
-#if "{{{show_resources}}}" == "true" [
+#if bool-token("show_resources", "{{{show_resources}}}") [
   #v(theme.space-sm)
   #text-box(theme, theme-grad, [RESOURCES], [{{{resources_text}}}])
 ]

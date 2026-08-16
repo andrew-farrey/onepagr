@@ -14,7 +14,16 @@ render_onepager(
 )
 }
 \arguments{
-\item{data}{Named list of whisker substitution values.}
+\item{data}{Named list of whisker substitution values. For alert-style
+templates (\code{overdose_spike_alert}, \code{syndromic_alert}), the
+\code{severity_level} token must be the literal lowercase string
+\code{"warning"} or \code{"critical"}, and any \verb{show_*} toggle token (e.g.
+\code{show_resources}, \code{show_cluster}) must be the literal lowercase
+string \code{"true"} or \code{"false"}. These are substituted directly into
+Typst string comparisons, so an R logical (which whisker coerces to
+\code{"TRUE"}/\code{"FALSE"}, uppercase) or any other value fails the compile
+loudly with a Typst \code{panic()} rather than silently rendering with
+the wrong severity styling or a mis-toggled section.}
 
 \item{template}{Character. A built-in template name (see \code{\link[=list_templates]{list_templates()}}).}
 

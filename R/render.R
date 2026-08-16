@@ -13,7 +13,16 @@
 #' `keep_typst = FALSE` to compile in a disposable tempdir instead and
 #' return only the PDF.
 #'
-#' @param data Named list of whisker substitution values.
+#' @param data Named list of whisker substitution values. For alert-style
+#'   templates (`overdose_spike_alert`, `syndromic_alert`), the
+#'   `severity_level` token must be the literal lowercase string
+#'   `"warning"` or `"critical"`, and any `show_*` toggle token (e.g.
+#'   `show_resources`, `show_cluster`) must be the literal lowercase
+#'   string `"true"` or `"false"`. These are substituted directly into
+#'   Typst string comparisons, so an R logical (which whisker coerces to
+#'   `"TRUE"`/`"FALSE"`, uppercase) or any other value fails the compile
+#'   loudly with a Typst `panic()` rather than silently rendering with
+#'   the wrong severity styling or a mis-toggled section.
 #' @param template Character. A built-in template name (see [list_templates()]).
 #' @param theme Character. A built-in theme name, or a path to a custom
 #'   theme .typ file (see [resolve_theme()]). Default `"default"`.

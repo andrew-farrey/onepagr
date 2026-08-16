@@ -136,6 +136,35 @@
   #text(size: 8.5pt, fill: if text-color == none { black } else { text-color })[#body]
 ]
 
+// Resolves a severity_level token to its full color triple, or fails
+// loudly if the token isn't the expected literal lowercase string.
+// Whisker coerces an R logical/typo to something other than "warning" or
+// "critical" silently (e.g. R's TRUE becomes the string "TRUE", not
+// "true") -- without this guard, an R caller's mistake here would
+// silently downgrade a critical alert to warning styling with no error
+// anywhere. See this package's design doc,
+// docs/superpowers/specs/2026-08-16-spike-alert-templates-design.md,
+// Section 4, for why severity is data-driven in the first place.
+#let severity-palette(theme, level) = {
+  if level == "critical" {
+    (color: theme.severity-critical, bg: theme.severity-critical-bg, text: theme.severity-critical-text)
+  } else if level == "warning" {
+    (color: theme.severity-warning, bg: theme.severity-warning-bg, text: theme.severity-warning-text)
+  } else {
+    panic("severity_level must be the literal lowercase string \"warning\" or \"critical\", got: " + repr(level))
+  }
+}
+
+// Resolves a show_* toggle token to a real Typst boolean, or fails
+// loudly if it isn't the expected literal lowercase string. Same
+// silent-coercion hazard as severity-palette() above -- see that
+// function's comment.
+#let bool-token(name, value) = {
+  if value == "true" { true }
+  else if value == "false" { false }
+  else { panic(name + " must be the literal lowercase string \"true\" or \"false\", got: " + repr(value)) }
+}
+
 // Shared document-level setup every template should apply: page metadata,
 // typography defaults, and the accessible-heading show rules. Call this
 // once near the top of a template, wrapping the ENTIRE document body

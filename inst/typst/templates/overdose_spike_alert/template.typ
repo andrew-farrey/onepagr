@@ -37,11 +37,10 @@
 // {{{pct_naloxone_width}}}% grid-column tokens: severity_level lands as
 // a literal string directly in Typst code, not just markup content. The
 // R caller MUST supply the literal lowercase string "warning" or
-// "critical" here, not an R logical -- see this plan's Global
-// Constraints.
-#let severity-color = if "{{{severity_level}}}" == "critical" { theme.severity-critical } else { theme.severity-warning }
-#let severity-bg = if "{{{severity_level}}}" == "critical" { theme.severity-critical-bg } else { theme.severity-warning-bg }
-#let severity-text-color = if "{{{severity_level}}}" == "critical" { theme.severity-critical-text } else { theme.severity-warning-text }
+// "critical" here, not an R logical -- severity-palette() panics loudly
+// otherwise instead of silently falling through -- see this plan's
+// Global Constraints and components.typ's severity-palette() comment.
+#let severity = severity-palette(theme, "{{{severity_level}}}")
 
 #apply-base-styles([{{{doc_title}}}], "{{{org_full}}}", theme, footer)[
 
@@ -70,26 +69,31 @@
 // carries the equivalent what/where/when framing for this template
 // shape, so a separate strip band would be redundant.
 // ============================================================
-#block(breakable: false, fill: severity-bg, stroke: (left: theme.stroke-accent-left + severity-color, rest: theme.stroke-border + theme.box-border), radius: theme.radius-card, inset: (x: 10pt, y: 8pt), width: 100%)[
-  #text(size: 11pt, weight: "bold", fill: severity-text-color)[⚠ SPIKE ALERT] #h(1em)
-  #text(size: 9pt, fill: severity-text-color)[{{{alert_area}}} #sym.dot.c issued {{{alert_issued_at}}}]
+#block(breakable: false, fill: severity.bg, stroke: (left: theme.stroke-accent-left + severity.color, rest: theme.stroke-border + theme.box-border), radius: theme.radius-card, inset: (x: 10pt, y: 8pt), width: 100%)[
+  #text(size: 11pt, weight: "bold", fill: severity.text)[⚠ SPIKE ALERT] #h(1em)
+  #text(size: 9pt, fill: severity.text)[{{{alert_area}}} #sym.dot.c issued {{{alert_issued_at}}}]
 ]
 
 #v(theme.space-md)
 
 // ============================================================
-// HEADLINE STATS
+// HEADLINE STATS -- the big 28pt numbers use severity.text (the darker
+// text-optimized variant), not the vivid severity.color, since
+// severity.color only clears WCAG contrast against card-bg at the 3:1
+// large-text minimum for severity-critical, and FAILS it outright for
+// severity-warning (~2.0:1) -- see themes/uk.typ and themes/default.typ
+// header comments on the severity-*-text tokens.
 // ============================================================
 #block(breakable: false)[
   #grid(columns: (1fr, 1fr), column-gutter: 8pt,
     fill: theme-grad.card-bg-grad, inset: 10pt,
-    stroke: (x, ..) => (top: theme.stroke-accent + severity-color, rest: theme.stroke-border + theme.box-border),
+    stroke: (x, ..) => (top: theme.stroke-accent + severity.color, rest: theme.stroke-border + theme.box-border),
     [
-      #text(size: 28pt, weight: "bold", fill: severity-color)[{{{n_events}}}] \
+      #text(size: 28pt, weight: "bold", fill: severity.text)[{{{n_events}}}] \
       #text(size: 8.5pt, fill: theme.text-secondary)[overdoses in the last {{{window_days}}} days]
     ],
     [
-      #text(size: 28pt, weight: "bold", fill: severity-color)[{{{n_spikes}}}] \
+      #text(size: 28pt, weight: "bold", fill: severity.text)[{{{n_spikes}}}] \
       #text(size: 8.5pt, fill: theme.text-secondary)[spikes in the last {{{spike_window_days}}} days]
     ],
   )
@@ -136,7 +140,7 @@
 // Typst #if blocks, so every {{{token}}} in this file always needs SOME
 // value -- see design doc Section 3.
 // ============================================================
-#if "{{{show_resources}}}" == "true" [
+#if bool-token("show_resources", "{{{show_resources}}}") [
   #v(theme.space-sm)
   #text-box(theme, theme-grad, [LOCAL RESPONSE RESOURCES], [{{{resources_text}}}])
 ]
