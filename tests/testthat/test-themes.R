@@ -39,5 +39,11 @@ test_that("resolve_template errors clearly for an unknown template", {
 })
 
 test_that("list_templates returns the built-in template names", {
-  expect_setequal(list_templates(), c("cohort_summary", "trend_snapshot"))
+  expect_setequal(
+    list_templates(),
+    c(
+      "cohort_summary", "trend_snapshot",
+      "overdose_spike_alert", "syndromic_alert"
+    )
+  )
 })
