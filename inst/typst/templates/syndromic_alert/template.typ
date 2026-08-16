@@ -92,7 +92,24 @@
     stat-card(theme, [{{{trend_d3}}}], [3 days ago]),
     stat-card(theme, [{{{trend_d2}}}], [2 days ago]),
     stat-card(theme, [{{{trend_d1}}}], [Yesterday]),
-    stat-card(theme, [{{{trend_d0}}}], [Today], color: severity.color),
+    // "Today" sits on the dark navy brand-blue-grad fill (column x == 4
+    // above) -- stat-card's own colors (severity.color for the number,
+    // theme.text-secondary for the label) are tuned for the light card
+    // background and fail contrast here. stat-card has no label-color
+    // parameter, so this cell is built manually instead of via
+    // stat-card(), using the same single-wrap `text(fill: white)[...]`
+    // pattern trend_snapshot/template.typ uses for its own highlighted
+    // grid cell (see its "KEY DATES IN THE TRACKED WINDOW" block): the
+    // inner #text() calls set only size/weight, not fill, so they
+    // inherit white from the wrapper rather than fighting an explicit
+    // fill of their own. See this file's fixed HEADLINE STATS comment
+    // above for the same underlying contrast-fix rationale.
+    align(center)[
+      #text(fill: white)[
+        #text(size: 22pt, weight: "bold")[{{{trend_d0}}}] \
+        #text(size: 8pt)[Today]
+      ]
+    ],
   )
 ]
 
