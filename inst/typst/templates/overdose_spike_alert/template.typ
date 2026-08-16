@@ -71,7 +71,7 @@
 // shape, so a separate strip band would be redundant.
 // ============================================================
 #block(breakable: false, fill: severity-bg, stroke: (left: theme.stroke-accent-left + severity-color, rest: theme.stroke-border + theme.box-border), radius: theme.radius-card, inset: (x: 10pt, y: 8pt), width: 100%)[
-  #text(size: 11pt, weight: "bold", fill: severity-text-color)["⚠" SPIKE ALERT] #h(1em)
+  #text(size: 11pt, weight: "bold", fill: severity-text-color)[⚠ SPIKE ALERT] #h(1em)
   #text(size: 9pt, fill: severity-text-color)[{{{alert_area}}} #sym.dot.c issued {{{alert_issued_at}}}]
 ]
 
