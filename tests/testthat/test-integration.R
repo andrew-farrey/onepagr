@@ -1,3 +1,28 @@
+test_that("each built-in template's fixture satisfies its required tokens", {
+  source("fixtures/sample_data.R", local = TRUE)
+  source("fixtures/sample_data_overdose_spike_alert.R", local = TRUE)
+  source("fixtures/sample_data_syndromic_alert.R", local = TRUE)
+
+  fixture_for <- list(
+    cohort_summary = sample_data,
+    trend_snapshot = sample_data,
+    overdose_spike_alert = sample_data_overdose_spike_alert,
+    syndromic_alert = sample_data_syndromic_alert
+  )
+
+  # This is the guard that catches a template being added without its
+  # fixture being added to fixture_for above -- must run regardless of
+  # whether Quarto is installed, so it's in its own ungated test_that
+  # rather than only running as a side effect of the render loop below.
+  expect_setequal(names(fixture_for), list_templates())
+  for (t in names(fixture_for)) {
+    expect_true(
+      validate_template_data(resolve_template(t), fixture_for[[t]]),
+      info = t
+    )
+  }
+})
+
 test_that("every built-in template renders under every built-in theme", {
   skip_if_not(quarto::quarto_available())
   source("fixtures/sample_data.R", local = TRUE)
@@ -10,8 +35,6 @@ test_that("every built-in template renders under every built-in theme", {
     overdose_spike_alert = sample_data_overdose_spike_alert,
     syndromic_alert = sample_data_syndromic_alert
   )
-
-  expect_setequal(names(fixture_for), list_templates())
 
   out_dir <- tempfile()
   dir.create(out_dir)
@@ -38,9 +61,9 @@ test_that("every built-in template renders under every built-in theme", {
       file.exists(out_pdf),
       info = sprintf("%s x %s", combos$template[i], combos$theme[i])
     )
-    # A real one-pager PDF is at minimum tens of KB -- a near-empty file
-    # here would indicate a silent compile failure that still happened
-    # to produce a (broken) output file.
+    # A real one-pager PDF is at minimum ~5KB -- a near-empty file here
+    # would indicate a silent compile failure that still happened to
+    # produce a (broken) output file.
     expect_gt(file.info(out_pdf)$size, 5000)
   }
 })
