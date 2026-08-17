@@ -133,7 +133,10 @@
 // on show_resources for why cluster_text still needs a value ("") even
 // when show_cluster is false.
 #if bool-token("show_cluster", "{{{show_cluster}}}") [
-  #text-box(theme, theme-grad, [CLUSTER DETECTION], [{{{cluster_text}}}], color: theme.brand-accent)
+  // brand-accent-text, not brand-accent -- see
+  // overdose_spike_alert/template.typ's identical comment on this exact
+  // fix.
+  #text-box(theme, theme-grad, [CLUSTER DETECTION], [{{{cluster_text}}}], color: theme.brand-accent-text)
   #v(theme.space-sm)
 ]
 
@@ -141,7 +144,10 @@
 
 #v(theme.space-sm)
 
-#text-box(theme, theme-grad, [RECOMMENDED ACTIONS], [{{{actions_text}}}], color: theme.brand-accent)
+// brand-accent-text, not brand-accent -- see
+// overdose_spike_alert/template.typ's identical comment on this exact
+// fix.
+#text-box(theme, theme-grad, [RECOMMENDED ACTIONS], [{{{actions_text}}}], color: theme.brand-accent-text)
 
 #if bool-token("show_resources", "{{{show_resources}}}") [
   #v(theme.space-sm)

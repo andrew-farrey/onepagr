@@ -131,7 +131,13 @@
 // ============================================================
 // RECOMMENDED ACTIONS
 // ============================================================
-#text-box(theme, theme-grad, [RECOMMENDED ACTIONS], [{{{actions_text}}}], color: theme.brand-accent)
+// brand-accent-text, not brand-accent: text-box's color: argument fills
+// the section-label HEADING text (small, needs 4.5:1), not a large
+// decorative element (which only needs 3:1) -- brand-accent itself is
+// verified only to the 3:1 large-text threshold. See themes/default.typ
+// and themes/uk.typ's brand-accent-text comments for the full story
+// (this exact mistake shipped once and failed a real PAC WCAG check).
+#text-box(theme, theme-grad, [RECOMMENDED ACTIONS], [{{{actions_text}}}], color: theme.brand-accent-text)
 
 // ============================================================
 // LOCAL RESPONSE RESOURCES -- optional, gated on show_resources. The R

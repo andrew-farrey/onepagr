@@ -17,7 +17,8 @@ test_that("every built-in theme defines the full systemic token set", {
     "stroke-accent-left", "stroke-fill",
     "radius-card", "content-pad-x",
     "severity-warning", "severity-warning-bg", "severity-warning-text",
-    "severity-critical", "severity-critical-bg", "severity-critical-text"
+    "severity-critical", "severity-critical-bg", "severity-critical-text",
+    "brand-accent-text"
   )
   theme_files <- list.files(
     system.file("typst", "themes", package = "onepagr"),

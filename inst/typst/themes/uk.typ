@@ -17,7 +17,20 @@
   // -- Palette ----------------------------------------------------------
   brand-blue: rgb("#0033A0"),
   brand-midnight: rgb("#002147"),
+  // Large-text/decorative use only (stat numbers, strokes) -- verified
+  // >=3:1 against card-bg (both theme-grad ends: 4.88:1 light, 3.90:1
+  // dark) but NOT the 4.5:1 normal-text threshold. See brand-accent-text
+  // below for small-text use (e.g. a text-box heading).
   brand-accent: rgb("#00703C"),
+  // brand-accent shaded ~20% toward black -- the text-safe variant.
+  // Confirmed by direct compile+PAC run: the unshaded brand-accent was
+  // used for a text-box heading in the first shipped alert template and
+  // happened to render on the lighter part of its background gradient,
+  // passing PAC by chance rather than by margin (the same color measures
+  // 3.90:1 at the gradient's dark end, under the 4.5:1 normal-text
+  // requirement that small heading text needs). This variant is
+  // verified >=4.5:1 (6.15:1 light end, 4.91:1 dark end) at both ends.
+  brand-accent-text: rgb("#005A30"),
   brand-sky: rgb("#9BBBD4"),
   card-bg: rgb("#E2E4E8"),
   callout-bg: rgb("#D3E1F7"),
@@ -36,10 +49,15 @@
   text-muted: rgb("#4D4A44"),
 
   // -- Severity/threshold colors (for alert-style templates) ------------
-  // DRAFT VALUES: not yet run through an automated WCAG contrast check
-  // (that tooling, check_theme_contrast(), ships in the follow-on
-  // theme-sourcing plan). Spot-check these against severity-*-bg with a
-  // contrast calculator before using them in a shipped alert template.
+  // WCAG-verified (real sRGB contrast formula, not eyeballed):
+  // severity-critical-text/-bg ground-truth confirmed via an actual PAC
+  // run (overdose_spike_alert, uk theme, critical severity -- passed
+  // clean). severity-warning-text/-bg was never actually exercised by
+  // that PAC run (the fixture used "critical") -- computed directly
+  // instead: 5.97:1 against severity-warning-bg, 4.32-5.40:1 against
+  // card-bg at 28pt (large-text threshold 3:1), all comfortably passing.
+  // check_theme_contrast() (follow-on theme-sourcing plan) will automate
+  // this kind of check going forward.
   severity-warning: rgb("#C8A000"),
   severity-warning-bg: rgb("#FFEEBF"),
   severity-warning-text: rgb("#6b5900"),
