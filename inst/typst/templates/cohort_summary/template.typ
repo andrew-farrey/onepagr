@@ -207,15 +207,22 @@
   = IMPLEMENTATION TIMELINE
   #v(theme.space-sm)
 
+  // Color emphasis escalates left to right (empty -> light -> dark) and
+  // peaks on the LAST box (x == 4), not the middle one -- per the source
+  // project's editorial review, the reader's eye should land hardest on
+  // the phase whose start date coincides with the analytic cohort's
+  // start, not the intermediate build-out phase. Targeting columns by
+  // exact index (x == 4, x == 2), not a symmetric calc.rem(x, 2)
+  // alternation, since the two boxes don't get symmetric treatment.
   #grid(columns: (1fr, auto, 1fr, auto, 1fr), column-gutter: 6pt, align: horizon,
     inset: (x, y) => if calc.rem(x, 2) == 0 { 10pt } else { 0pt },
-    fill: (x, ..) => if x == 2 { theme-grad.brand-blue-grad } else if calc.rem(x, 2) == 0 { theme-grad.callout-bg-grad } else { none },
-    stroke: (x, ..) => if x == 2 { 1pt + theme.brand-midnight } else if calc.rem(x, 2) == 0 { 1pt + theme.box-border } else { none },
+    fill: (x, ..) => if x == 4 { theme-grad.brand-blue-grad } else if x == 2 { theme-grad.callout-bg-grad } else { none },
+    stroke: (x, ..) => if x == 4 { theme.stroke-border + theme.brand-midnight } else if calc.rem(x, 2) == 0 { theme.stroke-border + theme.box-border } else { none },
     [#align(center)[#text(size: 1.15em)[*{{tl1_yr}}*] \ #v(theme.space-xs) #text(size: 8.5pt)[{{tl1_label}}]]],
     text(size: 20pt, weight: "bold", fill: theme.brand-blue)[#sym.arrow.r],
-    [#align(center)[#text(fill: white)[#text(size: 1.15em)[*{{tl2_yr}}*] \ #v(theme.space-xs) #text(size: 8.5pt)[{{tl2_label}}]]]],
+    [#align(center)[#text(size: 1.15em)[*{{tl2_yr}}*] \ #v(theme.space-xs) #text(size: 8.5pt)[{{tl2_label}}]]],
     text(size: 20pt, weight: "bold", fill: theme.brand-blue)[#sym.arrow.r],
-    [#align(center)[#text(size: 1.15em)[*{{tl3_yr}}*] \ #v(theme.space-xs) #text(size: 8.5pt)[{{tl3_label}}]]],
+    [#align(center)[#text(fill: white)[#text(size: 1.15em)[*{{tl3_yr}}*] \ #v(theme.space-xs) #text(size: 8.5pt)[{{tl3_label}}]]]],
   )
 ]
 
@@ -298,7 +305,7 @@
   #bar-row(theme, [#sym.lt.eq 30 days], {{pct_30d_width}}, "{{n_30d}}", label-width: 65pt)
   #bar-row(theme, [#sym.lt.eq 90 days], {{pct_90d_width}}, "{{n_90d}}", label-width: 65pt)
   #bar-row(theme, [#sym.lt.eq 365 days], {{pct_365d_width}}, "{{n_365d}}", label-width: 65pt)
-  #bar-row(theme, [#sym.gt 365 days], {{pct_gt365d_width}}, "{{n_gt365d}}", label-width: 65pt, muted: true)
+  #bar-row(theme, [#sym.gt 365 days], {{pct_gt365d_width}}, "{{n_gt365d}}", label-width: 65pt)
 ]
 
 #v(theme.space-xs)
