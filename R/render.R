@@ -32,10 +32,27 @@
 #' @param keep_typst Logical. Whether to leave the resolved `.typ` tree
 #'   next to `output` (`TRUE`, default) or use a disposable tempdir
 #'   (`FALSE`).
+#' @param extra_assets Character vector of file paths to stage into the
+#'   compile work directory alongside the theme/components/package assets
+#'   -- for per-run generated images (e.g. charts/maps produced fresh by
+#'   the calling script) that a template's own `#image()` calls need to
+#'   reference. Typst's compiler sandboxes file access to the directory
+#'   being compiled from and rejects absolute filesystem paths outright
+#'   (confirmed directly: `#image("C:/abs/path/map.png")` fails to
+#'   compile with "path contains invalid component" even after fixing
+#'   Windows backslashes to forward slashes -- this isn't a path-syntax
+#'   issue, Typst does not permit escaping its compile root at all). Each
+#'   file is copied in by its basename (overwriting on conflict); pass
+#'   just that basename as the corresponding whisker token's value (e.g.
+#'   `extra_assets = "path/to/map0.png"` pairs with a template token value
+#'   of `"map0.png"`, not the original full path). Default `character(0)`
+#'   (no extra assets, e.g. for templates whose images are all static
+#'   package assets).
 #' @return Character, the `output` path, invisibly.
 #' @export
 render_onepager <- function(data, template, theme = "default",
-                            theme_path = NULL, output, keep_typst = TRUE) {
+                            theme_path = NULL, output, keep_typst = TRUE,
+                            extra_assets = character(0)) {
   template_path <- resolve_template(template)
   template_src_dir <- dirname(template_path)
   theme_src <- resolve_theme(theme, theme_path)
@@ -65,6 +82,16 @@ render_onepager <- function(data, template, theme = "default",
   file.copy(components_src, work_dir, overwrite = TRUE)
   if (dir.exists(assets_src)) {
     file.copy(assets_src, work_dir, recursive = TRUE, overwrite = TRUE)
+  }
+  if (length(extra_assets) > 0) {
+    missing <- extra_assets[!file.exists(extra_assets)]
+    if (length(missing) > 0) {
+      stop(
+        "extra_assets file(s) not found: ", paste(missing, collapse = ", "),
+        call. = FALSE
+      )
+    }
+    file.copy(extra_assets, work_dir, overwrite = TRUE)
   }
 
   staged_template <- file.path(work_dir, basename(template_path))
