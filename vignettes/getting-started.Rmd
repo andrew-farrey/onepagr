@@ -34,7 +34,7 @@ your R session.
 
 ## Render your first report
 
-Every template needs a named list of values — which values depend on
+Every template needs a named list of values, and which values depend on
 the template. `cohort_summary` (contrasting two groups at a point in
 time) needs the fewest, so it's a good first example.
 
@@ -98,7 +98,7 @@ file.exists(out)
 
 That's the whole workflow: a named list in, a finished PDF out. A real
 project won't hand-type every value like this vignette does for
-demonstration — you'd typically build this list from your analysis
+demonstration. You'd typically build this list from your analysis
 output using ordinary R (`sprintf()`, `scales::comma()`,
 `paste()`), the same way you'd assemble any other report's numbers.
 
@@ -106,7 +106,7 @@ output using ordinary R (`sprintf()`, `scales::comma()`,
 
 By default, `render_onepager()` leaves the resolved `.typ` source
 (and everything it needs to recompile: the theme, shared components,
-and assets) next to your output PDF, in a folder named after it — here,
+and assets) next to your output PDF, in a folder named after it, here
 something like `<tempfile>_typst/`. That's deliberate: the actual Typst
 source is never hidden, even if you never open it. If you want only the
 PDF and nothing else, pass `keep_typst = FALSE`.
@@ -126,7 +126,7 @@ List what's available:
 onepagr::list_themes()
 ```
 
-Your own project can supply a fully custom theme instead — see
+Your own project can supply a fully custom theme instead. See
 `?resolve_theme` for how `theme_path` works, and any file under
 `system.file("typst/themes", package = "onepagr")` for the token schema
 a custom theme needs to define.
@@ -142,7 +142,7 @@ export_template("cohort_summary", "my-report/", theme = "uk")
 
 That copies the template, the resolved theme, shared components, and
 assets into `my-report/` as one self-contained, independently
-compilable unit. Once exported, it's yours — onepagr never touches it
+compilable unit. Once exported, it's yours: onepagr never touches it
 again. Compile your edited copy directly with `compile_typst()`.
 
 ## What's required for each template

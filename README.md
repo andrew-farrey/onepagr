@@ -74,9 +74,9 @@ render_onepager(data, template = "overdose_spike_alert", theme = "uk", output = 
 That's it: `alert.pdf` is a finished, accessible PDF. By default,
 `render_onepager()` also leaves the resolved `.typ` source next to the
 output (`alert_typst/`), so it's never hidden away, even if you never
-need to look at it — useful for troubleshooting or handing to an AI
-assistant to extend further. Set `keep_typst = FALSE` to skip that and
-get only the PDF.
+need to look at it. That's useful for troubleshooting or further
+customization, using the package documentation as your reference. Set
+`keep_typst = FALSE` to skip that and get only the PDF.
 
 See `?render_onepager` for every argument, or run
 `vignette("getting-started", package = "onepagr")` for a fuller
@@ -102,9 +102,9 @@ project, ready to read, hand-edit, or extend.
 
 ## Themes
 
-onepagr ships two built-in themes — `default` (a brand-neutral palette
-built on Bootstrap's own color variables) and `uk` (University of
-Kentucky / KIPRC branding) — selectable by name:
+onepagr ships two built-in themes, selectable by name: `default` (a
+brand-neutral palette built on Bootstrap's own color variables) and
+`uk` (University of Kentucky / KIPRC branding).
 
 ```r
 render_onepager(data, template = "trend_snapshot", theme = "default", output = "report.pdf")
@@ -118,7 +118,7 @@ render_onepager(data, template = "trend_snapshot", theme_path = "my-theme.typ", 
 ```
 
 A theme is a single Typst dictionary of colors, typography, and spacing
-tokens — see any file in `inst/typst/themes/` for the full schema, or
+tokens. See any file in `inst/typst/themes/` for the full schema, or
 `list_themes()` to see what's built in.
 
 ## Accessibility
@@ -127,7 +127,7 @@ Every built-in template and theme has been verified with
 [PAC](https://pac.pdf-accessibility.org/en) (PDF Accessibility Checker)
 against both the PDF/UA and WCAG tabs, not just Typst's own
 `--pdf-standard ua-1` compile-time check. If you write your own theme or
-template, re-run that check yourself — a color or layout choice that
+template, re-run that check yourself. A color or layout choice that
 passes for one template's usage isn't automatically safe for another
 (see the package's own development notes on why large-text-safe colors
 aren't automatically small-text-safe).

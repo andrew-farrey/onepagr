@@ -19,11 +19,11 @@
 // shadow, just one value threaded through function arguments like any
 // other data.
 //
-// This is the Typst-side half of the token system described in
-// ../../CLAUDE.md: the OTHER half is a project-local config (YAML or an R
-// list) that a future render script would read to decide WHICH theme file
-// to import -- that R-side selection logic doesn't exist yet (open design
-// question), but this Typst-side token dictionary is real and working now.
+// This is the Typst-side half of the token system: the OTHER half is
+// the R-side theme selection logic that decides WHICH theme file to
+// import. See the onepagr package's own README and
+// inst/typst/themes/*.typ for the current, shipped implementation of
+// both halves.
 
 #let theme = (
   // -- Palette ----------------------------------------------------------
