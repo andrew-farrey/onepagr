@@ -152,34 +152,43 @@
 #text(size: 7.5pt, fill: theme.text-secondary)[The composite SVI score above is built from many measures. The four maps below isolate individual components most directly tied to health-care access and economic strain, each paired with the same overdose death rate as the headline map -- so a reader can see which specific factor is driving a county's vulnerability, not just that it's vulnerable overall.]
 #v(theme.space-sm)
 
+// map1_caption..map4_caption are tokens, NOT hardcoded template prose
+// like the rest of this file's static explanatory text -- these
+// describe actual regional findings from the underlying analysis (e.g.
+// Appalachian-vs-non-Appalachian patterns, specific metro clustering),
+// which are true of THIS dataset, not a generic fact about what
+// unemployment/insurance/poverty/housing cost mean that would hold for
+// any consuming project. A future state/dataset using this template
+// needs its own captions, supplied the same way disclaimer_text is.
+
 #grid(columns: (1fr, 1fr), column-gutter: 10pt, row-gutter: 8pt,
   [
     #figure(
       box(stroke: 1pt + black, width: 100%)[#image("{{{map1_path}}}", width: 100%)],
       alt: "Kentucky county map, bivariate choropleth of unemployment rate against overdose death rate, using the same 3-by-3 color grid as the headline map.",
     )
-    #text(size: 7.5pt, fill: theme.text-secondary)[*{{{map_title1}}}.* Counties where joblessness is common; unemployment strains household finances and can reduce access to treatment and stable housing.]
+    #text(size: 7.5pt, fill: theme.text-secondary)[*{{{map_title1}}}.* {{{map1_caption}}}]
   ],
   [
     #figure(
       box(stroke: 1pt + black, width: 100%)[#image("{{{map2_path}}}", width: 100%)],
       alt: "Kentucky county map, bivariate choropleth of the percentage of the population without health insurance against overdose death rate, using the same 3-by-3 color grid as the headline map.",
     )
-    #text(size: 7.5pt, fill: theme.text-secondary)[*{{{map_title2}}}.* Uninsured residents face direct financial barriers to substance use treatment, medication-assisted treatment, and routine care that can catch a problem earlier.]
+    #text(size: 7.5pt, fill: theme.text-secondary)[*{{{map_title2}}}.* {{{map2_caption}}}]
   ],
   [
     #figure(
       box(stroke: 1pt + black, width: 100%)[#image("{{{map3_path}}}", width: 100%)],
       alt: "Kentucky county map, bivariate choropleth of the percentage of persons below 150 percent of the poverty line against overdose death rate, using the same 3-by-3 color grid as the headline map.",
     )
-    #text(size: 7.5pt, fill: theme.text-secondary)[*{{{map_title3}}}.* Poverty limits access to transportation, treatment, and other resources that support recovery and reduce overdose risk.]
+    #text(size: 7.5pt, fill: theme.text-secondary)[*{{{map_title3}}}.* {{{map3_caption}}}]
   ],
   [
     #figure(
       box(stroke: 1pt + black, width: 100%)[#image("{{{map4_path}}}", width: 100%)],
       alt: "Kentucky county map, bivariate choropleth of the percentage of housing units that are cost-burdened against overdose death rate, using the same 3-by-3 color grid as the headline map.",
     )
-    #text(size: 7.5pt, fill: theme.text-secondary)[*{{{map_title4}}}.* Housing cost burden (30%+ of income spent on housing) reflects material hardship and displacement risk, both linked to worse health outcomes.]
+    #text(size: 7.5pt, fill: theme.text-secondary)[*{{{map_title4}}}.* {{{map4_caption}}}]
   ],
 )
 
