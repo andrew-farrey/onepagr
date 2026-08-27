@@ -39,12 +39,25 @@
   narrative-callout-gap: 7pt,
 )
 
+// Route contact_email through a variable rather than splicing
+// {{{contact_email}}} directly into markup body wherever it's displayed.
+// "\@"-escaping the token only fixes Typst's "@" label-syntax parsing
+// for a value substituted into markup SOURCE text -- substituted into a
+// quoted Typst STRING argument instead (page-footer's contact-email
+// parameter, or a "mailto:" string), "\@" is not a recognized string
+// escape and the literal backslash renders/breaks the link. Interpolating
+// an already-evaluated string via #variable-name sidesteps this
+// entirely -- confirmed directly while building county_choropleth's
+// template, see that file's identical comment. Keep contact_email
+// UNESCAPED in the R-side data.
+#let contact-email = "{{{contact_email}}}"
+
 #let footer = page-footer(
   theme, theme-grad,
   "assets/partner-org-a-white.png", "Partner Organization A logo",
-  "assets/primary-org-white.png", "Primary Organization logo",
+  "assets/primary-org-white.png", "Partner Organization logo",
   "assets/partner-org-b-white.png", "Partner Organization B logo",
-  "{{{org_full}}}", "{{{contact_url}}}", "{{{contact_email}}}",
+  "{{{org_full}}}", "{{{contact_url}}}", contact-email,
 )
 
 #apply-base-styles([{{{doc_title}}}], "{{{org_full}}}", theme, footer)[
@@ -285,7 +298,7 @@
 ]
 
 #v(theme.space-xs)
-#text(size: 7pt, fill: theme.text-muted)[*Data sources:* {{{footnote_sources}}} #h(0.5em)|#h(0.5em) *Period:* {{{strip_period}}} #h(0.5em)|#h(0.5em) *Contact:* {{{org_full}}} at #link("mailto:{{{contact_email}}}")[{{{contact_email}}}]]
+#text(size: 7pt, fill: theme.text-muted)[*Data sources:* {{{footnote_sources}}} #h(0.5em)|#h(0.5em) *Period:* {{{strip_period}}} #h(0.5em)|#h(0.5em) *Contact:* {{{org_full}}} at #link("mailto:" + contact-email)[#contact-email]]
 ] // close body #pad(x: theme.content-pad-x)
 
 ] // close #apply-base-styles body

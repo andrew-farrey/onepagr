@@ -11,7 +11,7 @@ sample_data <- list(
   doc_subtitle = "Sample Record Linkage . Sample Region, Q3 2022-2025 . Primary Sample Organization",
   org_full = "Primary Sample Organization",
   contact_url = "https://example.org/",
-  contact_email = "contact\\@example.org",
+  contact_email = "contact@example.org",
   strip_data = "Sample System A . Sample System B . Sample System C",
   strip_period = "Q3 2022-2025",
   strip_design = "Retrospective Linkage Cohort",

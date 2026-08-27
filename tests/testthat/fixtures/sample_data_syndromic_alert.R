@@ -3,7 +3,7 @@ sample_data_syndromic_alert <- list(
   doc_subtitle = "Sample Regional Syndromic Surveillance Program",
   org_full = "Primary Sample Organization",
   contact_url = "https://example.org/",
-  contact_email = "contact\\@example.org",
+  contact_email = "contact@example.org",
   severity_level = "warning",
   alert_condition = "Influenza-like illness",
   alert_facility_region = "Sample Region, all reporting facilities",

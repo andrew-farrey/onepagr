@@ -3,7 +3,7 @@ sample_data_overdose_spike_alert <- list(
   doc_subtitle = "Sample Region Overdose Surveillance . Primary Sample Organization",
   org_full = "Primary Sample Organization",
   contact_url = "https://example.org/",
-  contact_email = "contact\\@example.org",
+  contact_email = "contact@example.org",
   severity_level = "critical",
   alert_area = "Sample County",
   alert_issued_at = "August 16, 2026, 9:00 AM",
