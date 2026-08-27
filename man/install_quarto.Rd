@@ -4,11 +4,11 @@
 \alias{install_quarto}
 \title{Install Quarto to a user-local directory}
 \usage{
-install_quarto(version = "1.7.32")
+install_quarto(version = "1.10.18")
 }
 \arguments{
 \item{version}{Character. Quarto version to install. Default
-\code{"1.7.32"}.}
+\code{"1.10.18"}.}
 }
 \value{
 Character, the install directory (macOS/Linux) or the
@@ -41,4 +41,14 @@ used below against quarto-dev/quarto-cli's current GitHub releases page
 (https://github.com/quarto-dev/quarto-cli/releases) -- release asset
 naming has changed across Quarto versions historically, so this should
 be confirmed against a live release rather than assumed to still match.
+
+The default \code{version} below must bundle a Typst new enough for
+\code{\link[=check_quarto]{check_quarto()}}'s own minimum (see that function's docs for why
+Quarto's version number alone isn't a safe indicator of this).
+\code{"1.10.18"} is used here specifically because it's confirmed directly
+(not assumed) to bundle Typst 0.15.1, the version this package's
+templates were actually developed and tested against -- re-verify
+this default against a live install (\verb{quarto typst --version}) before
+bumping it, rather than assuming a newer Quarto version number implies
+a newer bundled Typst.
 }

@@ -1,17 +1,44 @@
-#' Check whether Quarto is installed and meets onepagr's minimum version
+#' Extract the Typst version Quarto's own `typst` subcommand reports
 #'
-#' Wraps the `quarto` package's `quarto_available()`/`quarto_version()` to
-#' report what's installed. onepagr needs Quarto's Typst backend to
-#' support `--pdf-standard ua-1` and `--features a11y-extras` -- this
-#' checks against that floor, not just "is Quarto present at all."
+#' `quarto typst --version` prints a line like `typst 0.15.1 (9dfd3a08)`.
 #'
-#' @param min_version Character. Minimum required Quarto version. Default
-#'   `"1.4.549"`.
-#' @return Invisibly, a list with `available` (logical), `version`
-#'   (`package_version` or `NA`), and `ok` (logical, `TRUE` if available
-#'   and meets `min_version`).
+#' @param quarto_bin Character. Path to the quarto binary.
+#' @return `package_version`, or `NA` if the version couldn't be parsed.
+#' @keywords internal
+typst_version_via_quarto <- function(quarto_bin) {
+  out <- tryCatch(
+    system2(quarto_bin, c("typst", "--version"), stdout = TRUE, stderr = TRUE),
+    error = function(e) character(0), warning = function(w) character(0)
+  )
+  match <- regmatches(out, regexpr("[0-9]+\\.[0-9]+\\.[0-9]+", out))
+  if (length(match) == 0) NA else package_version(match[[1]])
+}
+
+#' Check whether Quarto is installed and its bundled Typst is new enough
+#'
+#' Wraps the `quarto` package's `quarto_available()` to check Quarto is
+#' present, then checks the **Typst version Quarto actually bundles** --
+#' not Quarto's own version number, which is NOT a reliable proxy for
+#' this: confirmed directly (via web research plus this package's own
+#' pinned dev environment) that Quarto sat on Typst 0.11.x across
+#' multiple Quarto 1.4-1.7.x releases before eventually bundling a newer
+#' one, so a Quarto-version floor can pass while the bundled Typst is
+#' still too old for `--pdf-standard ua-1` (added in Typst 0.14.0) or
+#' `--features a11y-extras` (this package is built and tested against
+#' Typst 0.15.1 specifically, bundled by Quarto 1.10.18 -- confirmed
+#' directly by running `quarto typst --version` in the dev environment
+#' every template in this package was verified against).
+#'
+#' @param min_typst_version Character. Minimum required Typst version
+#'   (the version Quarto's own bundled `typst` binary reports, not
+#'   Quarto's own version). Default `"0.15.1"`, matching this package's
+#'   own tested baseline.
+#' @return Invisibly, a list with `available` (logical), `quarto_version`
+#'   (`package_version` or `NA`), `typst_version` (`package_version` or
+#'   `NA`), and `ok` (logical, `TRUE` if available and the bundled Typst
+#'   meets `min_typst_version`).
 #' @export
-check_quarto <- function(min_version = "1.4.549") {
+check_quarto <- function(min_typst_version = "0.15.1") {
   available <- quarto::quarto_available()
   if (!available) {
     message(
@@ -22,23 +49,37 @@ check_quarto <- function(min_version = "1.4.549") {
       "install system-wide, install a user-local copy and point the ",
       "QUARTO_PATH environment variable at its binary instead."
     )
-    return(invisible(list(available = FALSE, version = NA, ok = FALSE)))
+    return(invisible(list(
+      available = FALSE, quarto_version = NA, typst_version = NA, ok = FALSE
+    )))
   }
 
-  version <- quarto::quarto_version()
-  ok <- version >= package_version(min_version)
+  quarto_bin <- quarto::quarto_path()
+  quarto_ver <- quarto::quarto_version()
+  typst_ver <- typst_version_via_quarto(quarto_bin)
+
+  ok <- !is.na(typst_ver) && typst_ver >= package_version(min_typst_version)
   if (!ok) {
     message(
-      "Quarto ", version, " was found, but onepagr needs at least ",
-      min_version, " for --pdf-standard ua-1 / --features a11y-extras ",
-      "support. Update Quarto from https://quarto.org/docs/get-started/, ",
-      "or run onepagr::install_quarto(). On Posit Workbench specifically, ",
-      "the system Quarto is often pinned to an old version -- install a ",
+      "Quarto ", quarto_ver, " was found, bundling Typst ",
+      if (is.na(typst_ver)) "(version could not be determined)" else typst_ver,
+      ", but onepagr needs at least Typst ", min_typst_version,
+      " for --pdf-standard ua-1 / --features a11y-extras support. ",
+      "Quarto's own version number is NOT a reliable indicator of this --",
+      " some Quarto releases went several versions without updating their",
+      " bundled Typst. Update Quarto from ",
+      "https://quarto.org/docs/get-started/, or run ",
+      "onepagr::install_quarto(). On Posit Workbench specifically, the ",
+      "system Quarto is often pinned to an old version -- install a ",
       "user-local copy and point QUARTO_PATH at its binary rather than ",
-      "waiting on an admin-managed upgrade."
+      "waiting on an admin-managed upgrade. After installing, re-run ",
+      "onepagr::check_quarto() to confirm the bundled Typst is new enough."
     )
   }
-  invisible(list(available = TRUE, version = version, ok = ok))
+  invisible(list(
+    available = TRUE, quarto_version = quarto_ver, typst_version = typst_ver,
+    ok = ok
+  ))
 }
 
 #' Install Quarto to a user-local directory
@@ -69,12 +110,22 @@ check_quarto <- function(min_version = "1.4.549") {
 #' naming has changed across Quarto versions historically, so this should
 #' be confirmed against a live release rather than assumed to still match.
 #'
+#' The default `version` below must bundle a Typst new enough for
+#' [check_quarto()]'s own minimum (see that function's docs for why
+#' Quarto's version number alone isn't a safe indicator of this).
+#' `"1.10.18"` is used here specifically because it's confirmed directly
+#' (not assumed) to bundle Typst 0.15.1, the version this package's
+#' templates were actually developed and tested against -- re-verify
+#' this default against a live install (`quarto typst --version`) before
+#' bumping it, rather than assuming a newer Quarto version number implies
+#' a newer bundled Typst.
+#'
 #' @param version Character. Quarto version to install. Default
-#'   `"1.7.32"`.
+#'   `"1.10.18"`.
 #' @return Character, the install directory (macOS/Linux) or the
 #'   downloaded installer path (Windows), invisibly.
 #' @export
-install_quarto <- function(version = "1.7.32") {
+install_quarto <- function(version = "1.10.18") {
   sysname <- Sys.info()[["sysname"]]
   install_dir <- tools::R_user_dir("onepagr", which = "data")
   dir.create(install_dir, recursive = TRUE, showWarnings = FALSE)
