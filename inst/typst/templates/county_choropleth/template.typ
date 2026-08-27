@@ -115,7 +115,11 @@
     #text-box(theme, theme-grad, [HOW TO READ THIS MAP])[
       Each county is shaded by two ranks at once: Social Vulnerability Index (SVI, left #sym.arrow.r right) and overdose death rate (bottom #sym.arrow.r top), each split into thirds across all 120 counties.
       #v(theme.space-xs)
-      *Dark green* #sym.dash.en top third on #emph[both]. *Orange* #sym.dash.en high death rate, lower SVI. *Blue-gray* #sym.dash.en high SVI, lower death rate. *Light gray* #sym.dash.en low on both.
+      // Verified directly against biscale::bi_pal("BlueOr", dim=3), not
+      // eyeballed: bi_class 3-1 (x=SVI high, y=death rate low) = orange
+      // #dd6a29; bi_class 1-3 (x=SVI low, y=death rate high) = blue
+      // #169dd0. An earlier version of this callout had these swapped.
+      *Dark green* #sym.dash.en top third on #emph[both]. *Orange* #sym.dash.en high SVI, lower death rate. *Blue* #sym.dash.en high death rate, lower SVI. *Light gray* #sym.dash.en low on both.
       #v(theme.space-xs)
       Shows where the two measures co-occur geographically -- not that one causes the other.
     ]
@@ -123,7 +127,14 @@
 )
 
 #v(theme.space-xs)
-#text(size: 8.5pt, fill: theme.text-secondary)[*Social Vulnerability Index (SVI).* SVI combines four domains of community risk factors from Census data into one composite score. Counties with higher SVI have less capacity to prepare for, respond to, and recover from hardship -- including the conditions that drive substance use and limit access to treatment.]
+// map0_caption is a token, not hardcoded prose, for the same reason
+// map1_caption..map4_caption (below) are: this is the analyst's actual
+// regional finding from reading this specific map (e.g. an
+// Appalachian-clustering pattern with a specific count of exceptions),
+// true of this dataset, not a generic fact about what SVI is -- that
+// generic explanation lives in the UNDERSTANDING THIS ANALYSIS narrative
+// just below instead, so this caption isn't redundant with it.
+#text(size: 8.5pt, fill: theme.text-secondary)[*Social Vulnerability Index (SVI).* {{{map0_caption}}}]
 
 #v(theme.space-md)
 = UNDERSTANDING THIS ANALYSIS
