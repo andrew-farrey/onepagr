@@ -10,7 +10,8 @@ render_onepager(
   theme = "default",
   theme_path = NULL,
   output,
-  keep_typst = TRUE
+  keep_typst = TRUE,
+  extra_assets = character(0)
 )
 }
 \arguments{
@@ -38,6 +39,23 @@ override; when supplied, \code{theme} is ignored. Default \code{NULL}.}
 \item{keep_typst}{Logical. Whether to leave the resolved \code{.typ} tree
 next to \code{output} (\code{TRUE}, default) or use a disposable tempdir
 (\code{FALSE}).}
+
+\item{extra_assets}{Character vector of file paths to stage into the
+compile work directory alongside the theme/components/package assets
+-- for per-run generated images (e.g. charts/maps produced fresh by
+the calling script) that a template's own \verb{#image()} calls need to
+reference. Typst's compiler sandboxes file access to the directory
+being compiled from and rejects absolute filesystem paths outright
+(confirmed directly: \verb{#image("C:/abs/path/map.png")} fails to
+compile with "path contains invalid component" even after fixing
+Windows backslashes to forward slashes -- this isn't a path-syntax
+issue, Typst does not permit escaping its compile root at all). Each
+file is copied in by its basename (overwriting on conflict); pass
+just that basename as the corresponding whisker token's value (e.g.
+\code{extra_assets = "path/to/map0.png"} pairs with a template token value
+of \code{"map0.png"}, not the original full path). Default \code{character(0)}
+(no extra assets, e.g. for templates whose images are all static
+package assets).}
 }
 \value{
 Character, the \code{output} path, invisibly.

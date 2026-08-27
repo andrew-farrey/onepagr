@@ -4,3 +4,6 @@
 ^\.github$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.claude$
+^\.superpowers$
+^CLAUDE\.md$

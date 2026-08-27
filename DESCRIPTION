@@ -9,6 +9,8 @@ Description: Generates polished, WCAG 2.2 AA and PDF/UA-1 accessible
     theme system. Ships built-in report templates and themes, and lets a
     consuming project supply its own design tokens and Typst templates.
 License: MIT + file LICENSE
+URL: https://github.com/andrew-farrey/onepagr
+BugReports: https://github.com/andrew-farrey/onepagr/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 Imports:
@@ -18,6 +20,9 @@ Imports:
     utils,
     whisker
 Suggests:
+    knitr,
+    rmarkdown,
     testthat (>= 3.2.0)
+VignetteBuilder: knitr
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.1.0
