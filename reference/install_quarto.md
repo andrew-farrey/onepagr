@@ -11,14 +11,14 @@ Quarto is pinned to an old version and users can't install system-wide.
 ## Usage
 
 ``` r
-install_quarto(version = "1.7.32")
+install_quarto(version = "1.10.18")
 ```
 
 ## Arguments
 
 - version:
 
-  Character. Quarto version to install. Default `"1.7.32"`.
+  Character. Quarto version to install. Default `"1.10.18"`.
 
 ## Value
 
@@ -44,3 +44,13 @@ below against quarto-dev/quarto-cli's current GitHub releases page
 (https://github.com/quarto-dev/quarto-cli/releases) – release asset
 naming has changed across Quarto versions historically, so this should
 be confirmed against a live release rather than assumed to still match.
+
+The default `version` below must bundle a Typst new enough for
+[`check_quarto()`](https://andrew-farrey.github.io/onepagr/reference/check_quarto.md)'s
+own minimum (see that function's docs for why Quarto's version number
+alone isn't a safe indicator of this). `"1.10.18"` is used here
+specifically because it's confirmed directly (not assumed) to bundle
+Typst 0.15.1, the version this package's templates were actually
+developed and tested against – re-verify this default against a live
+install (`quarto typst --version`) before bumping it, rather than
+assuming a newer Quarto version number implies a newer bundled Typst.

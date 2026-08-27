@@ -61,7 +61,7 @@ system-wide.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">install_quarto</span><span class="op">(</span>version <span class="op">=</span> <span class="st">"1.7.32"</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">install_quarto</span><span class="op">(</span>version <span class="op">=</span> <span class="st">"1.10.18"</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -70,7 +70,7 @@ system-wide.</p>
 
 <dl><dt id="arg-version">version<a class="anchor" aria-label="anchor" href="#arg-version"></a></dt>
 <dd><p>Character. Quarto version to install. Default
-<code>"1.7.32"</code>.</p></dd>
+<code>"1.10.18"</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -95,6 +95,15 @@ used below against quarto-dev/quarto-cli's current GitHub releases page
 (https://github.com/quarto-dev/quarto-cli/releases) – release asset
 naming has changed across Quarto versions historically, so this should
 be confirmed against a live release rather than assumed to still match.</p>
+<p>The default <code>version</code> below must bundle a Typst new enough for
+<code><a href="check_quarto.html">check_quarto()</a></code>'s own minimum (see that function's docs for why
+Quarto's version number alone isn't a safe indicator of this).
+<code>"1.10.18"</code> is used here specifically because it's confirmed directly
+(not assumed) to bundle Typst 0.15.1, the version this package's
+templates were actually developed and tested against – re-verify
+this default against a live install (<code>quarto typst --version</code>) before
+bumping it, rather than assuming a newer Quarto version number implies
+a newer bundled Typst.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
