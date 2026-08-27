@@ -23,8 +23,13 @@ Character, \code{dest}, invisibly.
 Copies a template's full self-contained folder (\code{template.typ} plus
 the resolved \code{theme.typ}, \code{components.typ}, and assets it needs to
 compile independently) into \code{dest}, before any real data exists -- for
-exploration or hand-editing, using the package documentation as your
-reference for the token/template schema. Once exported, the copy is
-the user's own; nothing in onepagr auto-regenerates over it. Compile
-an exported template directly with \code{\link[=compile_typst]{compile_typst()}}.
+exploration, hand-editing, or handing to an AI coding assistant to
+extend. That last case is a deliberate design goal, not an
+afterthought: \code{render_onepager()} also never hides the \code{.typ} source
+it compiles from by default, precisely so a real, readable, working
+template is always sitting somewhere an AI assistant (or a
+collaborator) can be pointed at to build a variation of it. Once
+exported, the copy is the user's own; nothing in onepagr
+auto-regenerates over it. Compile an exported template directly with
+\code{\link[=compile_typst]{compile_typst()}}.
 }

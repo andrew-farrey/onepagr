@@ -74,8 +74,10 @@ render_onepager(data, template = "overdose_spike_alert", theme = "uk", output = 
 That's it: `alert.pdf` is a finished, accessible PDF. By default,
 `render_onepager()` also leaves the resolved `.typ` source next to the
 output (`alert_typst/`), so it's never hidden away, even if you never
-need to look at it. That's useful for troubleshooting or further
-customization, using the package documentation as your reference. Set
+need to look at it. That's deliberate: it's useful for troubleshooting,
+and it means a real, working template is always sitting somewhere you
+can hand it to an AI coding assistant (or a collaborator) to build out
+further, which is part of the point of how onepagr is structured. Set
 `keep_typst = FALSE` to skip that and get only the PDF.
 
 See `?render_onepager` for every argument, or run
@@ -131,6 +133,19 @@ template, re-run that check yourself. A color or layout choice that
 passes for one template's usage isn't automatically safe for another
 (see the package's own development notes on why large-text-safe colors
 aren't automatically small-text-safe).
+
+## Development
+
+This package was developed with the assistance of AI coding tools
+(Claude Code). Every accessibility claim in this README and in the
+package's own comments reflects an actual verification run (a real
+Typst `--pdf-standard ua-1` compile, a real PAC check, or a real
+computed WCAG contrast ratio), not an assumption, whichever tool did
+the typing. AI-assisted development is also part of why onepagr is
+structured the way it is: `render_onepager()` never hides the `.typ`
+source it compiles from, and `export_template()` exists specifically so
+a real, working template is always available to hand to an AI
+assistant, or a human collaborator, to extend.
 
 ## License
 

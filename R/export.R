@@ -3,10 +3,15 @@
 #' Copies a template's full self-contained folder (`template.typ` plus
 #' the resolved `theme.typ`, `components.typ`, and assets it needs to
 #' compile independently) into `dest`, before any real data exists -- for
-#' exploration or hand-editing, using the package documentation as your
-#' reference for the token/template schema. Once exported, the copy is
-#' the user's own; nothing in onepagr auto-regenerates over it. Compile
-#' an exported template directly with [compile_typst()].
+#' exploration, hand-editing, or handing to an AI coding assistant to
+#' extend. That last case is a deliberate design goal, not an
+#' afterthought: `render_onepager()` also never hides the `.typ` source
+#' it compiles from by default, precisely so a real, readable, working
+#' template is always sitting somewhere an AI assistant (or a
+#' collaborator) can be pointed at to build a variation of it. Once
+#' exported, the copy is the user's own; nothing in onepagr
+#' auto-regenerates over it. Compile an exported template directly with
+#' [compile_typst()].
 #'
 #' @param template Character. A built-in template name (see [list_templates()]).
 #' @param dest Character. Directory to copy the template into. Created
