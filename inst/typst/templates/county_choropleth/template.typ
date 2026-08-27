@@ -108,7 +108,7 @@
   [
     #figure(
       box(stroke: 1pt + black, width: 100%)[#image("{{{map0_path}}}", width: 100%)],
-      alt: "Kentucky county map. Each county is shaded by a 3-by-3 bivariate color grid combining its overall Social Vulnerability Index tertile with its crude drug overdose death rate tertile. Dark green marks counties in the highest tertile for both measures; light gray marks counties in the lowest tertile for both.",
+      alt: "Kentucky county map, with each county labeled by name. Each county is shaded by a 3-by-3 bivariate color grid combining its overall Social Vulnerability Index tertile with its crude drug overdose death rate tertile. Dark green marks counties in the highest tertile for both measures; light gray marks counties in the lowest tertile for both.",
     )
   ],
   [
@@ -123,6 +123,20 @@
 )
 
 #v(theme.space-xs)
+#text(size: 8.5pt, fill: theme.text-secondary)[*Social Vulnerability Index (SVI).* SVI combines four domains of community risk factors from Census data into one composite score. Counties with higher SVI have less capacity to prepare for, respond to, and recover from hardship -- including the conditions that drive substance use and limit access to treatment.]
+
+#v(theme.space-md)
+= UNDERSTANDING THIS ANALYSIS
+#v(theme.space-sm)
+#text(size: 8.5pt)[Drug overdose fatality does not occur in isolation; it concentrates in communities where social and economic conditions create compounding risk. The Social Vulnerability Index (SVI), developed by the CDC, draws on census data to quantify four dimensions of community vulnerability: socioeconomic status, household characteristics, racial and ethnic minority status, and housing type and transportation. Higher SVI scores indicate communities with greater risk.]
+
+#v(theme.space-sm)
+#text(size: 8.5pt)[The maps in this series use a bivariate choropleth design to display two variables at once: fatal drug overdose death rate and social vulnerability. Dark green indicates counties high on both measures; orange or blue indicates counties high on one measure but low on the other; gray indicates counties low on both. This approach reveals not just where overdose burden is concentrated, but whether and how that concentration aligns with social vulnerability.]
+
+#v(theme.space-sm)
+#text(size: 8.5pt)[Each of the five maps examines a different vulnerability indicator -- the composite SVI and four component measures -- to show how the geographic relationship between overdose burden and social disadvantage shifts across measures.]
+
+#v(theme.space-sm)
 #text(size: 7pt, fill: theme.text-muted)[SVI is CDC/ATSDR's composite Social Vulnerability Index (sum of all four theme rankings), {{{data_vintage}}}. Overdose deaths are Kentucky resident deaths with an underlying cause of death consistent with the standard CDC/NCHS drug-poisoning definition (ICD-10 X40#sym.dash.en 44, X60#sym.dash.en 64, X85, Y10#sym.dash.en 14), {{{strip_period}}}, crude rate per 100,000 residents (not age-adjusted).]
 
 ] // close page-1 body
