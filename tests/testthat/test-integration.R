@@ -2,12 +2,14 @@ test_that("each built-in template's fixture satisfies its required tokens", {
   source("fixtures/sample_data.R", local = TRUE)
   source("fixtures/sample_data_overdose_spike_alert.R", local = TRUE)
   source("fixtures/sample_data_syndromic_alert.R", local = TRUE)
+  source("fixtures/sample_data_county_choropleth.R", local = TRUE)
 
   fixture_for <- list(
     cohort_summary = sample_data,
     trend_snapshot = sample_data,
     overdose_spike_alert = sample_data_overdose_spike_alert,
-    syndromic_alert = sample_data_syndromic_alert
+    syndromic_alert = sample_data_syndromic_alert,
+    county_choropleth = sample_data_county_choropleth
   )
 
   # This is the guard that catches a template being added without its
@@ -28,12 +30,25 @@ test_that("every built-in template renders under every built-in theme", {
   source("fixtures/sample_data.R", local = TRUE)
   source("fixtures/sample_data_overdose_spike_alert.R", local = TRUE)
   source("fixtures/sample_data_syndromic_alert.R", local = TRUE)
+  source("fixtures/sample_data_county_choropleth.R", local = TRUE)
 
   fixture_for <- list(
     cohort_summary = sample_data,
     trend_snapshot = sample_data,
     overdose_spike_alert = sample_data_overdose_spike_alert,
-    syndromic_alert = sample_data_syndromic_alert
+    syndromic_alert = sample_data_syndromic_alert,
+    county_choropleth = sample_data_county_choropleth
+  )
+
+  # county_choropleth is the only template needing per-run generated
+  # images staged via extra_assets (Typst rejects absolute image paths
+  # and sandboxes file access to its own compile directory -- see
+  # R/render.R's extra_assets documentation). Every other template gets
+  # character(0), the default.
+  extra_assets_for <- list(
+    county_choropleth = file.path(
+      "fixtures", "maps", sprintf("map%d.png", 0:4)
+    )
   )
 
   out_dir <- tempfile()
@@ -50,12 +65,15 @@ test_that("every built-in template renders under every built-in theme", {
     out_pdf <- file.path(
       out_dir, sprintf("%s_%s.pdf", combos$template[i], combos$theme[i])
     )
+    assets <- extra_assets_for[[combos$template[i]]]
+    if (is.null(assets)) assets <- character(0)
     render_onepager(
       fixture_for[[combos$template[i]]],
       template = combos$template[i],
       theme = combos$theme[i],
       output = out_pdf,
-      keep_typst = FALSE
+      keep_typst = FALSE,
+      extra_assets = assets
     )
     expect_true(
       file.exists(out_pdf),

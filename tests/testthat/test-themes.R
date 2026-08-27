@@ -43,7 +43,7 @@ test_that("list_templates returns the built-in template names", {
     list_templates(),
     c(
       "cohort_summary", "trend_snapshot",
-      "overdose_spike_alert", "syndromic_alert"
+      "overdose_spike_alert", "syndromic_alert", "county_choropleth"
     )
   )
 })
