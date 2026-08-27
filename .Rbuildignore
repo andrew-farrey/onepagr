@@ -7,3 +7,5 @@
 ^\.claude$
 ^\.superpowers$
 ^CLAUDE\.md$
+^_pkgdown\.yml$
+^pkgdown$

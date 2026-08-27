@@ -1,5 +1,9 @@
 # onepagr
 
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/andrew-farrey/onepagr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/andrew-farrey/onepagr/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+
 Generate polished, accessible one-page (front-and-back) PDF reports from
 analysis output, using a small set of fixed Typst templates and a
 swappable design-token theme system.
