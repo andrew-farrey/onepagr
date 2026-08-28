@@ -9,3 +9,4 @@
 ^CLAUDE\.md$
 ^_pkgdown\.yml$
 ^pkgdown$
+^codecov\.yml$
