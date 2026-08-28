@@ -180,6 +180,11 @@ hand to an AI assistant, or a human collaborator, to extend.
 
 MIT. See `LICENSE.md`.
 
+The package logo (`man/figures/logo.png`) incorporates Microsoft’s
+Fluent System Icon `Accessibility Checkmark 20 Regular` (MIT). See
+`data-raw/hex-sticker/ICON-LICENSE.md` for full attribution and the
+unmodified source SVG.
+
 ## Citation
 
 ``` r
