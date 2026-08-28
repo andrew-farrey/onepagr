@@ -21,14 +21,22 @@ sample_data_county_choropleth <- list(
   n_high_svi_counties = "40",
   data_vintage = "2022 vintage",
   map0_path = "map0.png",
+  map0_caption = paste(
+    "Sample finding: high SVI and high overdose death rates cluster",
+    "together in the sample region's eastern counties."
+  ),
   map1_path = "map1.png",
   map_title1 = "Unemployment vs. Overdose Death Rate",
+  map1_caption = "Sample finding: strongest association in sample sub-region A.",
   map2_path = "map2.png",
   map_title2 = "Uninsured Rate vs. Overdose Death Rate",
+  map2_caption = "Sample finding: strongest association in sample sub-region B.",
   map3_path = "map3.png",
   map_title3 = "Poverty Rate vs. Overdose Death Rate",
+  map3_caption = "Sample finding: strongest association in sample sub-region C.",
   map4_path = "map4.png",
   map_title4 = "Housing Cost Burden vs. Overdose Death Rate",
+  map4_caption = "Sample finding: strongest association in sample sub-region D.",
   disclaimer_text = paste(
     "These findings are based on preliminary sample data for illustration",
     "only. Numbers do not represent any real program, agency, or",
