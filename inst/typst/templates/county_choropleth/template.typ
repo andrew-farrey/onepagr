@@ -112,10 +112,27 @@
 // waste most of the page's vertical space below it (confirmed directly:
 // an even 58/42 split left roughly two-thirds of the page blank beneath
 // a map rendered too small to use the available height).
+// The headline map's height was previously driven entirely by the
+// source image's own aspect ratio (width: 100%, no height set) -- fine
+// for the wide, short aspect ratio a real Kentucky county map happens to
+// have, but silently at the mercy of whatever proportions a DIFFERENT
+// jurisdiction's map export has. A more square map (this template's own
+// test fixture is a 4:3 placeholder, not the elongated real thing) grows
+// tall enough to push this page's remaining content onto an unwanted
+// third page with no error or warning -- confirmed directly, not
+// hypothetical: that's exactly what the 4:3 test fixture does. Capping
+// the map at a fixed height and letting `fit: "contain"` letterbox
+// (rather than crop or distort) any aspect ratio makes this page's total
+// height deterministic regardless of the calling project's own map
+// export shape. Tune headline-map-height if a future template revision
+// needs the front page's vertical budget to shift.
+#let headline-map-height = 280pt
 #grid(columns: (75fr, 25fr), column-gutter: 12pt,
   [
     #figure(
-      box(stroke: 1pt + black, width: 100%)[#image("{{{map0_path}}}", width: 100%)],
+      box(stroke: 1pt + black, width: 100%, height: headline-map-height)[
+        #align(center + horizon)[#image("{{{map0_path}}}", height: 100%, fit: "contain")]
+      ],
       alt: "Kentucky county map, with each county labeled by name. Each county is shaded by a 3-by-3 bivariate color grid combining its overall Social Vulnerability Index tertile with its crude drug overdose death rate tertile. Dark green marks counties in the highest tertile for both measures; light gray marks counties in the lowest tertile for both.",
     )
   ],
@@ -174,16 +191,16 @@
 // this template, not specific to one state's analysis.
 #let svi-chip(label) = box(
   fill: white, stroke: 0.5pt + theme.border-color, radius: 2pt,
-  outset: (y: 1pt), inset: (x: 4pt, y: 1.5pt),
+  outset: (y: 0.5pt), inset: (x: 4pt, y: 1pt),
 )[#text(size: 6.3pt, fill: theme.text-secondary)[#label]]
 
 #let svi-theme-row(color, label, items) = grid(
   columns: (100pt, 1fr), column-gutter: 8pt, align: (left + horizon, left + horizon),
-  rect(fill: color, radius: 3pt, inset: (x: 6pt, y: 4pt), width: 100%)[#text(size: 7pt, weight: "bold", fill: white)[#label]],
+  rect(fill: color, radius: 3pt, inset: (x: 6pt, y: 3pt), width: 100%)[#text(size: 7pt, weight: "bold", fill: white)[#label]],
   items.map(svi-chip).join(h(3pt)),
 )
 
-#stack(spacing: 4pt,
+#stack(spacing: 3pt,
   svi-theme-row(theme.brand-blue, [SOCIOECONOMIC STATUS], ([Below 150% poverty], [Unemployed], [Housing cost burden], [No high school diploma], [No health insurance])),
   svi-theme-row(theme.brand-blue.lighten(25%), [HOUSEHOLD CHARACTERISTICS], ([Aged 65+], [Aged 17 and younger], [Civilian with a disability], [Single-parent households], [Limited English proficiency])),
   svi-theme-row(theme.brand-blue.lighten(45%), [RACIAL AND ETHNIC MINORITY STATUS], ([Hispanic or Latino], [Black], [Asian], [American Indian/Alaska Native], [Native Hawaiian/Pacific Islander], [Two or more races], [Other races])),
@@ -215,31 +232,49 @@
 // any consuming project. A future state/dataset using this template
 // needs its own captions, supplied the same way disclaimer_text is.
 
-#grid(columns: (1fr, 1fr), column-gutter: 10pt, row-gutter: 8pt,
+// Same fixed-height-plus-fit:"contain" treatment as the headline map
+// above, and for the same reason: four maps stacked into two rows means
+// this page's total height is twice as sensitive to the source images'
+// own aspect ratio as the front page was. component-map-row-gutter is
+// deliberately generous (not the bare minimum that avoids visual
+// overlap) -- an earlier version of this grid used row-gutter: 8pt,
+// which left the second row's map boxes visually cramped directly under
+// the first row's captions.
+#let component-map-height = 220pt
+#let component-map-row-gutter = 20pt
+#grid(columns: (1fr, 1fr), column-gutter: 10pt, row-gutter: component-map-row-gutter,
   [
     #figure(
-      box(stroke: 1pt + black, width: 100%)[#image("{{{map1_path}}}", width: 100%)],
+      box(stroke: 1pt + black, width: 100%, height: component-map-height)[
+        #align(center + horizon)[#image("{{{map1_path}}}", height: 100%, fit: "contain")]
+      ],
       alt: "Kentucky county map, bivariate choropleth of unemployment rate against overdose death rate, using the same 3-by-3 color grid as the headline map.",
     )
     #text(size: 7.5pt, fill: theme.text-secondary)[*{{{map_title1}}}.* {{{map1_caption}}}]
   ],
   [
     #figure(
-      box(stroke: 1pt + black, width: 100%)[#image("{{{map2_path}}}", width: 100%)],
+      box(stroke: 1pt + black, width: 100%, height: component-map-height)[
+        #align(center + horizon)[#image("{{{map2_path}}}", height: 100%, fit: "contain")]
+      ],
       alt: "Kentucky county map, bivariate choropleth of the percentage of the population without health insurance against overdose death rate, using the same 3-by-3 color grid as the headline map.",
     )
     #text(size: 7.5pt, fill: theme.text-secondary)[*{{{map_title2}}}.* {{{map2_caption}}}]
   ],
   [
     #figure(
-      box(stroke: 1pt + black, width: 100%)[#image("{{{map3_path}}}", width: 100%)],
+      box(stroke: 1pt + black, width: 100%, height: component-map-height)[
+        #align(center + horizon)[#image("{{{map3_path}}}", height: 100%, fit: "contain")]
+      ],
       alt: "Kentucky county map, bivariate choropleth of the percentage of persons below 150 percent of the poverty line against overdose death rate, using the same 3-by-3 color grid as the headline map.",
     )
     #text(size: 7.5pt, fill: theme.text-secondary)[*{{{map_title3}}}.* {{{map3_caption}}}]
   ],
   [
     #figure(
-      box(stroke: 1pt + black, width: 100%)[#image("{{{map4_path}}}", width: 100%)],
+      box(stroke: 1pt + black, width: 100%, height: component-map-height)[
+        #align(center + horizon)[#image("{{{map4_path}}}", height: 100%, fit: "contain")]
+      ],
       alt: "Kentucky county map, bivariate choropleth of the percentage of housing units that are cost-burdened against overdose death rate, using the same 3-by-3 color grid as the headline map.",
     )
     #text(size: 7.5pt, fill: theme.text-secondary)[*{{{map_title4}}}.* {{{map4_caption}}}]
