@@ -147,6 +147,41 @@
 #v(theme.space-sm)
 #text(size: 8.5pt)[Each of the five maps examines a different vulnerability indicator -- the composite SVI and four component measures -- to show how the geographic relationship between overdose burden and social disadvantage shifts across measures.]
 
+#v(theme.space-md)
+= WHAT SVI MEASURES
+#v(theme.space-xs)
+#text(size: 7.5pt, fill: theme.text-secondary)[SVI's composite score sums county rankings across four CDC-defined themes, each built from several Census variables:]
+#v(theme.space-xs)
+
+// A compact row layout, not CDC's own tall-left-bar diagram (see
+// https://www.atsdr.cdc.gov/place-health/php/svi/index.html) -- that
+// shape is taller than it is wide and doesn't fit the space available
+// here. A monochromatic blue ramp derived from theme.brand-blue, not
+// CDC's own green/orange/purple/blue scheme: this page's bivariate
+// legend already uses orange and green for a completely different
+// meaning (SVI-vs-death-rate quadrants), and reusing those colors here
+// for an unrelated 4-way category would read as if they were connected.
+// This whole section is hardcoded (not tokenized) since it describes
+// CDC's official SVI theme structure -- true for any dataset built on
+// this template, not specific to one state's analysis.
+#let svi-chip(label) = box(
+  fill: white, stroke: 0.5pt + theme.border-color, radius: 2pt,
+  outset: (y: 1pt), inset: (x: 4pt, y: 1.5pt),
+)[#text(size: 6.3pt, fill: theme.text-secondary)[#label]]
+
+#let svi-theme-row(color, label, items) = grid(
+  columns: (100pt, 1fr), column-gutter: 8pt, align: (left + horizon, left + horizon),
+  rect(fill: color, radius: 3pt, inset: (x: 6pt, y: 4pt), width: 100%)[#text(size: 7pt, weight: "bold", fill: white)[#label]],
+  items.map(svi-chip).join(h(3pt)),
+)
+
+#stack(spacing: 4pt,
+  svi-theme-row(theme.brand-blue, [SOCIOECONOMIC STATUS], ([Below 150% poverty], [Unemployed], [Housing cost burden], [No high school diploma], [No health insurance])),
+  svi-theme-row(theme.brand-blue.lighten(25%), [HOUSEHOLD CHARACTERISTICS], ([Aged 65+], [Aged 17 and younger], [Civilian with a disability], [Single-parent households], [Limited English proficiency])),
+  svi-theme-row(theme.brand-blue.lighten(45%), [RACIAL AND ETHNIC MINORITY STATUS], ([Hispanic or Latino], [Black], [Asian], [American Indian/Alaska Native], [Native Hawaiian/Pacific Islander], [Two or more races], [Other races])),
+  svi-theme-row(theme.brand-blue.lighten(60%), [HOUSING TYPE AND TRANSPORTATION], ([Multi-unit structures], [Mobile homes], [Crowding], [No vehicle access], [Group quarters])),
+)
+
 #v(theme.space-sm)
 #text(size: 7pt, fill: theme.text-muted)[SVI is CDC/ATSDR's composite Social Vulnerability Index (sum of all four theme rankings), {{{data_vintage}}}. Overdose deaths are Kentucky resident deaths with an underlying cause of death consistent with the standard CDC/NCHS drug-poisoning definition (ICD-10 X40#sym.dash.en 44, X60#sym.dash.en 64, X85, Y10#sym.dash.en 14), {{{strip_period}}}, crude rate per 100,000 residents (not age-adjusted).]
 
