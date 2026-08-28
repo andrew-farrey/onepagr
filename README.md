@@ -1,4 +1,4 @@
-# onepagr
+# onepagr <img src="man/figures/logo.png" align="right" height="139" alt="onepagr logo" />
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/andrew-farrey/onepagr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/andrew-farrey/onepagr/actions/workflows/R-CMD-check.yaml)
@@ -167,6 +167,11 @@ assistant, or a human collaborator, to extend.
 ## License
 
 MIT. See `LICENSE.md`.
+
+The package logo (`man/figures/logo.png`) incorporates Microsoft's Fluent
+System Icon `Accessibility Checkmark 20 Regular` (MIT). See
+`data-raw/hex-sticker/ICON-LICENSE.md` for full attribution and the
+unmodified source SVG.
 
 ## Citation
 
