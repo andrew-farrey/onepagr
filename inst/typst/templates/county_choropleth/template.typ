@@ -126,7 +126,17 @@
 // height deterministic regardless of the calling project's own map
 // export shape. Tune headline-map-height if a future template revision
 // needs the front page's vertical budget to shift.
-#let headline-map-height = 280pt
+//
+// Reduced from 280pt: adding the bordered-table framing to WHAT SVI
+// MEASURES (outer box + between-row rules) cost more vertical space
+// than the section's original un-bordered layout, even after tightening
+// that table's own spacing to a minimum -- confirmed directly by this
+// template's own regression tests (test-county-choropleth.R), which
+// failed at 280pt (3 pages, both the default fixture and the deliberate
+// extreme-aspect-ratio stress test) and pass at 250pt. `fit: "contain"`
+// means a smaller cap is still fully safe for any map aspect ratio, not
+// just Kentucky's -- it can only letterbox more, never crop or distort.
+#let headline-map-height = 250pt
 #grid(columns: (75fr, 25fr), column-gutter: 12pt,
   [
     #figure(
@@ -194,18 +204,56 @@
   outset: (y: 0.5pt), inset: (x: 4pt, y: 1pt),
 )[#text(size: 6.3pt, fill: theme.text-secondary)[#label]]
 
-#let svi-theme-row(color, label, items) = grid(
-  columns: (100pt, 1fr), column-gutter: 8pt, align: (left + horizon, left + horizon),
-  rect(fill: color, radius: 3pt, inset: (x: 6pt, y: 3pt), width: 100%)[#text(size: 7pt, weight: "bold", fill: white)[#label]],
-  items.map(svi-chip).join(h(3pt)),
-)
+// text-color is an explicit per-row argument, not automatic -- a
+// monochromatic ramp needs a DIFFERENT label-text color once the
+// background gets light enough that white text stops passing WCAG's
+// 4.5:1 (small-text) requirement, exactly the "brand-accent vs
+// brand-accent-text" split this package's own theme files already use
+// for the identical reason. This was originally shipped with white
+// text on all four rows, unverified -- confirmed wrong by a real PAC
+// run against a consuming project (11 contrast errors), not caught in
+// advance. Each pairing below is now verified with the actual WCAG
+// contrast formula (not eyeballed): lighten 0%/20% + white text both
+// clear 6:1; lighten 50%/70% + brand-midnight text clear 5.6:1 and
+// 9:1. The gap between ~28%-38% lighten has NO safe text color (white
+// and brand-midnight both fail there) -- confirmed by scanning the
+// full 0-70% range, not assumed -- so the four stops deliberately skip
+// past it rather than landing inside it. Also confirmed against a real
+// compiled PDF (not just the R-side contrast formula): searched the
+// rendered output for each predicted hex value and found matching
+// pixels for all four, confirming Typst's real color.lighten() matches
+// the linear-RGB-mix model these numbers were computed from.
+#let svi-theme-label(color, label, text-color: white) = rect(
+  fill: color, radius: 3pt, inset: (x: 6pt, y: 3pt), width: 100%,
+)[#text(size: 7pt, weight: "bold", fill: text-color)[#label]]
 
-#stack(spacing: 3pt,
-  svi-theme-row(theme.brand-blue, [SOCIOECONOMIC STATUS], ([Below 150% poverty], [Unemployed], [Housing cost burden], [No high school diploma], [No health insurance])),
-  svi-theme-row(theme.brand-blue.lighten(25%), [HOUSEHOLD CHARACTERISTICS], ([Aged 65+], [Aged 17 and younger], [Civilian with a disability], [Single-parent households], [Limited English proficiency])),
-  svi-theme-row(theme.brand-blue.lighten(45%), [RACIAL AND ETHNIC MINORITY STATUS], ([Hispanic or Latino], [Black], [Asian], [American Indian/Alaska Native], [Native Hawaiian/Pacific Islander], [Two or more races], [Other races])),
-  svi-theme-row(theme.brand-blue.lighten(60%), [HOUSING TYPE AND TRANSPORTATION], ([Multi-unit structures], [Mobile homes], [Crowding], [No vehicle access], [Group quarters])),
-)
+#let svi-theme-items(items) = items.map(svi-chip).join(h(3pt))
+
+// One outer bordered box (the whole visualization framed as a table),
+// with a rule between each row -- rather than 4 separately-stacked
+// mini-grids with gaps, this is ONE grid with 4 rows, so a single
+// `stroke` rule covers every row boundary consistently instead of
+// hand-placing 3 separate divider lines. Spacing (outer inset,
+// row-gutter, per-cell bottom inset) is intentionally tight -- a first,
+// more generously-spaced version pushed a consuming project's report
+// onto an unwanted third page; this is the value that held at 2 pages
+// there after two rounds of tightening.
+#box(stroke: 0.5pt + theme.border-color, radius: 3pt, inset: 4pt, width: 100%)[
+  #grid(
+    columns: (100pt, 1fr), column-gutter: 8pt, row-gutter: 2pt,
+    align: (left + horizon, left + horizon),
+    stroke: (_, y) => if y < 3 { (bottom: 0.5pt + theme.border-color) } else { none },
+    inset: (bottom: 2pt),
+    svi-theme-label(theme.brand-blue, [SOCIOECONOMIC STATUS]),
+    svi-theme-items(([Below 150% poverty], [Unemployed], [Housing cost burden], [No high school diploma], [No health insurance])),
+    svi-theme-label(theme.brand-blue.lighten(20%), [HOUSEHOLD CHARACTERISTICS]),
+    svi-theme-items(([Aged 65+], [Aged 17 and younger], [Civilian with a disability], [Single-parent households], [Limited English proficiency])),
+    svi-theme-label(theme.brand-blue.lighten(50%), [RACIAL AND ETHNIC MINORITY STATUS], text-color: theme.brand-midnight),
+    svi-theme-items(([Hispanic or Latino], [Black], [Asian], [American Indian/Alaska Native], [Native Hawaiian/Pacific Islander], [Two or more races], [Other races])),
+    svi-theme-label(theme.brand-blue.lighten(70%), [HOUSING TYPE AND TRANSPORTATION], text-color: theme.brand-midnight),
+    svi-theme-items(([Multi-unit structures], [Mobile homes], [Crowding], [No vehicle access], [Group quarters])),
+  )
+]
 
 #v(theme.space-sm)
 #text(size: 7pt, fill: theme.text-muted)[SVI is CDC/ATSDR's composite Social Vulnerability Index (sum of all four theme rankings), {{{data_vintage}}}. Overdose deaths are Kentucky resident deaths with an underlying cause of death consistent with the standard CDC/NCHS drug-poisoning definition (ICD-10 X40#sym.dash.en 44, X60#sym.dash.en 64, X85, Y10#sym.dash.en 14), {{{strip_period}}}, crude rate per 100,000 residents (not age-adjusted).]
