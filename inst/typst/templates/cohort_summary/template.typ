@@ -66,11 +66,18 @@
 // UNESCAPED in the R-side data.
 #let contact-email = "{{{contact_email}}}"
 
+// Logo paths/alt-text and the header texture are tokens, not hardcoded
+// literals, specifically so a consuming project can swap in its own
+// branding without exporting and hand-editing this file: pass your own
+// image files via render_onepager()'s extra_assets argument, and set
+// these tokens to whatever basenames those files land under. Defaults
+// (in this package's own fixtures) point at the built-in package
+// assets, unchanged from before this became configurable.
 #let footer = page-footer(
   theme, theme-grad,
-  "assets/partner-org-a-white.png", "Partner Organization A logo",
-  "assets/primary-org-white.png", "Primary Organization logo",
-  "assets/partner-org-b-white.png", "Partner Organization B logo",
+  "{{{logo_partner_a_path}}}", "{{{logo_partner_a_alt}}}", "{{{show_partner_a}}}",
+  "{{{logo_primary_path}}}", "{{{logo_primary_alt}}}",
+  "{{{logo_partner_b_path}}}", "{{{logo_partner_b_alt}}}", "{{{show_partner_b}}}",
   "{{{org_full}}}", "{{{contact_url}}}", contact-email,
 )
 
@@ -81,10 +88,10 @@
 // ============================================================
 #block(width: 100%, fill: theme-grad.brand-blue-grad, clip: true, inset: (x: 20pt, y: 10pt), above: 0pt, below: 0pt)[
   #place(top + right, dx: 40pt, dy: -30pt)[
-    #pdf.artifact(kind: "background")[#image("assets/header-texture.png", width: 260pt)]
+    #pdf.artifact(kind: "background")[#image("{{{header_texture_path}}}", width: 260pt)]
   ]
   #grid(columns: (auto, 1fr), column-gutter: 14pt, align: horizon,
-    image("assets/primary-org-white.png", height: 28pt, alt: "Primary Organization logo"),
+    image("{{{logo_primary_path}}}", height: 28pt, alt: "{{{logo_primary_alt}}}"),
     [
       #text(fill: white, size: 12pt, weight: "bold")[{{{doc_title}}}] \
       #text(fill: white.transparentize(15%), size: 9pt)[{{{doc_subtitle}}}]

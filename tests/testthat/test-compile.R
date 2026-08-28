@@ -91,3 +91,42 @@ test_that("compile_typst validates before attempting to compile", {
   )
   expect_false(file.exists(out_pdf))
 })
+
+test_that("compile_typst rejects a font_dir that does not exist", {
+  tmp_dir <- tempfile()
+  dir.create(tmp_dir)
+  on.exit(unlink(tmp_dir, recursive = TRUE))
+  typ_path <- file.path(tmp_dir, "minimal.typ")
+  writeLines(
+    c("#set document(title: [Test])", "#text[{{{greeting}}}]"), typ_path
+  )
+  out_pdf <- file.path(tmp_dir, "out.pdf")
+  expect_error(
+    compile_typst(
+      typ_path, list(greeting = "Hello"), out_pdf,
+      font_dir = file.path(tmp_dir, "no_such_dir")
+    ),
+    "font_dir"
+  )
+  expect_false(file.exists(out_pdf))
+})
+
+test_that("compile_typst compiles successfully with a font_dir supplied", {
+  skip_if_not(quarto::quarto_available())
+  tmp_dir <- tempfile()
+  dir.create(tmp_dir)
+  on.exit(unlink(tmp_dir, recursive = TRUE))
+  font_dir <- file.path(tmp_dir, "fonts")
+  dir.create(font_dir)
+
+  typ_path <- file.path(tmp_dir, "minimal.typ")
+  writeLines(
+    c("#set document(title: [Test])", "#text[{{{greeting}}}]"), typ_path
+  )
+  out_pdf <- file.path(tmp_dir, "out.pdf")
+  result <- compile_typst(
+    typ_path, list(greeting = "Hello"), out_pdf, font_dir = font_dir
+  )
+  expect_true(file.exists(out_pdf))
+  expect_equal(result, out_pdf)
+})

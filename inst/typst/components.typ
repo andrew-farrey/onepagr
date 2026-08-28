@@ -85,25 +85,56 @@
 // real clickable contact URL is needed, put it in the page body instead,
 // which isn't page furniture and has no such restriction.
 //
-// Three-logo "tri-fold" lockup: tight gutter + thin dividers reads as one
-// combined co-branded lockup while remaining three separately alt-tagged
-// images -- more precise for screen-reader users than flattening into one
-// raster (which would lose per-organization identification), and each
-// logo stays independently resizable and swappable.
-#let page-footer(theme, theme-grad, logo-a, logo-a-alt, logo-primary, logo-primary-alt, logo-b, logo-b-alt, org-full, contact-url, contact-email, texture: "assets/header-texture.png") = box(width: 100%, fill: theme-grad.brand-blue-grad, clip: true, stroke: (top: theme.stroke-accent + theme.brand-midnight), inset: (x: 20pt, y: 10pt))[
+// Resolves a show_* toggle token to a real Typst boolean, or fails
+// loudly if it isn't the expected literal lowercase string. Same
+// silent-coercion hazard as severity-palette() below -- see that
+// function's comment. Defined here, above page-footer(), rather than
+// alongside severity-palette() further down: Typst evaluates top-level
+// #let bindings in file order, so page-footer() (which calls
+// bool-token()) needs this defined earlier in the file, not just earlier
+// in reading order of "related" functions.
+#let bool-token(name, value) = {
+  if value == "true" { true }
+  else if value == "false" { false }
+  else { panic(name + " must be the literal lowercase string \"true\" or \"false\", got: " + repr(value)) }
+}
+
+// Logo lockup: tight gutter + thin dividers reads as one combined
+// co-branded lockup while remaining separately alt-tagged images -- more
+// precise for screen-reader users than flattening into one raster (which
+// would lose per-organization identification), and each logo stays
+// independently resizable and swappable.
+//
+// Not every jurisdiction has a three-organization design like KIPRC's --
+// a single health department running its own reports has exactly one
+// logo, and a two-agency partnership has two. show-partner-a/
+// show-partner-b are show_*-style boolean tokens (see bool-token() above)
+// that drop the corresponding slot from the lockup entirely, rather than
+// rendering an empty or placeholder image in its place: the primary
+// logo is always shown, partner-a/partner-b are each optional. The
+// dividers and grid column count are computed from however many logos
+// are actually visible, so a one-logo jurisdiction gets a plain single
+// image with no dangling divider on either side.
+#let page-footer(theme, theme-grad, logo-a, logo-a-alt, show-partner-a, logo-primary, logo-primary-alt, logo-b, logo-b-alt, show-partner-b, org-full, contact-url, contact-email, texture: "assets/header-texture.png") = box(width: 100%, fill: theme-grad.brand-blue-grad, clip: true, stroke: (top: theme.stroke-accent + theme.brand-midnight), inset: (x: 20pt, y: 10pt))[
   #show link: it => it.body
   #place(top + right, dx: 40pt, dy: -30pt)[
     #pdf.artifact(kind: "background")[#image(texture, width: 200pt)]
   ]
   #let logo-divider = line(length: 22pt, angle: 90deg, stroke: 0.6pt + white.transparentize(45%))
+  #let logo-lockup = {
+    let logos = ()
+    if bool-token("show_partner_a", show-partner-a) { logos.push((logo-a, logo-a-alt)) }
+    logos.push((logo-primary, logo-primary-alt))
+    if bool-token("show_partner_b", show-partner-b) { logos.push((logo-b, logo-b-alt)) }
+    let cells = ()
+    for (i, l) in logos.enumerate() {
+      if i > 0 { cells.push(logo-divider) }
+      cells.push(image(l.at(0), height: 24pt, alt: l.at(1)))
+    }
+    grid(columns: (auto,) * cells.len(), column-gutter: 7pt, align: horizon, ..cells)
+  }
   #grid(columns: (auto, 1fr), align: horizon,
-    grid(columns: (auto, auto, auto, auto, auto), column-gutter: 7pt, align: horizon,
-      image(logo-a, height: 24pt, alt: logo-a-alt),
-      logo-divider,
-      image(logo-primary, height: 24pt, alt: logo-primary-alt),
-      logo-divider,
-      image(logo-b, height: 24pt, alt: logo-b-alt),
-    ),
+    logo-lockup,
     align(right)[#text(fill: white, size: 8pt)[*#org-full* \ #contact-url \ #contact-email]]
   )
 ]
@@ -153,16 +184,6 @@
   } else {
     panic("severity_level must be the literal lowercase string \"warning\" or \"critical\", got: " + repr(level))
   }
-}
-
-// Resolves a show_* toggle token to a real Typst boolean, or fails
-// loudly if it isn't the expected literal lowercase string. Same
-// silent-coercion hazard as severity-palette() above -- see that
-// function's comment.
-#let bool-token(name, value) = {
-  if value == "true" { true }
-  else if value == "false" { false }
-  else { panic(name + " must be the literal lowercase string \"true\" or \"false\", got: " + repr(value)) }
 }
 
 // Shared document-level setup every template should apply: page metadata,

@@ -1,0 +1,267 @@
+---
+title: "Theming: colors and logos"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Theming: colors and logos}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+quarto_ready <- requireNamespace("quarto", quietly = TRUE) &&
+  quarto::quarto_available()
+```
+
+onepagr's visual identity splits into two genuinely separate mechanisms,
+and it's worth knowing which is which before you customize either one:
+
+- **Colors and spacing** are controlled by a **theme**: a single Typst
+  dictionary, selectable by name (`theme = "uk"`) or supplied as your own
+  file (`theme_path = "my-theme.typ"`).
+- **Logos and the header texture** are **data**, not theme settings --
+  every template requires seven logo/image tokens in the `data` list you
+  pass to `render_onepager()`, the same way it requires `doc_title` or
+  `org_full`. Swapping logos means changing those values and staging your
+  own image files, not editing a template's Typst source.
+- **Fonts** are a theme setting (`body-font`), but making a *specific*
+  font file actually available to Typst is a separate, per-render
+  concern, covered in Part 3.
+
+This vignette covers all three.
+
+## Part 1: Colors
+
+### Built-in themes
+
+```{r}
+onepagr::list_themes()
+```
+
+```{r, eval = FALSE}
+render_onepager(data, template = "trend_snapshot", theme = "default", output = "report.pdf")
+render_onepager(data, template = "trend_snapshot", theme = "uk", output = "report.pdf")
+```
+
+### Writing your own theme
+
+A theme is a plain Typst file defining a `theme` dictionary (colors,
+fonts, spacing/stroke scale) and a `theme-grad` dictionary (a handful of
+gradients derived from `theme`'s colors). The easiest starting point is
+a copy of the built-in `default` theme:
+
+```{r}
+default_theme_path <- system.file(
+  "typst", "themes", "default.typ",
+  package = "onepagr"
+)
+cat(readLines(default_theme_path, n = 6), sep = "\n")
+```
+
+Copy that file, then change the values you want. The keys that matter
+most for an overall look:
+
+| Key | Controls |
+|---|---|
+| `brand-blue`, `brand-midnight` | The header band's gradient, and the accent stripe on every stat-card/callout box |
+| `brand-accent` | Large decorative text (big stat-card numbers) -- needs 3:1 contrast, not 4.5:1 |
+| `brand-accent-text` | The same accent color's small-text-safe variant (e.g. a `text-box` section heading) -- needs 4.5:1 |
+| `card-bg`, `callout-bg`, `lessons-bg` | Box background tints |
+| `text-secondary`, `text-muted` | Body and caption text colors |
+| `severity-warning`, `severity-critical` (+ their `-bg`/`-text` variants) | Alert-template severity coloring (`overdose_spike_alert`, `syndromic_alert`) |
+
+The full key list (spacing, stroke widths, radius, margin) is the same
+across every theme file; see `default.typ`'s own comments for what each
+one does; they're less likely to need changing than the colors above.
+
+### Verifying contrast before you ship a color change
+
+This is the part that's easy to skip and genuinely shouldn't be. Every
+color in onepagr's built-in themes was verified against WCAG's real
+contrast formula, not chosen by eye, because a color that looks readable
+to you is not the same thing as a color that measures 4.5:1. onepagr
+doesn't yet ship an automated checker for this (`check_theme_contrast()`
+is a planned, not-yet-built function), so for now this is a manual step,
+using the same formula this package's own development used:
+
+```{r}
+wcag_contrast <- function(hex1, hex2) {
+  linearize <- function(channel) {
+    channel <- channel / 255
+    ifelse(channel <= 0.03928, channel / 12.92, ((channel + 0.055) / 1.055)^2.4)
+  }
+  relative_luminance <- function(hex) {
+    rgb <- grDevices::col2rgb(hex)
+    lin <- linearize(rgb)
+    0.2126 * lin[1] + 0.7152 * lin[2] + 0.0722 * lin[3]
+  }
+  l1 <- relative_luminance(hex1)
+  l2 <- relative_luminance(hex2)
+  (max(l1, l2) + 0.05) / (min(l1, l2) + 0.05)
+}
+
+# Example: is a purple accent readable as small text on a light card
+# background? WCAG needs >= 4.5 for normal text, >= 3 for large text
+# (18pt+ regular or 14pt+ bold).
+wcag_contrast("#6A4C93", "#EDE7F6")
+```
+
+Check every foreground/background pairing your new color actually
+appears in, at the text size it's actually used at (a `text-box` section
+label is small text and needs 4.5:1; a 28pt stat-card number is large
+text and only needs 3:1). This project's own `default.typ` and `uk.typ`
+theme files have real, first-hand examples of a color that passed at one
+size and failed at another; both files' comments explain exactly which
+pairing failed and why.
+
+### Rendering with a custom theme
+
+```{r, eval = FALSE}
+render_onepager(data, template = "trend_snapshot", theme_path = "my-theme.typ", output = "report.pdf")
+```
+
+## Part 2: Logos and images
+
+### Logos are data, not template edits
+
+Every built-in template requires these tokens in the `data` list you
+pass to `render_onepager()`:
+
+| Token | Meaning |
+|---|---|
+| `logo_primary_path`, `logo_primary_alt` | Your own organization's logo -- always shown |
+| `logo_partner_a_path`, `logo_partner_a_alt`, `show_partner_a` | An optional co-branding partner, shown left of the primary logo |
+| `logo_partner_b_path`, `logo_partner_b_alt`, `show_partner_b` | A second optional co-branding partner, shown right of the primary logo |
+| `header_texture_path` | The decorative background texture behind the header band |
+
+Changing a logo means changing these values plus staging the actual
+image file, via `render_onepager()`'s `extra_assets` argument -- it does
+**not** require exporting or hand-editing a template's Typst source.
+Three separate logo slots exist (rather than one flattened composite
+image) so a screen reader announces real per-organization identification
+instead of one opaque "logo" -- but not every jurisdiction has a
+three-organization design. `show_partner_a`/`show_partner_b` are each
+independent `"true"`/`"false"` toggles (the literal lowercase string, not
+an R logical -- see `?render_onepager`), so a single health department
+reporting under its own name gets one logo with no dangling divider, a
+two-agency partnership gets two, and a KIPRC-style three-organization
+lockup gets three. The primary logo is never optional.
+
+```{r, eval = FALSE}
+# A single health department: one logo, no partners.
+data$logo_primary_path <- "county-health-dept-logo.png"
+data$logo_primary_alt <- "Example County Health Department logo"
+data$show_partner_a <- "false"
+data$show_partner_b <- "false"
+data$header_texture_path <- "header-texture.png"
+
+render_onepager(
+  data, template = "syndromic_alert", theme = "default", output = "report.pdf",
+  extra_assets = c("county-health-dept-logo.png", "header-texture.png")
+)
+```
+
+`extra_assets` stages your files into the same directory Typst compiles
+from (Typst's compiler sandboxes file access and rejects absolute paths
+outright), so the token value must be just the basename you pass to
+`extra_assets`, not the file's original full path. If you're fine with
+the package's own three built-in placeholder logos, you don't need
+`extra_assets` at all -- the fixture defaults in
+`vignette("getting-started")` already point at those bundled assets by
+name.
+
+### A practical tip: crop before you resize
+
+A raster logo file often has transparent padding baked in around the
+real artwork (this project found one source logo with roughly a third
+of its canvas being empty space). That padding silently shrinks how big
+the logo actually looks once Typst applies a `height:`/`width:` setting,
+and can misalign a multi-logo row that assumes each image's visible
+content fills its frame. Check the image's real bounding box before
+trusting a nominal size setting:
+
+```{r, eval = FALSE}
+# Using the PIL/Pillow Python library's alpha.getbbox(), or an
+# equivalent in your tool of choice, before sizing a new logo.
+```
+
+### Accessible alt text
+
+Every logo `image()` call takes an `alt:` argument. Write real,
+specific text ("Sample Health Department logo"), not something generic
+like "logo" or "image" -- this is what a screen reader announces in
+place of the image, and it's the same accessibility bar the rest of
+onepagr's output is held to.
+
+## Part 3: Fonts
+
+A theme's `body-font` key names the font family Typst should use for all
+body/heading text (e.g. `default.typ`'s `body-font: "Liberation Sans"`).
+Two different questions hide inside "change the font":
+
+1. **What family name should Typst look for?** That's the theme's job --
+   change `body-font` in your own theme file, same as any other token in
+   Part 1.
+2. **Is that family actually available to Typst at compile time?** That's
+   a separate, per-render concern, and it's the one that actually needs
+   new machinery: Typst only sees fonts installed system-wide by default,
+   and a locked-down enterprise deployment (e.g. Posit Workbench) may not
+   permit installing new fonts at the OS level at all.
+
+`render_onepager()`'s `font_dir` argument solves the second problem
+without needing OS-level font installation: point it at a directory
+containing your own `.ttf`/`.otf` files, and Typst searches that
+directory *in addition to* system fonts for this compile only
+(confirmed directly: `quarto typst fonts --font-path <dir>` lists a font
+from `<dir>` alongside every system font, not instead of them).
+
+```{r, eval = FALSE}
+# my-theme.typ sets body-font: "Open Sans", and Open Sans isn't
+# installed system-wide -- ship the font file alongside your project
+# and point font_dir at its folder.
+render_onepager(
+  data, template = "cohort_summary", theme_path = "my-theme.typ",
+  output = "report.pdf", font_dir = "fonts/"
+)
+```
+
+If `body-font` names a family Typst can't find (system-wide or in
+`font_dir`), Typst silently falls back to a default font rather than
+erroring -- so after changing a font, actually open the compiled PDF (or
+check its embedded font list) to confirm your font took effect, the same
+"verify, don't assume" discipline Part 1 applies to color contrast.
+
+## Onboarding a new jurisdiction: what you actually need
+
+Pulling Parts 1-3 together, a health department or university adopting
+onepagr for the first time needs exactly three things before it can
+render its own reports, on top of the same real analysis output every
+other onepagr user needs:
+
+1. **A color palette.** At minimum, a primary/accent color pair; see
+   Part 1. Reuse the built-in `default` (Bootstrap-derived, brand-neutral)
+   theme as-is if you don't have -- or don't yet want to commit to --
+   your own institutional colors. A full custom theme is colors, not
+   code: copy `default.typ`, change the hex values, verify contrast, done.
+2. **Logo file(s).** One, if you're reporting under your own name alone;
+   two or three if you co-brand with partner agencies. See Part 2 --
+   there's no minimum of three, and no template editing required either
+   way.
+3. **A font, if the default doesn't suit you.** Optional -- every
+   built-in theme already names a real, commonly-available font. Only
+   relevant if your institution has a specific brand font it wants to
+   use instead; see Part 3.
+
+None of the three requires touching a template's Typst source. A new
+jurisdiction's entire setup is a theme file (or none, if `default`/`uk`
+suffice), a handful of logo files, and the `data` list documented in
+`vignette("getting-started")` and `vignette("end-to-end-workflow")`.
+
+## See also
+
+- `vignette("getting-started", package = "onepagr")` for the basic
+  render workflow.
+- `vignette("end-to-end-workflow", package = "onepagr")` for a full
+  worked example starting from real data.
+- Any file under `system.file("typst/themes", package = "onepagr")`
+  for a complete, real theme file to read or copy.

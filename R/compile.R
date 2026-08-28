@@ -72,9 +72,18 @@ validate_template_data <- function(path, data) {
 #'   Typst's relative `#import` paths resolve correctly.
 #' @param data Named list of whisker substitution values.
 #' @param output Character. Path to write the compiled PDF to.
+#' @param font_dir Character or `NULL`. A directory of font files (`.ttf`/
+#'   `.otf`) to make available to Typst for this compile, passed through
+#'   as `--font-path`. Typst does not merge this with the system font
+#'   list -- both system fonts and this directory are searched, so a
+#'   theme's `text-font`/`heading-font` tokens can name either a
+#'   system-installed font or one shipped here (confirmed directly:
+#'   `quarto typst fonts --font-path <dir>` lists a font from `<dir>`
+#'   alongside system fonts, not instead of them). Default `NULL` (system
+#'   fonts only).
 #' @return Character, the `output` path, invisibly.
 #' @export
-compile_typst <- function(path, data, output) {
+compile_typst <- function(path, data, output, font_dir = NULL) {
   validate_template_data(path, data)
 
   quarto_bin <- quarto::quarto_path()
@@ -86,6 +95,10 @@ compile_typst <- function(path, data, output) {
     )
   }
 
+  if (!is.null(font_dir) && !dir.exists(font_dir)) {
+    stop("font_dir does not exist: ", font_dir, call. = FALSE)
+  }
+
   template_text <- paste(readLines(path, warn = FALSE), collapse = "\n")
   rendered <- whisker::whisker.render(template_text, data)
   typ_out <- file.path(
@@ -94,12 +107,14 @@ compile_typst <- function(path, data, output) {
   )
   writeLines(rendered, typ_out)
 
+  font_args <- if (!is.null(font_dir)) c("--font-path", shQuote(font_dir))
   result <- system2(
     quarto_bin,
     args = c(
       "typst", "compile",
       "--pdf-standard", "ua-1",
       "--features", "a11y-extras",
+      font_args,
       shQuote(typ_out), shQuote(output)
     ),
     stdout = TRUE, stderr = TRUE

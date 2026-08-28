@@ -48,11 +48,17 @@
 #'   of `"map0.png"`, not the original full path). Default `character(0)`
 #'   (no extra assets, e.g. for templates whose images are all static
 #'   package assets).
+#' @param font_dir Character or `NULL`. Passed through to
+#'   [compile_typst()]'s `font_dir` argument -- a directory of font files
+#'   to make available for this compile, in addition to system fonts, for
+#'   a theme's `text-font`/`heading-font` tokens that name a font not
+#'   installed system-wide (e.g. a Posit Workbench deployment without
+#'   permission to install fonts at the OS level). Default `NULL`.
 #' @return Character, the `output` path, invisibly.
 #' @export
 render_onepager <- function(data, template, theme = "default",
                             theme_path = NULL, output, keep_typst = TRUE,
-                            extra_assets = character(0)) {
+                            extra_assets = character(0), font_dir = NULL) {
   template_path <- resolve_template(template)
   template_src_dir <- dirname(template_path)
   theme_src <- resolve_theme(theme, theme_path)
@@ -95,5 +101,5 @@ render_onepager <- function(data, template, theme = "default",
   }
 
   staged_template <- file.path(work_dir, basename(template_path))
-  compile_typst(staged_template, data, output)
+  compile_typst(staged_template, data, output, font_dir = font_dir)
 }

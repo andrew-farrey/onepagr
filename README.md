@@ -131,6 +131,15 @@ A theme is a single Typst dictionary of colors, typography, and spacing
 tokens. See any file in `inst/typst/themes/` for the full schema, or
 `list_themes()` to see what's built in.
 
+Logos are separate from theming: every template takes a primary logo
+(always shown) plus two optional partner logos, toggled independently
+via `show_partner_a`/`show_partner_b`, so a single organization, a
+two-agency partnership, and a three-organization lockup are all first-
+class cases -- no template editing required either way. A `font_dir`
+argument to `render_onepager()` makes a directory of font files
+available to Typst for a compile, for a theme's font that isn't
+installed system-wide. See `vignette("theming")` for all of the above.
+
 ## Accessibility
 
 Every built-in template and theme has been verified with

@@ -12,6 +12,19 @@ sample_data <- list(
   org_full = "Primary Sample Organization",
   contact_url = "https://example.org/",
   contact_email = "contact@example.org",
+  # Defaults match the package's own built-in assets exactly -- override
+  # any of these (paired with render_onepager()'s extra_assets argument
+  # for your own image files) to swap in your own branding without
+  # exporting and hand-editing the template.
+  logo_partner_a_path = "assets/partner-org-a-white.png",
+  logo_partner_a_alt = "Partner Organization A logo",
+  show_partner_a = "true",
+  logo_primary_path = "assets/primary-org-white.png",
+  logo_primary_alt = "Primary Organization logo",
+  logo_partner_b_path = "assets/partner-org-b-white.png",
+  logo_partner_b_alt = "Partner Organization B logo",
+  show_partner_b = "true",
+  header_texture_path = "assets/header-texture.png",
   strip_data = "Sample System A . Sample System B . Sample System C",
   strip_period = "Q3 2022-2025",
   strip_design = "Retrospective Linkage Cohort",
