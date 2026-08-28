@@ -2,7 +2,9 @@ Package: onepagr
 Title: Accessible One-Page Reports from Typst Templates
 Version: 0.1.0
 Authors@R: person("Andrew", "Farrey", email = "afarrey11@outlook.com",
-    role = c("aut", "cre"), comment = "University of Kentucky / KIPRC")
+    role = c("aut", "cre"),
+    comment = c(affiliation = "University of Kentucky / KIPRC",
+        ORCID = "0000-0003-4279-0998"))
 Description: Generates polished, WCAG 2.2 AA and PDF/UA-1 accessible
     one-page (front-and-back) PDF reports from analysis output, using a
     small set of fixed Typst report templates and a swappable design-token
