@@ -91,8 +91,10 @@
 
 // ============================================================
 // TREND LEADING TO ALERT -- boxed-sequence idiom, same visual grammar as
-// trend_snapshot's 4-period grid, reused here for a fixed 5-day trailing
-// window instead of calendar periods.
+// trend_snapshot's 4-period grid, reused here for a 5-period trailing
+// window. The period LABELS (trend_label0..4) are tokens, not fixed
+// text -- the number of periods (5) is fixed by the grid, but what each
+// period represents (days, weeks, months) is the caller's choice.
 // ============================================================
 = TREND LEADING TO ALERT
 #v(theme.space-sm)
@@ -101,10 +103,10 @@
     fill: (x, ..) => if x == 4 { theme-grad.brand-blue-grad } else { theme-grad.card-bg-grad },
     inset: 8pt,
     stroke: (x, ..) => if x == 4 { theme.stroke-border + theme.brand-midnight } else { theme.stroke-border + theme.box-border },
-    stat-card(theme, [{{{trend_d4}}}], [4 days ago]),
-    stat-card(theme, [{{{trend_d3}}}], [3 days ago]),
-    stat-card(theme, [{{{trend_d2}}}], [2 days ago]),
-    stat-card(theme, [{{{trend_d1}}}], [Yesterday]),
+    stat-card(theme, [{{{trend_d4}}}], [{{{trend_label4}}}]),
+    stat-card(theme, [{{{trend_d3}}}], [{{{trend_label3}}}]),
+    stat-card(theme, [{{{trend_d2}}}], [{{{trend_label2}}}]),
+    stat-card(theme, [{{{trend_d1}}}], [{{{trend_label1}}}]),
     // "Today" sits on the dark navy brand-blue-grad fill (column x == 4
     // above) -- stat-card's own colors (severity.color for the number,
     // theme.text-secondary for the label) are tuned for the light card
@@ -117,10 +119,17 @@
     // inherit white from the wrapper rather than fighting an explicit
     // fill of their own. See this file's fixed HEADLINE STATS comment
     // above for the same underlying contrast-fix rationale.
+    //
+    // trend_label0..4 are tokens, not fixed text, specifically so this
+    // template isn't locked to a daily monitoring cadence -- NSSP
+    // ESSENCE-style syndromic surveillance routinely runs on weekly or
+    // monthly cadences too. Supply whatever period labels fit your
+    // actual monitoring interval (e.g. "4 weeks ago".."This week", or
+    // "4 months ago".."This month").
     align(center)[
       #text(fill: white)[
         #text(size: 22pt, weight: "bold")[{{{trend_d0}}}] \
-        #text(size: 8pt)[Today]
+        #text(size: 8pt)[{{{trend_label0}}}]
       ]
     ],
   )

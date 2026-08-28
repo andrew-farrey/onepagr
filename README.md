@@ -86,7 +86,10 @@ further, which is part of the point of how onepagr is structured. Set
 
 See `?render_onepager` for every argument, or run
 `vignette("getting-started", package = "onepagr")` for a fuller
-walkthrough.
+walkthrough. For a realistic, worked example that starts from real
+public data and runs a small analysis before rendering (rather than a
+hand-typed values list), see
+`vignette("end-to-end-workflow", package = "onepagr")`.
 
 ## Built-in templates
 
