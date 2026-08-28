@@ -92,6 +92,26 @@ test_that("compile_typst validates before attempting to compile", {
   expect_false(file.exists(out_pdf))
 })
 
+test_that("compile_typst errors clearly when Quarto isn't found", {
+  tmp_dir <- tempfile()
+  dir.create(tmp_dir)
+  on.exit(unlink(tmp_dir, recursive = TRUE))
+  typ_path <- file.path(tmp_dir, "minimal.typ")
+  writeLines(
+    c("#set document(title: [Test])", "#text[{{{greeting}}}]"), typ_path
+  )
+  out_pdf <- file.path(tmp_dir, "out.pdf")
+
+  testthat::local_mocked_bindings(
+    quarto_path = function() NULL,
+    .package = "quarto"
+  )
+  expect_error(
+    compile_typst(typ_path, list(greeting = "Hello"), out_pdf),
+    "Quarto was not found"
+  )
+})
+
 test_that("compile_typst rejects a font_dir that does not exist", {
   tmp_dir <- tempfile()
   dir.create(tmp_dir)

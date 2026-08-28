@@ -16,6 +16,13 @@ test_that("resolve_theme errors when no registry name or file matches", {
   expect_error(resolve_theme("does-not-exist"), "not a built-in theme")
 })
 
+test_that("resolve_theme errors clearly when theme_path doesn't exist", {
+  expect_error(
+    resolve_theme("default", theme_path = "does/not/exist.typ"),
+    "theme_path does not exist"
+  )
+})
+
 test_that("theme_path overrides theme entirely", {
   tmp <- tempfile(fileext = ".typ")
   writeLines("#let theme = (brand-blue: rgb(\"#000000\"))", tmp)

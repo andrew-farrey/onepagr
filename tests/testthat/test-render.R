@@ -41,6 +41,26 @@ test_that("render_onepager keep_typst = TRUE leaves a tree next to the PDF", {
   expect_true(dir.exists(file.path(typst_dir, "assets")))
 })
 
+test_that("render_onepager creates a nested output dir that doesn't exist", {
+  skip_if_not(quarto::quarto_available())
+  out_dir <- tempfile()
+  on.exit(unlink(out_dir, recursive = TRUE))
+  # Deliberately do NOT pre-create out_dir (or its parent "nested"
+  # subdirectory) -- every other render_onepager test here pre-creates
+  # its output directory, which meant render_onepager()'s own
+  # `dir.create(dirname(output), recursive = TRUE)` fallback never
+  # actually ran under test.
+  out_pdf <- file.path(out_dir, "nested", "report.pdf")
+
+  source("fixtures/sample_data.R", local = TRUE)
+  render_onepager(
+    sample_data, template = "cohort_summary", theme = "default",
+    output = out_pdf, keep_typst = FALSE
+  )
+
+  expect_true(file.exists(out_pdf))
+})
+
 test_that("render_onepager keep_typst = FALSE leaves only the PDF", {
   skip_if_not(quarto::quarto_available())
   out_dir <- tempfile()
