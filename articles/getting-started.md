@@ -13,7 +13,6 @@ system. Check whether it’s available:
 ``` r
 
 onepagr::check_quarto()
-#> Quarto was not found on this system. Install it from https://quarto.org/docs/get-started/, or run onepagr::install_quarto(). On a locked-down environment (e.g. Posit Workbench) where the system Quarto is outdated and you can't install system-wide, install a user-local copy and point the QUARTO_PATH environment variable at its binary instead.
 ```
 
 If that reports a problem, install a user-local copy yourself with
@@ -37,6 +36,18 @@ data <- list(
   org_full = "Sample Health Organization",
   contact_url = "https://example.org/",
   contact_email = "contact@example.org",
+  # Logo tokens are required by every template -- these values point at
+  # onepagr's own bundled placeholder assets. See vignette("theming") to
+  # swap in your own branding instead.
+  logo_partner_a_path = "assets/partner-org-a-white.png",
+  logo_partner_a_alt = "Partner Organization A logo",
+  show_partner_a = "true",
+  logo_primary_path = "assets/primary-org-white.png",
+  logo_primary_alt = "Primary Organization logo",
+  logo_partner_b_path = "assets/partner-org-b-white.png",
+  logo_partner_b_alt = "Partner Organization B logo",
+  show_partner_b = "true",
+  header_texture_path = "assets/header-texture.png",
   strip_data = "Sample System",
   strip_period = "2024",
   strip_design = "Retrospective Cohort",
@@ -84,6 +95,7 @@ render_onepager(
   data, template = "cohort_summary", theme = "default", output = out
 )
 file.exists(out)
+#> [1] TRUE
 ```
 
 That’s the whole workflow: a named list in, a finished PDF out. A real

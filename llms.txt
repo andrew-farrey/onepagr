@@ -89,7 +89,10 @@ See
 [`?render_onepager`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md)
 for every argument, or run
 [`vignette("getting-started", package = "onepagr")`](https://andrew-farrey.github.io/onepagr/articles/getting-started.md)
-for a fuller walkthrough.
+for a fuller walkthrough. For a realistic, worked example that starts
+from real public data and runs a small analysis before rendering (rather
+than a hand-typed values list), see
+[`vignette("end-to-end-workflow", package = "onepagr")`](https://andrew-farrey.github.io/onepagr/articles/end-to-end-workflow.md).
 
 ## Built-in templates
 
@@ -134,6 +137,18 @@ A theme is a single Typst dictionary of colors, typography, and spacing
 tokens. See any file in `inst/typst/themes/` for the full schema, or
 [`list_themes()`](https://andrew-farrey.github.io/onepagr/reference/list_themes.md)
 to see what’s built in.
+
+Logos are separate from theming: every template takes a primary logo
+(always shown) plus two optional partner logos, toggled independently
+via `show_partner_a`/`show_partner_b`, so a single organization, a
+two-agency partnership, and a three-organization lockup are all first-
+class cases – no template editing required either way. A `font_dir`
+argument to
+[`render_onepager()`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md)
+makes a directory of font files available to Typst for a compile, for a
+theme’s font that isn’t installed system-wide. See
+[`vignette("theming")`](https://andrew-farrey.github.io/onepagr/articles/theming.md)
+for all of the above.
 
 ## Accessibility
 
@@ -208,5 +223,9 @@ citation("onepagr")
 
 ### All vignettes
 
+- [An end-to-end workflow: from data to
+  PDF](https://andrew-farrey.github.io/onepagr/articles/end-to-end-workflow.md):
 - [Getting started with
   onepagr](https://andrew-farrey.github.io/onepagr/articles/getting-started.md):
+- [Theming: colors and
+  logos](https://andrew-farrey.github.io/onepagr/articles/theming.md):

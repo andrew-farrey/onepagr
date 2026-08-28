@@ -18,7 +18,9 @@
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Getting started with onepagr</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/end-to-end-workflow.html">An end-to-end workflow: from data to PDF</a></li>
+    <li><a class="dropdown-item" href="../articles/getting-started.html">Getting started with onepagr</a></li>
+    <li><a class="dropdown-item" href="../articles/theming.html">Theming: colors and logos</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -53,6 +55,9 @@
 <code><a href="../reference/list_templates.html">list_templates()</a></code> / <code><a href="../reference/list_themes.html">list_themes()</a></code> / <code><a href="../reference/resolve_template.html">resolve_template()</a></code> / <code><a href="../reference/resolve_theme.html">resolve_theme()</a></code>: the built-in template and theme registry.</li>
 <li>
 <code><a href="../reference/fmt_n.html">fmt_n()</a></code> / <code><a href="../reference/fmt_pct.html">fmt_pct()</a></code>: number-formatting helpers matching the convention every built-in template’s tokens expect.</li>
+<li>Logos are data, not template edits: every template takes a primary logo (always shown) plus two independently toggleable partner logos (<code>show_partner_a</code>/<code>show_partner_b</code>), so a single organization, a two-agency partnership, and a three-organization lockup are all first-class cases.</li>
+<li>
+<code><a href="../reference/render_onepager.html">render_onepager()</a></code>’s <code>font_dir</code> argument makes a directory of font files available to Typst for a compile, for a theme font that isn’t installed system-wide.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="templates-0-1-0">Templates<a class="anchor" aria-label="anchor" href="#templates-0-1-0"></a></h3>

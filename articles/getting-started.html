@@ -33,7 +33,9 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/getting-started.html">Getting started with onepagr</a></li>
+<li><a class="dropdown-item" href="../articles/end-to-end-workflow.html">An end-to-end workflow: from data to PDF</a></li>
+    <li><a class="dropdown-item" href="../articles/getting-started.html">Getting started with onepagr</a></li>
+    <li><a class="dropdown-item" href="../articles/theming.html">Theming: colors and logos</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -75,8 +77,7 @@ customizing a template.</p>
 <p>onepagr needs <a href="https://quarto.org" class="external-link">Quarto</a> (which bundles
 Typst) on your system. Check whether it’s available:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">onepagr</span><span class="fu">::</span><span class="fu"><a href="../reference/check_quarto.html">check_quarto</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Quarto was not found on this system. Install it from https://quarto.org/docs/get-started/, or run onepagr::install_quarto(). On a locked-down environment (e.g. Posit Workbench) where the system Quarto is outdated and you can't install system-wide, install a user-local copy and point the QUARTO_PATH environment variable at its binary instead.</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">onepagr</span><span class="fu">::</span><span class="fu"><a href="../reference/check_quarto.html">check_quarto</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>If that reports a problem, install a user-local copy yourself with
 <code><a href="../reference/install_quarto.html">onepagr::install_quarto()</a></code> (onepagr never installs anything
 automatically) or install Quarto normally from quarto.org, then restart
@@ -97,6 +98,18 @@ a point in time) needs the fewest, so it’s a good first example.</p>
 <span>  org_full <span class="op">=</span> <span class="st">"Sample Health Organization"</span>,</span>
 <span>  contact_url <span class="op">=</span> <span class="st">"https://example.org/"</span>,</span>
 <span>  contact_email <span class="op">=</span> <span class="st">"contact@example.org"</span>,</span>
+<span>  <span class="co"># Logo tokens are required by every template -- these values point at</span></span>
+<span>  <span class="co"># onepagr's own bundled placeholder assets. See vignette("theming") to</span></span>
+<span>  <span class="co"># swap in your own branding instead.</span></span>
+<span>  logo_partner_a_path <span class="op">=</span> <span class="st">"assets/partner-org-a-white.png"</span>,</span>
+<span>  logo_partner_a_alt <span class="op">=</span> <span class="st">"Partner Organization A logo"</span>,</span>
+<span>  show_partner_a <span class="op">=</span> <span class="st">"true"</span>,</span>
+<span>  logo_primary_path <span class="op">=</span> <span class="st">"assets/primary-org-white.png"</span>,</span>
+<span>  logo_primary_alt <span class="op">=</span> <span class="st">"Primary Organization logo"</span>,</span>
+<span>  logo_partner_b_path <span class="op">=</span> <span class="st">"assets/partner-org-b-white.png"</span>,</span>
+<span>  logo_partner_b_alt <span class="op">=</span> <span class="st">"Partner Organization B logo"</span>,</span>
+<span>  show_partner_b <span class="op">=</span> <span class="st">"true"</span>,</span>
+<span>  header_texture_path <span class="op">=</span> <span class="st">"assets/header-texture.png"</span>,</span>
 <span>  strip_data <span class="op">=</span> <span class="st">"Sample System"</span>,</span>
 <span>  strip_period <span class="op">=</span> <span class="st">"2024"</span>,</span>
 <span>  strip_design <span class="op">=</span> <span class="st">"Retrospective Cohort"</span>,</span>
@@ -143,7 +156,8 @@ a point in time) needs the fewest, so it’s a good first example.</p>
 <span><span class="fu"><a href="../reference/render_onepager.html">render_onepager</a></span><span class="op">(</span></span>
 <span>  <span class="va">data</span>, template <span class="op">=</span> <span class="st">"cohort_summary"</span>, theme <span class="op">=</span> <span class="st">"default"</span>, output <span class="op">=</span> <span class="va">out</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
 <p>That’s the whole workflow: a named list in, a finished PDF out. A
 real project won’t hand-type every value like this vignette does for
 demonstration. You’d typically build this list from your analysis output

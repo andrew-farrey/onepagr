@@ -11,7 +11,7 @@ itself, not a separately-maintained manifest.
 ## Usage
 
 ``` r
-compile_typst(path, data, output)
+compile_typst(path, data, output, font_dir = NULL)
 ```
 
 ## Arguments
@@ -29,6 +29,18 @@ compile_typst(path, data, output)
 - output:
 
   Character. Path to write the compiled PDF to.
+
+- font_dir:
+
+  Character or `NULL`. A directory of font files (`.ttf`/ `.otf`) to
+  make available to Typst for this compile, passed through as
+  `--font-path`. Typst does not merge this with the system font list –
+  both system fonts and this directory are searched, so a theme's
+  `text-font`/`heading-font` tokens can name either a system-installed
+  font or one shipped here (confirmed directly:
+  `quarto typst fonts --font-path <dir>` lists a font from `<dir>`
+  alongside system fonts, not instead of them). Default `NULL` (system
+  fonts only).
 
 ## Value
 

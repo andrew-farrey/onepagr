@@ -33,6 +33,14 @@ Initial release.
   [`fmt_pct()`](https://andrew-farrey.github.io/onepagr/reference/fmt_pct.md):
   number-formatting helpers matching the convention every built-in
   template’s tokens expect.
+- Logos are data, not template edits: every template takes a primary
+  logo (always shown) plus two independently toggleable partner logos
+  (`show_partner_a`/`show_partner_b`), so a single organization, a
+  two-agency partnership, and a three-organization lockup are all
+  first-class cases.
+- [`render_onepager()`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md)’s
+  `font_dir` argument makes a directory of font files available to Typst
+  for a compile, for a theme font that isn’t installed system-wide.
 
 ### Templates
 

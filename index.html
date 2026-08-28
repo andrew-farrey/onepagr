@@ -35,7 +35,9 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/getting-started.html">Getting started with onepagr</a></li>
+<li><a class="dropdown-item" href="articles/end-to-end-workflow.html">An end-to-end workflow: from data to PDF</a></li>
+    <li><a class="dropdown-item" href="articles/getting-started.html">Getting started with onepagr</a></li>
+    <li><a class="dropdown-item" href="articles/theming.html">Theming: colors and logos</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -106,7 +108,7 @@
 <span></span>
 <span><span class="fu"><a href="reference/render_onepager.html">render_onepager</a></span><span class="op">(</span><span class="va">data</span>, template <span class="op">=</span> <span class="st">"overdose_spike_alert"</span>, theme <span class="op">=</span> <span class="st">"uk"</span>, output <span class="op">=</span> <span class="st">"alert.pdf"</span><span class="op">)</span></span></code></pre></div>
 <p>That’s it: <code>alert.pdf</code> is a finished, accessible PDF. By default, <code><a href="reference/render_onepager.html">render_onepager()</a></code> also leaves the resolved <code>.typ</code> source next to the output (<code>alert_typst/</code>), so it’s never hidden away, even if you never need to look at it. That’s deliberate: it’s useful for troubleshooting, and it means a real, working template is always sitting somewhere you can hand it to an AI coding assistant (or a collaborator) to build out further, which is part of the point of how onepagr is structured. Set <code>keep_typst = FALSE</code> to skip that and get only the PDF.</p>
-<p>See <code><a href="reference/render_onepager.html">?render_onepager</a></code> for every argument, or run <code><a href="articles/getting-started.html">vignette("getting-started", package = "onepagr")</a></code> for a fuller walkthrough.</p>
+<p>See <code><a href="reference/render_onepager.html">?render_onepager</a></code> for every argument, or run <code><a href="articles/getting-started.html">vignette("getting-started", package = "onepagr")</a></code> for a fuller walkthrough. For a realistic, worked example that starts from real public data and runs a small analysis before rendering (rather than a hand-typed values list), see <code><a href="articles/end-to-end-workflow.html">vignette("end-to-end-workflow", package = "onepagr")</a></code>.</p>
 </div>
 <div class="section level2">
 <h2 id="built-in-templates">Built-in templates<a class="anchor" aria-label="anchor" href="#built-in-templates"></a>
@@ -163,6 +165,7 @@
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/render_onepager.html">render_onepager</a></span><span class="op">(</span><span class="va">data</span>, template <span class="op">=</span> <span class="st">"trend_snapshot"</span>, theme_path <span class="op">=</span> <span class="st">"my-theme.typ"</span>, output <span class="op">=</span> <span class="st">"report.pdf"</span><span class="op">)</span></span></code></pre></div>
 <p>A theme is a single Typst dictionary of colors, typography, and spacing tokens. See any file in <code>inst/typst/themes/</code> for the full schema, or <code><a href="reference/list_themes.html">list_themes()</a></code> to see what’s built in.</p>
+<p>Logos are separate from theming: every template takes a primary logo (always shown) plus two optional partner logos, toggled independently via <code>show_partner_a</code>/<code>show_partner_b</code>, so a single organization, a two-agency partnership, and a three-organization lockup are all first- class cases – no template editing required either way. A <code>font_dir</code> argument to <code><a href="reference/render_onepager.html">render_onepager()</a></code> makes a directory of font files available to Typst for a compile, for a theme’s font that isn’t installed system-wide. See <code><a href="articles/theming.html">vignette("theming")</a></code> for all of the above.</p>
 </div>
 <div class="section level2">
 <h2 id="accessibility">Accessibility<a class="anchor" aria-label="anchor" href="#accessibility"></a>
@@ -222,6 +225,7 @@
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://github.com/andrew-farrey/onepagr/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/andrew-farrey/onepagr/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://app.codecov.io/gh/andrew-farrey/onepagr" class="external-link"><img src="https://codecov.io/gh/andrew-farrey/onepagr/graph/badge.svg" alt="Codecov test coverage"></a></li>
 </ul>
 </div>
 

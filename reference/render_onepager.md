@@ -17,7 +17,8 @@ render_onepager(
   theme_path = NULL,
   output,
   keep_typst = TRUE,
-  extra_assets = character(0)
+  extra_assets = character(0),
+  font_dir = NULL
 )
 ```
 
@@ -80,6 +81,16 @@ render_onepager(
   of `"map0.png"`, not the original full path). Default `character(0)`
   (no extra assets, e.g. for templates whose images are all static
   package assets).
+
+- font_dir:
+
+  Character or `NULL`. Passed through to
+  [`compile_typst()`](https://andrew-farrey.github.io/onepagr/reference/compile_typst.md)'s
+  `font_dir` argument – a directory of font files to make available for
+  this compile, in addition to system fonts, for a theme's
+  `text-font`/`heading-font` tokens that name a font not installed
+  system-wide (e.g. a Posit Workbench deployment without permission to
+  install fonts at the OS level). Default `NULL`.
 
 ## Value
 
