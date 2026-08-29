@@ -34,9 +34,16 @@ onepagr is not yet on CRAN. Install the development version from GitHub:
 pak::pak("andrew-farrey/onepagr")
 ```
 
-onepagr also needs [Quarto](https://quarto.org) (which bundles Typst) on
-your system. Check whether it's already available, and get a clear
-message if it isn't or is too old:
+onepagr also needs [Quarto](https://quarto.org), which bundles
+[Typst](https://typst.app), on your system. **Accessible PDF output needs
+Typst 0.14.0 or newer**, the release that [added PDF/UA-1 conformance and
+automatic tagged-PDF support](https://typst.app/docs/changelog/0.14.0/)
+in the first place. Older Typst simply cannot produce an accessible PDF,
+no matter what onepagr does. onepagr itself checks for Typst 0.15.1+ by
+default (a newer floor than the bare minimum, confirmed to be what's
+actually bundled by recent Quarto releases). Check whether your system's
+Typst is new enough, and get a clear message naming the actual version
+if it isn't:
 
 ```r
 onepagr::check_quarto()
