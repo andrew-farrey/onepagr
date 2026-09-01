@@ -27,5 +27,7 @@
   : Resolve a built-in template name to its installed template.typ path
 - [`resolve_theme()`](https://andrew-farrey.github.io/onepagr/reference/resolve_theme.md)
   : Resolve a theme name or path to an installed .typ file
+- [`set_quarto_path()`](https://andrew-farrey.github.io/onepagr/reference/set_quarto_path.md)
+  : Point onepagr (and Quarto) at a specific Quarto binary
 - [`validate_template_data()`](https://andrew-farrey.github.io/onepagr/reference/validate_template_data.md)
   : Validate whisker data against a template's required tokens

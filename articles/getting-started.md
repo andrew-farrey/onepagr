@@ -20,6 +20,20 @@ If that reports a problem, install a user-local copy yourself with
 (onepagr never installs anything automatically) or install Quarto
 normally from quarto.org, then restart your R session.
 
+On macOS and Linux,
+[`install_quarto()`](https://andrew-farrey.github.io/onepagr/reference/install_quarto.md)
+also points onepagr at the copy it just installed: it sets `QUARTO_PATH`
+for your current session right away, then asks whether to save that to
+your `~/.Renviron` too, so every future session picks it up
+automatically. You’re never expected to hand-edit a `.Renviron` file
+yourself. (Windows opens the official installer instead, so there’s no
+path to set until you finish that yourself.)
+
+If you already have a Quarto install elsewhere onepagr should use
+instead – an admin-managed one on Posit Workbench, for example –
+`onepagr::set_quarto_path("/path/to/quarto")` points onepagr at it the
+same way, with the same save-for-later prompt.
+
 ## Render your first report
 
 Every template needs a named list of values, and which values depend on

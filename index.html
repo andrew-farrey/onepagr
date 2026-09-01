@@ -79,12 +79,15 @@
 <p>onepagr also needs <a href="https://quarto.org" class="external-link">Quarto</a>, which bundles <a href="https://typst.app" class="external-link">Typst</a>, on your system. <strong>Accessible PDF output needs Typst 0.14.0 or newer</strong>, the release that <a href="https://typst.app/docs/changelog/0.14.0/" class="external-link">added PDF/UA-1 conformance and automatic tagged-PDF support</a> in the first place. Older Typst simply cannot produce an accessible PDF, no matter what onepagr does. onepagr itself checks for Typst 0.15.1+ by default (a newer floor than the bare minimum, confirmed to be what’s actually bundled by recent Quarto releases). Check whether your system’s Typst is new enough, and get a clear message naming the actual version if it isn’t:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">onepagr</span><span class="fu">::</span><span class="fu"><a href="reference/check_quarto.html">check_quarto</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>If it’s missing, <code><a href="reference/install_quarto.html">onepagr::install_quarto()</a></code> installs a user-local copy without needing admin rights (you must run it yourself; onepagr never installs software automatically).</p>
+<p>If it’s missing, <code><a href="reference/install_quarto.html">onepagr::install_quarto()</a></code> installs a user-local copy without needing admin rights (you must run it yourself; onepagr never installs software automatically). On macOS and Linux it also points onepagr at the copy it just installed for you: it sets <code>QUARTO_PATH</code> for your current session immediately, then asks whether to save that to your <code>~/.Renviron</code> too, so every future R session picks it up automatically without you ever needing to know what a <code>.Renviron</code> file is. (On Windows it opens the official installer instead of extracting anything itself, so there’s no path to point at until you finish that installer yourself.)</p>
+<p>Already have a Quarto install somewhere else onepagr should use instead, for example an admin-managed one on Posit Workbench? Point onepagr at it the same way, without hand-editing anything:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">onepagr</span><span class="fu">::</span><span class="fu"><a href="reference/set_quarto_path.html">set_quarto_path</a></span><span class="op">(</span><span class="st">"/path/to/quarto"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h2>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/andrew-farrey/onepagr" class="external-link">onepagr</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -162,10 +165,10 @@
 <h2 id="themes">Themes<a class="anchor" aria-label="anchor" href="#themes"></a>
 </h2>
 <p>onepagr ships two built-in themes, selectable by name: <code>default</code> (a brand-neutral palette built on Bootstrap’s own color variables) and <code>uk</code> (University of Kentucky / KIPRC branding).</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/render_onepager.html">render_onepager</a></span><span class="op">(</span><span class="va">data</span>, template <span class="op">=</span> <span class="st">"trend_snapshot"</span>, theme <span class="op">=</span> <span class="st">"default"</span>, output <span class="op">=</span> <span class="st">"report.pdf"</span><span class="op">)</span></span></code></pre></div>
 <p>Your own project can supply a completely custom theme instead of a built-in name:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/render_onepager.html">render_onepager</a></span><span class="op">(</span><span class="va">data</span>, template <span class="op">=</span> <span class="st">"trend_snapshot"</span>, theme_path <span class="op">=</span> <span class="st">"my-theme.typ"</span>, output <span class="op">=</span> <span class="st">"report.pdf"</span><span class="op">)</span></span></code></pre></div>
 <p>A theme is a single Typst dictionary of colors, typography, and spacing tokens. See any file in <code>inst/typst/themes/</code> for the full schema, or <code><a href="reference/list_themes.html">list_themes()</a></code> to see what’s built in.</p>
 <p>Logos are separate from theming: every template takes a primary logo (always shown) plus two optional partner logos, toggled independently via <code>show_partner_a</code>/<code>show_partner_b</code>, so a single organization, a two-agency partnership, and a three-organization lockup are all first- class cases – no template editing required either way. A <code>font_dir</code> argument to <code><a href="reference/render_onepager.html">render_onepager()</a></code> makes a directory of font files available to Typst for a compile, for a theme’s font that isn’t installed system-wide. See <code><a href="articles/theming.html">vignette("theming")</a></code> for all of the above.</p>
@@ -189,7 +192,7 @@
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"onepagr"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>

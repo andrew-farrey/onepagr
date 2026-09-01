@@ -81,6 +81,18 @@ Typst) on your system. Check whether it’s available:</p>
 <code><a href="../reference/install_quarto.html">onepagr::install_quarto()</a></code> (onepagr never installs anything
 automatically) or install Quarto normally from quarto.org, then restart
 your R session.</p>
+<p>On macOS and Linux, <code><a href="../reference/install_quarto.html">install_quarto()</a></code> also points onepagr
+at the copy it just installed: it sets <code>QUARTO_PATH</code> for your
+current session right away, then asks whether to save that to your
+<code>~/.Renviron</code> too, so every future session picks it up
+automatically. You’re never expected to hand-edit a
+<code>.Renviron</code> file yourself. (Windows opens the official
+installer instead, so there’s no path to set until you finish that
+yourself.)</p>
+<p>If you already have a Quarto install elsewhere onepagr should use
+instead – an admin-managed one on Posit Workbench, for example –
+<code>onepagr::set_quarto_path("/path/to/quarto")</code> points onepagr
+at it the same way, with the same save-for-later prompt.</p>
 </div>
 <div class="section level2">
 <h2 id="render-your-first-report">Render your first report<a class="anchor" aria-label="anchor" href="#render-your-first-report"></a>
