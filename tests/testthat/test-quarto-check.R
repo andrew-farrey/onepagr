@@ -134,6 +134,19 @@ test_that("install_quarto downloads the Windows .msi and opens it", {
 })
 
 test_that("install_quarto downloads and extracts the macOS tar.gz", {
+  # install_quarto() now calls set_quarto_path() for real on success,
+  # which sets QUARTO_PATH for the actual session (not mocked -- that's
+  # the point) -- restore whatever it was before, so this fake path
+  # doesn't leak into later tests that check quarto::quarto_available().
+  old_path <- Sys.getenv("QUARTO_PATH", unset = NA)
+  on.exit(
+    if (is.na(old_path)) {
+      Sys.unsetenv("QUARTO_PATH")
+    } else {
+      Sys.setenv(QUARTO_PATH = old_path)
+    },
+    add = TRUE
+  )
   testthat::local_mocked_bindings(Sys.info = function() {
     c(sysname = "Darwin")
   }, .package = "base")
@@ -147,8 +160,16 @@ test_that("install_quarto downloads and extracts the macOS tar.gz", {
       calls$download_url <- url
       invisible(0)
     },
+    # A real untar() would leave the extracted quarto binary on disk --
+    # set_quarto_path() (called by install_quarto() after extraction) now
+    # checks file.exists() on that path, so this mock creates a real
+    # placeholder file rather than doing nothing, matching what a genuine
+    # extraction would produce.
     untar = function(tarfile, exdir) {
       calls$untar_exdir <- exdir
+      bin_dir <- file.path(exdir, "quarto-9.9.9", "bin")
+      dir.create(bin_dir, recursive = TRUE, showWarnings = FALSE)
+      file.create(file.path(bin_dir, "quarto"))
       invisible(0)
     },
     .package = "utils"
@@ -165,6 +186,15 @@ test_that("install_quarto downloads and extracts the macOS tar.gz", {
 })
 
 test_that("install_quarto downloads and extracts the Linux tar.gz", {
+  old_path <- Sys.getenv("QUARTO_PATH", unset = NA)
+  on.exit(
+    if (is.na(old_path)) {
+      Sys.unsetenv("QUARTO_PATH")
+    } else {
+      Sys.setenv(QUARTO_PATH = old_path)
+    },
+    add = TRUE
+  )
   testthat::local_mocked_bindings(Sys.info = function() {
     c(sysname = "Linux")
   }, .package = "base")
@@ -178,7 +208,12 @@ test_that("install_quarto downloads and extracts the Linux tar.gz", {
       calls$download_url <- url
       invisible(0)
     },
-    untar = function(tarfile, exdir) invisible(0),
+    untar = function(tarfile, exdir) {
+      bin_dir <- file.path(exdir, "quarto-9.9.9", "bin")
+      dir.create(bin_dir, recursive = TRUE, showWarnings = FALSE)
+      file.create(file.path(bin_dir, "quarto"))
+      invisible(0)
+    },
     .package = "utils"
   )
 
@@ -186,4 +221,150 @@ test_that("install_quarto downloads and extracts the Linux tar.gz", {
   expect_true(
     grepl("quarto-9.9.9-linux-amd64.tar.gz", calls$download_url, fixed = TRUE)
   )
+})
+
+# set_quarto_path() calls Sys.setenv() for real (not mocked -- that's the
+# whole point of the function), so every test below saves and restores
+# whatever QUARTO_PATH was already set to, rather than leaking a test
+# value into later tests or the developer's own session.
+
+test_that("set_quarto_path sets QUARTO_PATH for the current session", {
+  old <- Sys.getenv("QUARTO_PATH", unset = NA)
+  on.exit(
+    if (is.na(old)) {
+      Sys.unsetenv("QUARTO_PATH")
+    } else {
+      Sys.setenv(QUARTO_PATH = old)
+    },
+    add = TRUE
+  )
+  quarto_bin <- tempfile()
+  file.create(quarto_bin)
+
+  expect_message(
+    set_quarto_path(quarto_bin, persist = FALSE),
+    "QUARTO_PATH set to"
+  )
+  expect_equal(Sys.getenv("QUARTO_PATH"), quarto_bin)
+})
+
+test_that("set_quarto_path errors clearly on a nonexistent path", {
+  expect_error(
+    set_quarto_path("/does/not/exist/quarto", persist = FALSE),
+    "does not exist"
+  )
+})
+
+test_that("set_quarto_path does not touch .Renviron when persist = FALSE", {
+  old <- Sys.getenv("QUARTO_PATH", unset = NA)
+  on.exit(
+    if (is.na(old)) {
+      Sys.unsetenv("QUARTO_PATH")
+    } else {
+      Sys.setenv(QUARTO_PATH = old)
+    },
+    add = TRUE
+  )
+  quarto_bin <- tempfile()
+  file.create(quarto_bin)
+  renviron_path <- tempfile()
+
+  set_quarto_path(quarto_bin, persist = FALSE, renviron_path = renviron_path)
+  expect_false(file.exists(renviron_path))
+})
+
+test_that("set_quarto_path persists to renviron_path when persist = TRUE", {
+  old <- Sys.getenv("QUARTO_PATH", unset = NA)
+  on.exit(
+    if (is.na(old)) {
+      Sys.unsetenv("QUARTO_PATH")
+    } else {
+      Sys.setenv(QUARTO_PATH = old)
+    },
+    add = TRUE
+  )
+  quarto_bin <- tempfile()
+  file.create(quarto_bin)
+  renviron_path <- tempfile()
+  on.exit(unlink(renviron_path), add = TRUE)
+
+  expect_message(
+    set_quarto_path(quarto_bin, persist = TRUE, renviron_path = renviron_path),
+    "Saved to"
+  )
+  expect_true(file.exists(renviron_path))
+  lines <- readLines(renviron_path)
+  expect_true(any(grepl(
+    paste0('QUARTO_PATH="', quarto_bin, '"'), lines, fixed = TRUE
+  )))
+})
+
+test_that("persist = NA skips the prompt and the write when not interactive", {
+  # testthat runs non-interactively, so interactive() is FALSE and the NA
+  # branch's `interactive() && ...` short-circuits without ever calling
+  # utils::askYesNo() -- this is what keeps this test (and every
+  # install_quarto() test above, which now calls set_quarto_path()
+  # internally) from blocking on stdin or silently writing to a real
+  # ~/.Renviron during a test run.
+  old <- Sys.getenv("QUARTO_PATH", unset = NA)
+  on.exit(
+    if (is.na(old)) {
+      Sys.unsetenv("QUARTO_PATH")
+    } else {
+      Sys.setenv(QUARTO_PATH = old)
+    },
+    add = TRUE
+  )
+  quarto_bin <- tempfile()
+  file.create(quarto_bin)
+  renviron_path <- tempfile()
+
+  set_quarto_path(quarto_bin, renviron_path = renviron_path)
+  expect_false(file.exists(renviron_path))
+})
+
+test_that("update_renviron_line appends a new key to a nonexistent file", {
+  renviron_path <- tempfile()
+  on.exit(unlink(renviron_path), add = TRUE)
+
+  update_renviron_line("QUARTO_PATH", "/opt/quarto/bin/quarto", renviron_path)
+
+  expect_equal(
+    readLines(renviron_path), 'QUARTO_PATH="/opt/quarto/bin/quarto"'
+  )
+})
+
+test_that("update_renviron_line replaces an existing key, keeps other lines", {
+  renviron_path <- tempfile()
+  on.exit(unlink(renviron_path), add = TRUE)
+  writeLines(c(
+    'SOME_OTHER_VAR="keep-me"',
+    'QUARTO_PATH="/old/stale/path"',
+    'ANOTHER_VAR="also-keep-me"'
+  ), renviron_path)
+
+  update_renviron_line("QUARTO_PATH", "/new/path/quarto", renviron_path)
+
+  expect_equal(readLines(renviron_path), c(
+    'SOME_OTHER_VAR="keep-me"',
+    'QUARTO_PATH="/new/path/quarto"',
+    'ANOTHER_VAR="also-keep-me"'
+  ))
+})
+
+test_that("update_renviron_line collapses duplicate keys to one line", {
+  renviron_path <- tempfile()
+  on.exit(unlink(renviron_path), add = TRUE)
+  writeLines(c(
+    'QUARTO_PATH="/first/stale/path"',
+    'KEEP_ME="yes"',
+    'QUARTO_PATH="/second/stale/path"'
+  ), renviron_path)
+
+  update_renviron_line("QUARTO_PATH", "/final/path/quarto", renviron_path)
+
+  expect_equal(readLines(renviron_path), c(
+    'QUARTO_PATH="/final/path/quarto"',
+    'KEEP_ME="yes"'
+  ))
 })

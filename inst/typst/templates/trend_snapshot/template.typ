@@ -59,15 +59,36 @@
 // Organization logo" like every other template -- a copy-paste slip,
 // now moot since it's the same {{{logo_primary_alt}}} token every
 // template uses.)
+// strip-links: false -- see the identical comment in
+// county_choropleth/template.typ (same rationale: this template
+// self-places the footer as real body content, not page(footer:)
+// furniture, so the default link-stripping no longer applies).
 #let footer = page-footer(
   theme, theme-grad,
   "{{{logo_partner_a_path}}}", "{{{logo_partner_a_alt}}}", "{{{show_partner_a}}}",
   "{{{logo_primary_path}}}", "{{{logo_primary_alt}}}",
   "{{{logo_partner_b_path}}}", "{{{logo_partner_b_alt}}}", "{{{show_partner_b}}}",
   "{{{org_full}}}", "{{{contact_url}}}", contact-email,
+  strip-links: false,
 )
 
-#apply-base-styles([{{{doc_title}}}], "{{{org_full}}}", theme, footer)[
+// footer is placed explicitly per page below (#place(bottom + center,
+// float: true)), NOT passed here -- see apply-base-styles()'s own
+// comment in components.typ and county_choropleth/template.typ (where
+// this pattern was verified first, including why `float: true` is
+// required, not optional) for why. margin-bottom is reduced from
+// apply-base-styles()'s 0.85in default to the same 0.056in (4pt) value
+// county_choropleth uses, for the same reason: that default reserved
+// room for the OLD page(footer:) footer specifically, which the floated
+// footer no longer needs. Confirmed directly (real compile, checked page
+// count and the PDF's own structure tree) that this template still
+// holds at 2 pages with this shared value and gains real tagged /Figure
+// entries for its footer logos -- NOT independently cliff-swept against
+// its own content the way county_choropleth's headline-map-height was,
+// since this template has no equivalent adjustable element to sweep. If
+// this page's content grows in the future, re-verify the page count
+// directly rather than assuming this margin still holds.
+#apply-base-styles([{{{doc_title}}}], "{{{org_full}}}", theme, margin-bottom: 0.056in)[
 
 // ============================================================
 // HEADER (identical pattern to onepager_template.typ -- page furniture
@@ -213,6 +234,7 @@
 ]
 
 ] // close page-1 body #pad(x: theme.content-pad-x) -- pagebreak() can't be nested in a container
+#place(bottom + center, float: true)[#footer]
 #pagebreak()
 #pad(x: theme.content-pad-x)[
 #v(theme.space-sm)
@@ -307,5 +329,6 @@
 #v(theme.space-xs)
 #text(size: 7pt, fill: theme.text-muted)[*Data sources:* {{{footnote_sources}}} #h(0.5em)|#h(0.5em) *Period:* {{{strip_period}}} #h(0.5em)|#h(0.5em) *Contact:* {{{org_full}}} at #link("mailto:" + contact-email)[#contact-email]]
 ] // close body #pad(x: theme.content-pad-x)
+#place(bottom + center, float: true)[#footer]
 
 ] // close #apply-base-styles body

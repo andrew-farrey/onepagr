@@ -108,7 +108,15 @@ compile_typst <- function(path, data, output, font_dir = NULL) {
   writeLines(rendered, typ_out)
 
   font_args <- if (!is.null(font_dir)) c("--font-path", shQuote(font_dir))
-  result <- system2(
+  # suppressWarnings() only silences system2()'s own "had status N" warning,
+  # which fires unconditionally on a non-zero exit whenever stdout is
+  # captured as text -- redundant here since a non-zero exit is already
+  # surfaced below via the file.exists() check and a stop() carrying the
+  # full captured output, a clearer message than the warning's bare status
+  # code. system2() has no other warning path: a missing executable is a
+  # hard error from system2() itself, not a warning, so this can't mask
+  # that case.
+  result <- suppressWarnings(system2(
     quarto_bin,
     args = c(
       "typst", "compile",
@@ -118,7 +126,7 @@ compile_typst <- function(path, data, output, font_dir = NULL) {
       shQuote(typ_out), shQuote(output)
     ),
     stdout = TRUE, stderr = TRUE
-  )
+  ))
 
   if (!file.exists(output)) {
     stop(

@@ -58,7 +58,15 @@
 // Global Constraints and components.typ's severity-palette() comment.
 #let severity = severity-palette(theme, "{{{severity_level}}}")
 
-#apply-base-styles([{{{doc_title}}}], "{{{org_full}}}", theme, footer)[
+// footer is still passed here (not self-placed) -- this template has no
+// #pagebreak() (natural pagination, page count depends on content
+// length), so there's no known-safe point to self-place it once per
+// page the way county_choropleth/cohort_summary/trend_snapshot now do.
+// See apply-base-styles()'s own comment in components.typ: this means
+// the footer logos here are still Artifact-excluded from the PDF's
+// accessibility tree, a known, not-yet-resolved gap specific to the two
+// natural-pagination templates.
+#apply-base-styles([{{{doc_title}}}], "{{{org_full}}}", theme, footer: footer)[
 
 // ============================================================
 // HEADER (same idiom as cohort_summary/trend_snapshot)

@@ -45,15 +45,29 @@
 // file's header comment on contact-email), even though passing the raw
 // token here was never actually broken given this template's fixture
 // already supplies an unescaped value.
+// strip-links: false because this template self-places the footer as
+// real body content, not page(footer:) furniture -- see this call's
+// counterpart comment below the #apply-base-styles() call, and
+// page-footer()'s own comment in components.typ, for why leaving this
+// at the default (true) would be a real, PAC-confirmed accessibility
+// bug here (contact-url/contact-email rendering as inert, unlinked text
+// with no actual reason to be inert anymore).
 #let footer = page-footer(
   theme, theme-grad,
   "{{{logo_partner_a_path}}}", "{{{logo_partner_a_alt}}}", "{{{show_partner_a}}}",
   "{{{logo_primary_path}}}", "{{{logo_primary_alt}}}",
   "{{{logo_partner_b_path}}}", "{{{logo_partner_b_alt}}}", "{{{show_partner_b}}}",
   "{{{org_full}}}", "{{{contact_url}}}", contact-email,
+  strip-links: false,
 )
 
-#apply-base-styles([{{{doc_title}}}], "{{{org_full}}}", theme, footer)[
+// footer is placed explicitly per page below (#place(bottom + center)),
+// NOT passed here -- see apply-base-styles()'s own comment in
+// components.typ for why: page(footer:) content is unconditionally
+// excluded from the PDF's accessibility tree, alt text or not, so a
+// template with a known fixed page count self-places the footer as real
+// body content instead.
+#apply-base-styles([{{{doc_title}}}], "{{{org_full}}}", theme, margin-bottom: 0.056in)[
 
 // ============================================================
 // HEADER
@@ -85,7 +99,7 @@
 // ============================================================
 // AT A GLANCE
 // ============================================================
-= {{{strip_geography}}} AT A GLANCE #sym.dash.en {{{strip_period}}}
+= {{{strip_geography}}} at a Glance - {{{strip_period}}}
 #v(theme.space-sm)
 
 #block(breakable: false)[
@@ -93,9 +107,9 @@
     columns: (1fr, 1fr, 1fr), column-gutter: 6pt,
     fill: theme-grad.card-bg-grad, inset: 6pt,
     stroke: (x, ..) => (top: theme.stroke-accent + (theme.brand-blue, theme.brand-accent, theme.brand-midnight).at(x), rest: theme.stroke-border + theme.box-border),
-    stat-card(theme, [{{{n_statewide_od_deaths}}}], [Resident drug overdose deaths, {{{strip_period}}}]),
+    stat-card(theme, [{{{n_statewide_od_deaths}}}], [Count of resident drug overdose deaths, {{{strip_period}}}]),
     stat-card(theme, [{{{statewide_od_rate}}}], [Statewide crude death rate, per 100,000 residents], color: theme.brand-accent),
-    stat-card(theme, [{{{n_high_svi_counties}}}], [Counties in the highest Social Vulnerability Index tertile], color: theme.brand-midnight),
+    stat-card(theme, [{{{n_high_svi_counties}}}], [Counties in the top third for Social Vulnerability], color: theme.brand-midnight),
   )
 ]
 
@@ -107,7 +121,7 @@
 #v(theme.space-sm)
 
 // Front-page real estate: the headline map is this page's dominant
-// visual, so it gets most of the column width (75%) rather than an even
+// visual, so it gets most of the column width (80%) rather than an even
 // split with the explainer text -- a narrow map rendered small would
 // waste most of the page's vertical space below it (confirmed directly:
 // an even 58/42 split left roughly two-thirds of the page blank beneath
@@ -136,8 +150,49 @@
 // extreme-aspect-ratio stress test) and pass at 250pt. `fit: "contain"`
 // means a smaller cap is still fully safe for any map aspect ratio, not
 // just Kentucky's -- it can only letterbox more, never crop or distort.
+//
+// Re-verified after widening the map column to 80fr and bumping the SVI
+// chip font to 7.5pt: a real compile sweep of this file's combined state
+// at that point found the overflow cliff at 273pt (3 pages) vs. 272pt (2
+// pages), a comfortable 22pt margin below 250pt.
+//
+// Re-verified AGAIN after a KIPRC editor's copyedit pass (spelling out
+// CDC/ATSDR/NCHS and other prose lengthening across this page) plus
+// bumping the shared page-footer() logo height from 24pt to 32pt: the
+// cliff moved down to 265pt (3 pages) vs. 264pt (2 pages), 14pt margin.
+//
+// Re-verified a THIRD time after a bigger structural change: the footer
+// is no longer wired via `set page(footer:)` at all (see
+// apply-base-styles()'s comment in components.typ -- that mechanism
+// unconditionally excludes its content from the PDF's accessibility
+// tree, confirmed directly). It's now real, tagged content, self-placed
+// per page via `#place(bottom + center, float: true)[#footer]` below and
+// after the #pagebreak(). `float: true` matters: without it, the placed
+// footer overlaid and silently hid whatever body content (this page's
+// own footnote) happened to render at the same position -- confirmed
+// directly by rendering to PNG and finding the footnote text missing,
+// not by reasoning about it. WITH float: true, Typst reserves real
+// space for the footer in the page's content flow instead of overlaying
+// it, which means the footer now competes for the SAME vertical budget
+// this page's other content does -- unlike before, when `page(footer:)`
+// content was free (rendered in the page's dedicated footer region, not
+// counted against this budget at all). apply-base-styles()'s
+// margin-bottom is also cut from its 0.85in default to 0.056in (4pt)
+// here specifically because that default reserved room for the OLD
+// page(footer:) mechanism this template no longer uses -- keeping it
+// would have double-spent vertical budget (reserved margin AND a
+// floated footer both eating into the same space). Net result, swept
+// fresh at this file's current combined state: the cliff is now 255pt
+// (3 pages) vs. 254pt (2 pages) -- 250pt has a real but thin 4pt margin,
+// tighter than any previous measurement in this file's history. Every
+// number above this line is now historical context, not current fact --
+// this is the one that's actually true right now. Re-sweep directly
+// (same method as test-county-choropleth.R's page-count tests) after
+// ANY future change near this page OR to the shared footer/margin
+// mechanics -- do not trust any number in this comment, including this
+// one, without re-verifying it first.
 #let headline-map-height = 250pt
-#grid(columns: (75fr, 25fr), column-gutter: 12pt,
+#grid(columns: (80fr, 20fr), column-gutter: 12pt,
   [
     #figure(
       box(stroke: 1pt + black, width: 100%, height: headline-map-height)[
@@ -147,7 +202,7 @@
     )
   ],
   [
-    #text-box(theme, theme-grad, [HOW TO READ THIS MAP])[
+    #text-box(theme, theme-grad, [HOW TO READ THIS MAP], height: headline-map-height)[
       Each county is shaded by two ranks at once: Social Vulnerability Index (SVI, left #sym.arrow.r right) and overdose death rate (bottom #sym.arrow.r top), each split into thirds across all 120 counties.
       #v(theme.space-xs)
       // Verified directly against biscale::bi_pal("BlueOr", dim=3), not
@@ -156,7 +211,7 @@
       // #169dd0. An earlier version of this callout had these swapped.
       *Dark green* #sym.dash.en top third on #emph[both]. *Orange* #sym.dash.en high SVI, lower death rate. *Blue* #sym.dash.en high death rate, lower SVI. *Light gray* #sym.dash.en low on both.
       #v(theme.space-xs)
-      Shows where the two measures co-occur geographically -- not that one causes the other.
+      The color coding indicates where the two measures co-occur geographically -- not that one causes the other.
     ]
   ]
 )
@@ -174,18 +229,18 @@
 #v(theme.space-md)
 = UNDERSTANDING THIS ANALYSIS
 #v(theme.space-sm)
-#text(size: 8.5pt)[Drug overdose fatality does not occur in isolation; it concentrates in communities where social and economic conditions create compounding risk. The Social Vulnerability Index (SVI), developed by the CDC, draws on census data to quantify four dimensions of community vulnerability: socioeconomic status, household characteristics, racial and ethnic minority status, and housing type and transportation. Higher SVI scores indicate communities with greater risk.]
+#text(size: 8.5pt)[Elevated drug overdose fatality rates do not occur in isolation; they are concentrated in communities where social and economic conditions create compounded risk. The SVI, developed by the Centers for Disease Control and Prevention, draws on census data to quantify four dimensions of community vulnerability: socioeconomic status, household characteristics, racial and ethnic minority status, and housing type and transportation. Higher SVI scores indicate communities with greater vulnerability.]
 
 #v(theme.space-sm)
-#text(size: 8.5pt)[The maps in this series use a bivariate choropleth design to display two variables at once: fatal drug overdose death rate and social vulnerability. Dark green indicates counties high on both measures; orange or blue indicates counties high on one measure but low on the other; gray indicates counties low on both. This approach reveals not just where overdose burden is concentrated, but whether and how that concentration aligns with social vulnerability.]
+#text(size: 8.5pt)[The maps in this series use a bivariate choropleth design to display two variables at once: drug overdose death rate and social vulnerability. Dark green indicates counties high on both measures; orange or blue indicates counties high on one measure but low on the other; gray indicates counties low on both. This approach reveals not just where overdose burden is concentrated, but whether and how that concentration aligns with social vulnerability.]
 
 #v(theme.space-sm)
-#text(size: 8.5pt)[Each of the five maps examines a different vulnerability indicator -- the composite SVI and four component measures -- to show how the geographic relationship between overdose burden and social disadvantage shifts across measures.]
+#text(size: 8.5pt)[Each of the individual maps, on this page and on the reverse, examines a different vulnerability indicator -- the composite SVI and four individual component measures -- to show how the geographic relationship between overdose burden and social disadvantage shifts across measures.]
 
 #v(theme.space-md)
 = WHAT SVI MEASURES
 #v(theme.space-xs)
-#text(size: 7.5pt, fill: theme.text-secondary)[SVI's composite score sums county rankings across four CDC-defined themes, each built from several Census variables:]
+#text(size: 7.5pt, fill: theme.text-secondary)[The SVI composite score combines county rankings across four CDC-defined themes, each based on multiple Census variables.]
 #v(theme.space-xs)
 
 // A compact row layout, not CDC's own tall-left-bar diagram (see
@@ -202,7 +257,7 @@
 #let svi-chip(label) = box(
   fill: white, stroke: 0.5pt + theme.border-color, radius: 2pt,
   outset: (y: 0.5pt), inset: (x: 4pt, y: 1pt),
-)[#text(size: 6.3pt, fill: theme.text-secondary)[#label]]
+)[#text(size: 7.5pt, fill: theme.text-secondary)[#label]]
 
 // text-color is an explicit per-row argument, not automatic -- a
 // monochromatic ramp needs a DIFFERENT label-text color once the
@@ -256,9 +311,16 @@
 ]
 
 #v(theme.space-sm)
-#text(size: 7pt, fill: theme.text-muted)[SVI is CDC/ATSDR's composite Social Vulnerability Index (sum of all four theme rankings), {{{data_vintage}}}. Overdose deaths are Kentucky resident deaths with an underlying cause of death consistent with the standard CDC/NCHS drug-poisoning definition (ICD-10 X40#sym.dash.en 44, X60#sym.dash.en 64, X85, Y10#sym.dash.en 14), {{{strip_period}}}, crude rate per 100,000 residents (not age-adjusted).]
+// A bare "*" at the start of a #text[] body starts bold-emphasis markup
+// and breaks the compile with "unclosed delimiter" -- same escaping
+// class as contact-email's "\@" (this file's header comment) and
+// disclaimer_text's "\$" -- needs the literal "\*" escape. Any future
+// literal asterisk (a footnote marker, multiplication, etc.) anywhere in
+// this package's templates needs the same treatment.
+#text(size: 7pt, fill: theme.text-muted)[\*SVI is the Centers for Disease Control and Prevention and Agency for Toxic Substances and Disease Registry's (CDC/ATSDR's) composite Social Vulnerability Index (sum of all four theme rankings), {{{data_vintage}}}. Overdose deaths are Kentucky resident deaths with an underlying cause of death consistent with the standard CDC/National Center for Health Statistics (NCHS) drug-poisoning definition (ICD-10 codes X40#sym.dash.en 44, X60#sym.dash.en 64, X85, Y10#sym.dash.en 14), {{{strip_period}}}, crude rate per 100,000 residents (not age-adjusted).]
 
 ] // close page-1 body
+#place(bottom + center, float: true)[#footer]
 #pagebreak()
 #pad(x: theme.content-pad-x)[
 #v(theme.space-sm)
@@ -268,7 +330,7 @@
 // ============================================================
 = COMPONENT FACTORS BEHIND THE SVI SCORE
 #v(theme.space-xs)
-#text(size: 7.5pt, fill: theme.text-secondary)[The composite SVI score above is built from many measures. The four maps below isolate individual components most directly tied to health-care access and economic strain, each paired with the same overdose death rate as the headline map -- so a reader can see which specific factor is driving a county's vulnerability, not just that it's vulnerable overall.]
+#text(size: 7.5pt, fill: theme.text-secondary)[The composite SVI score above is built from many measures. The four maps below isolate individual components most directly tied to health-care access and economic strain, each paired with the same overdose death rate as the map above -- to help visualize which specific factors are driving a county's overall vulnerability.]
 #v(theme.space-sm)
 
 // map1_caption..map4_caption are tokens, NOT hardcoded template prose
@@ -346,5 +408,6 @@
 #v(theme.space-xs)
 #text(size: 7pt, fill: theme.text-muted)[*Data sources:* {{{footnote_sources}}} #h(0.5em)|#h(0.5em) *Period:* {{{strip_period}}} #h(0.5em)|#h(0.5em) *Contact:* {{{org_full}}} at #link("mailto:" + contact-email)[#contact-email]]
 ] // close body #pad(x: theme.content-pad-x)
+#place(bottom + center, float: true)[#footer]
 
 ] // close #apply-base-styles body

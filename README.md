@@ -51,7 +51,21 @@ onepagr::check_quarto()
 
 If it's missing, `onepagr::install_quarto()` installs a user-local copy
 without needing admin rights (you must run it yourself; onepagr never
-installs software automatically).
+installs software automatically). On macOS and Linux it also points
+onepagr at the copy it just installed for you: it sets `QUARTO_PATH` for
+your current session immediately, then asks whether to save that to your
+`~/.Renviron` too, so every future R session picks it up automatically
+without you ever needing to know what a `.Renviron` file is. (On Windows
+it opens the official installer instead of extracting anything itself,
+so there's no path to point at until you finish that installer yourself.)
+
+Already have a Quarto install somewhere else onepagr should use instead,
+for example an admin-managed one on Posit Workbench? Point onepagr at it
+the same way, without hand-editing anything:
+
+```r
+onepagr::set_quarto_path("/path/to/quarto")
+```
 
 ## Quick start
 

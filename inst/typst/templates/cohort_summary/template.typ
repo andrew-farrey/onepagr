@@ -73,15 +73,38 @@
 // these tokens to whatever basenames those files land under. Defaults
 // (in this package's own fixtures) point at the built-in package
 // assets, unchanged from before this became configurable.
+// strip-links: false -- see the identical comment in
+// county_choropleth/template.typ (same rationale: this template
+// self-places the footer as real body content, not page(footer:)
+// furniture, so the default link-stripping no longer applies).
 #let footer = page-footer(
   theme, theme-grad,
   "{{{logo_partner_a_path}}}", "{{{logo_partner_a_alt}}}", "{{{show_partner_a}}}",
   "{{{logo_primary_path}}}", "{{{logo_primary_alt}}}",
   "{{{logo_partner_b_path}}}", "{{{logo_partner_b_alt}}}", "{{{show_partner_b}}}",
   "{{{org_full}}}", "{{{contact_url}}}", contact-email,
+  strip-links: false,
 )
 
-#apply-base-styles([{{{doc_title}}}], "{{{org_full}}}", theme, footer)[
+// footer is placed explicitly per page below (#place(bottom + center,
+// float: true)), NOT passed here -- see apply-base-styles()'s own
+// comment in components.typ and county_choropleth/template.typ (where
+// this pattern was verified first, including why `float: true` is
+// required, not optional) for why: page(footer:) content is
+// unconditionally excluded from the PDF's accessibility tree, alt text
+// or not. margin-bottom is also reduced from apply-base-styles()'s
+// 0.85in default, to the same 0.056in (4pt) value county_choropleth
+// uses -- that default reserved room for the OLD page(footer:) footer
+// specifically, which the floated footer no longer needs. Confirmed
+// directly (real compile, checked page count and the PDF's own structure
+// tree) that this template still holds at 2 pages with this shared
+// value and gains real tagged /Figure entries for its footer logos. This
+// template has no headline-map-height-equivalent adjustable element the
+// way county_choropleth does, so its own margin/content cliff has NOT
+// been independently swept the same rigorous way -- if this page's
+// content grows in the future (more text, more bar-rows), re-verify the
+// page count directly rather than assuming this margin still holds.
+#apply-base-styles([{{{doc_title}}}], "{{{org_full}}}", theme, margin-bottom: 0.056in)[
 
 // ============================================================
 // HEADER
@@ -247,6 +270,7 @@
 ]
 
 ] // close page-1 body #pad(x: theme.content-pad-x) -- pagebreak() can't be nested in a container
+#place(bottom + center, float: true)[#footer]
 #pagebreak()
 #pad(x: theme.content-pad-x)[
 #v(theme.space-sm)
@@ -306,7 +330,7 @@
 #rect(fill: theme-grad.card-bg-grad, stroke: (top: theme.stroke-accent + theme.brand-midnight, rest: theme.stroke-border + theme.box-border), inset: 7pt, width: 100%)[
   == LONGER, RICHER RECORDS AMONG LINKED CASES
   #v(theme.space-xs)
-  #text(size: 7.5pt, fill: theme.text-secondary)[A linked encounter record gives reviewers more real-world detail to draw from — about the case, the setting, and the context. The word-count comparison on page 1 measures overall record length; the bars below measure additional domain-specific terms per record, on average, compared to unlinked cases (main record; secondary record about the same), {{{strip_period}}}.]
+  #text(size: 7.5pt, fill: theme.text-secondary)[A linked encounter record gives reviewers more real-world detail to draw from -- about the case, the setting, and the context. The word-count comparison on page 1 measures overall record length; the bars below measure additional domain-specific terms per record, on average, compared to unlinked cases (main record; secondary record about the same), {{{strip_period}}}.]
   #v(theme.space-sm)
   #domain-bar(theme, [Context], {{{domain_diff_scene}}})
   #domain-bar(theme, [History], {{{domain_diff_history}}})
@@ -357,5 +381,6 @@
 #v(theme.space-xs)
 #text(size: 7pt, fill: theme.text-muted)[*Data sources:* {{{footnote_sources}}} #h(0.5em)|#h(0.5em) *Period:* {{{strip_period}}} #h(0.5em)|#h(0.5em) *Contact:* {{{org_full}}} at #link("mailto:" + contact-email)[#contact-email]]
 ] // close body #pad(x: theme.content-pad-x)
+#place(bottom + center, float: true)[#footer]
 
 ] // close #apply-base-styles body

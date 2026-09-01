@@ -13,6 +13,22 @@
 // test, not assumed: a first version of this file did exactly that, and
 // swapping a template's theme import silently had zero effect on
 // anything rendered through these shared components.
+//
+// KNOWN TYPST ESCAPING GOTCHAS -- markup-body text substituted via a
+// whisker token or hardcoded template prose can trip Typst's markup
+// parser if it starts with (or contains) a character that ALSO starts a
+// markup construct. Confirmed directly, not theoretical, each time:
+// a bare "@" starts label-reference syntax (county_choropleth/
+// template.typ's contact-email header comment), a bare "$" starts math
+// mode (disclaimer_text), and a bare "*" starts bold-emphasis markup,
+// breaking the compile with "unclosed delimiter" (county_choropleth's
+// footnote, which needs a literal footnote-marker asterisk). Escape with
+// a leading backslash ("\@", "\$", "\*") wherever a literal one of these
+// characters is needed inside markup body text -- and note this only
+// fixes a token spliced into markup SOURCE text; a token substituted
+// into a quoted Typst STRING argument instead needs no escaping at all
+// (see county_choropleth's contact-email comment for why those two
+// substitution contexts behave differently).
 
 // Stat card: a big number over a small label. fill/stroke/radius/inset are
 // applied by the enclosing grid() itself (sizes to the row's resolved
@@ -75,15 +91,41 @@
 // tree entirely (correct for pure decoration), rather than tagged as a
 // Figure that would still need a bounding box.
 //
-// PDF/UA-1 flatly prohibits links inside artifacts, and this whole
-// repeating footer is page furniture that Typst automatically tags as an
-// Artifact -- confirmed directly via `--pdf-standard ua-1`'s own compile
-// error ("PDF artifacts may not contain links") during prototyping. Typst
-// auto-detects and auto-links bare URL-looking text too, so
-// `show link: it => it.body` strips any link -- explicit or auto-detected
-// -- back down to plain, inert text for everything in this footer. If a
-// real clickable contact URL is needed, put it in the page body instead,
-// which isn't page furniture and has no such restriction.
+// PDF/UA-1 flatly prohibits links inside artifacts, and page furniture
+// wired via `set page(footer:)` is page furniture that Typst
+// automatically tags as an Artifact -- confirmed directly via
+// `--pdf-standard ua-1`'s own compile error ("PDF artifacts may not
+// contain links") during prototyping. Typst auto-detects and auto-links
+// bare URL-looking text too (contact-url and contact-email both trigger
+// this even though neither is an explicit #link() call), so
+// `strip-links: true` (the default) applies `show link: it => it.body`
+// to strip any link -- explicit or auto-detected -- back down to plain,
+// inert text, for templates that still wire this footer via
+// `set page(footer:)` (see apply-base-styles()'s own comment on which
+// templates still do).
+//
+// For a template that instead self-places this footer as real body
+// content (not page furniture, not an Artifact -- see
+// county_choropleth/template.typ for the pattern), pass
+// `strip-links: false`. Getting this wrong in that direction is a REAL,
+// PAC-confirmed accessibility bug, not a hypothetical: this rule
+// originally stripped links unconditionally, for every caller, because
+// it was ALWAYS true that this footer rendered inside an Artifact. Once
+// county_choropleth/cohort_summary/trend_snapshot stopped doing that (to
+// fix the footer-logos-untagged bug -- see apply-base-styles()'s
+// comment), the ORIGINAL reason for stripping links no longer applied to
+// them, but the rule kept stripping anyway -- a real PAC run against the
+// fixed templates flagged exactly this ("Link in text does not have a
+// 'Link' element", 4 instances on county_choropleth: contact-url and
+// contact-email, both pages), confirming sighted users saw URL/email-
+// shaped text with no actual accessible link underneath. `strip-links`
+// is the fix: `false` lets the same auto-detected links stay real
+// `/Link` elements when they're no longer inside an artifact, verified
+// directly (a scoped `show link:` rule inside one branch of an #if
+// still correctly applies to a content value interpolated from outside
+// that branch -- confirmed with a minimal repro, not assumed from how
+// the equivalent function-scoping issue elsewhere in this file works,
+// since content values and function returns follow different rules).
 //
 // Resolves a show_* toggle token to a real Typst boolean, or fails
 // loudly if it isn't the expected literal lowercase string. Same
@@ -115,12 +157,23 @@
 // dividers and grid column count are computed from however many logos
 // are actually visible, so a one-logo jurisdiction gets a plain single
 // image with no dangling divider on either side.
-#let page-footer(theme, theme-grad, logo-a, logo-a-alt, show-partner-a, logo-primary, logo-primary-alt, logo-b, logo-b-alt, show-partner-b, org-full, contact-url, contact-email, texture: "assets/header-texture.png") = box(width: 100%, fill: theme-grad.brand-blue-grad, clip: true, stroke: (top: theme.stroke-accent + theme.brand-midnight), inset: (x: 20pt, y: 10pt))[
-  #show link: it => it.body
+#let page-footer(theme, theme-grad, logo-a, logo-a-alt, show-partner-a, logo-primary, logo-primary-alt, logo-b, logo-b-alt, show-partner-b, org-full, contact-url, contact-email, texture: "assets/header-texture.png", strip-links: true) = box(width: 100%, fill: theme-grad.brand-blue-grad, clip: true, stroke: (top: theme.stroke-accent + theme.brand-midnight), inset: (x: 20pt, y: 10pt))[
   #place(top + right, dx: 40pt, dy: -30pt)[
     #pdf.artifact(kind: "background")[#image(texture, width: 200pt)]
   ]
-  #let logo-divider = line(length: 22pt, angle: 90deg, stroke: 0.6pt + white.transparentize(45%))
+  // Dividers between logos used to be their own grid cell (a bare
+  // line()) -- harmless visually, but PAC flagged it ("possibly
+  // inappropriate use of a Div structure element"): every grid() cell
+  // gets tagged /Div regardless of its content, so a divider cell with
+  // no taggable content inside becomes an empty /Div. Confirmed directly
+  // that wrapping the line in #pdf.artifact() does NOT fix this -- the
+  // cell's own /Div wrapper persists even when its content is excluded
+  // from the tag tree, since the Div comes from the grid CELL, not the
+  // content. The actual fix is structural: don't give the divider its
+  // own cell at all. A left border stroke on each non-first logo's own
+  // cell produces the identical visual divider with zero extra cells,
+  // confirmed directly (a minimal repro with a bordered box in place of
+  // a separate line-cell produced no empty /Div at all).
   #let logo-lockup = {
     let logos = ()
     if bool-token("show_partner_a", show-partner-a) { logos.push((logo-a, logo-a-alt)) }
@@ -128,14 +181,38 @@
     if bool-token("show_partner_b", show-partner-b) { logos.push((logo-b, logo-b-alt)) }
     let cells = ()
     for (i, l) in logos.enumerate() {
-      if i > 0 { cells.push(logo-divider) }
-      cells.push(image(l.at(0), height: 24pt, alt: l.at(1)))
+      let logo-img = image(l.at(0), height: 32pt, alt: l.at(1))
+      cells.push(
+        if i > 0 {
+          box(inset: (left: 15pt), stroke: (left: 0.6pt + white.transparentize(45%)))[#logo-img]
+        } else {
+          logo-img
+        }
+      )
     }
     grid(columns: (auto,) * cells.len(), column-gutter: 7pt, align: horizon, ..cells)
   }
+  // Explicit #link() calls, not bare #contact-url/#contact-email
+  // interpolation -- confirmed directly that Typst's auto-link detection
+  // (which DOES catch a literal URL typed straight into markup source)
+  // does NOT fire on a URL that arrives as a function-parameter string
+  // and gets interpolated via #variable-name, even though it displays
+  // identically. Without an explicit #link(), there is no link element
+  // here at all for `strip-links` to have any effect on, stripped or
+  // not -- confirmed by a real PAC run flagging exactly this ("Link in
+  // text does not have a 'Link' element") even after strip-links: false
+  // was added, which is what caught this. contact-email uses the same
+  // "mailto:" + contact-email pattern already proven safe elsewhere in
+  // this package (see county_choropleth/template.typ's own footnote).
+  #let org-info = align(right)[#text(fill: white, size: 8pt)[*#org-full* \ #link(contact-url)[#contact-url] \ #link("mailto:" + contact-email)[#contact-email]]]
   #grid(columns: (auto, 1fr), align: horizon,
     logo-lockup,
-    align(right)[#text(fill: white, size: 8pt)[*#org-full* \ #contact-url \ #contact-email]]
+    if strip-links [
+      #show link: it => it.body
+      #org-info
+    ] else [
+      #org-info
+    ]
   )
 ]
 
@@ -156,10 +233,10 @@
 // heading keeps tagging as a standalone /H2 rather than getting wrapped
 // in /P. Scoped locally to this box so it doesn't affect any other
 // heading elsewhere in the document.
-#let text-box(theme, theme-grad, label, body, color: none, bg: none, text-color: none) = rect(
+#let text-box(theme, theme-grad, label, body, color: none, bg: none, text-color: none, height: auto) = rect(
   fill: if bg == none { theme-grad.card-bg-grad } else { bg },
   stroke: (top: theme.stroke-accent + (if color == none { theme.brand-midnight } else { color }), rest: theme.stroke-border + theme.box-border),
-  inset: 7pt, width: 100%,
+  inset: 7pt, width: 100%, height: height,
 )[
   #show heading: set text(size: 8pt, weight: "bold", fill: if color == none { theme.brand-midnight } else { color }, tracking: 0.5pt)
   == #label
@@ -199,29 +276,34 @@
 // the function take the rest of the document as a `body` parameter and
 // return it from inside the same block where the rules were declared,
 // which is what this function does. Call it as
-// `#apply-base-styles(doc-title, org-full, theme, footer)[...entire
-// document content...]`, not as a standalone call with content written
-// separately after it.
+// `#apply-base-styles(doc-title, org-full, theme)[...entire document
+// content...]`, not as a standalone call with content written separately
+// after it.
 //
-// Semantic headings drive real screen-reader navigation structure. Styling
-// is applied via `show heading: set text(...)`, NOT a content-replacing
-// `show heading: it => ...` rule. Verified directly against a compiled
-// PDF's own structure tree (pypdf, walking /StructTreeRoot): a totally
-// unstyled default heading tags as a standalone /H1 sibling next to the
-// body /P that follows it -- correct. The instant ANY content-replacing
-// `it => ...` rule intercepts a heading (even a no-op `it => it.body`
-// pass-through), Typst re-wraps the realized output in an enclosing /P,
-// producing /P > /H1 -- an "inappropriate use of a P structure element"
-// that PDF/UA checkers will flag. A `set`-style rule applies styling
-// without ever re-realizing the heading's content, so Typst's own correct
-// standalone /H1 tagging survives untouched.
-//
-// Typst's built-in heading stylesheet also applies its own (much larger)
-// above/below block spacing via a `set` rule independent of any
-// content-replacing rule -- resetting it to this document's own block
-// spacing prevents it silently pushing a tight one-page layout onto an
-// extra page.
-#let apply-base-styles(doc-title, org-full, theme, footer, body) = {
+// `footer` is an OPTIONAL named argument, default `none` -- deliberately
+// NOT wired into `set page(footer: ...)` by default anymore. Confirmed
+// directly (a minimal repro: `#image(..., alt: "...")` inside
+// `set page(footer: [...])`, compiled with `--pdf-standard ua-1
+// --features a11y-extras`, structure-tree-walked with pypdf) that Typst
+// unconditionally excludes ALL `page(footer:)` content from the PDF's tag
+// tree, alt text or not -- there is no per-element override. For a
+// template with a KNOWN, fixed page count (an explicit #pagebreak()
+// between each page), don't pass `footer` here at all: instead call
+// `#place(bottom + center)[#footer]` as a sibling statement at the end of
+// each page's own content, which DOES produce a real tagged /Figure
+// (confirmed the same way) -- see county_choropleth/template.typ for the
+// pattern. For a template with variable/natural pagination (no
+// #pagebreak(), page count depends on content length -- see
+// overdose_spike_alert/syndromic_alert), there's no known safe point to
+// self-place a footer once per page without knowing the page count in
+// advance, so those templates still pass `footer: page-footer(...)` here
+// to get the old automatic-every-page behavior. This is a real,
+// documented accessibility gap for those two templates specifically
+// (their footer logos are Artifact-excluded, same root cause as before)
+// -- not silently different from the fixed-page templates, and not yet
+// resolved; revisit if Typst ever exposes a way to detect page
+// boundaries without an explicit #pagebreak().
+#let apply-base-styles(doc-title, org-full, theme, body, footer: none, margin-bottom: 0.85in) = {
   set document(title: [#doc-title], author: org-full)
   set text(font: theme.body-font, size: theme.body-size)
   // Hyphenation rendered as a literal "4" glyph at line-break points on
@@ -237,7 +319,7 @@
   show heading.where(level: 1): set text(size: 9pt, weight: "bold", fill: theme.brand-blue, tracking: 1pt)
   show heading.where(level: 2): set text(size: 7.5pt, weight: "bold")
   set page(
-    margin: (x: 0pt, top: 0pt, bottom: 0.85in), paper: "us-letter",
+    margin: (x: 0pt, top: 0pt, bottom: margin-bottom), paper: "us-letter",
     footer: footer,
   )
   body

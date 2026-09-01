@@ -160,11 +160,105 @@ install_quarto <- function(version = "1.10.18") {
   bin_path <- file.path(
     install_dir, sprintf("quarto-%s", version), "bin", "quarto"
   )
-  message(
-    "Quarto ", version, " installed to ", install_dir, ".\n",
-    "Point onepagr (and the quarto package) at it by setting:\n",
-    "  Sys.setenv(QUARTO_PATH = \"", bin_path, "\")\n",
-    "in your session, .Rprofile, or project .Renviron."
-  )
+  message("Quarto ", version, " installed to ", install_dir, ".")
+  set_quarto_path(bin_path)
   invisible(install_dir)
+}
+
+#' Point onepagr (and Quarto) at a specific Quarto binary
+#'
+#' Sets `QUARTO_PATH` for the current R session immediately. With consent,
+#' also persists it to the user-level `~/.Renviron` so future sessions pick
+#' it up automatically -- the whole reason this function exists is so a
+#' consuming team never has to learn what `.Renviron` is or hand-edit one:
+#' [install_quarto()] calls this automatically on macOS/Linux once it knows
+#' the real installed binary path, and this can also be called directly to
+#' point onepagr at any other Quarto install (e.g. an admin-managed one on
+#' Posit Workbench).
+#'
+#' `.Renviron` is specifically the right place for this, not a
+#' project-local config and not bare `options()`: it's a machine-local fact
+#' about where Quarto happens to live on THIS system, not a fact about any
+#' one analysis project, so it should follow the user across projects
+#' rather than being redeclared per-project.
+#'
+#' Like [install_quarto()], this is only ever invoked directly by the user
+#' or on the user's behalf immediately after a real install -- never called
+#' automatically by [render_onepager()] or any other rendering function.
+#'
+#' @param path Character. Path to a quarto binary. Must already exist.
+#' @param persist Logical or `NA`. `NA` (default): if the session is
+#'   interactive, asks before writing to `renviron_path`; if not
+#'   interactive, does not persist. `TRUE`/`FALSE`: persist or don't, with
+#'   no prompt -- for scripts and non-interactive use.
+#' @param renviron_path Character. Path to the `.Renviron` file to update
+#'   when persisting. Default the current user's `~/.Renviron`. Exposed as
+#'   an argument mainly so this is testable without touching a real
+#'   `.Renviron`; most callers should leave it at the default.
+#' @return Invisibly, `path`.
+#' @export
+set_quarto_path <- function(
+  path, persist = NA, renviron_path = path.expand("~/.Renviron")
+) {
+  if (!file.exists(path)) {
+    stop("path does not exist: ", path, call. = FALSE)
+  }
+
+  Sys.setenv(QUARTO_PATH = path)
+  message("QUARTO_PATH set to ", path, " for this session.")
+
+  should_persist <- if (is.na(persist)) {
+    interactive() && isTRUE(utils::askYesNo(
+      "Persist this to ~/.Renviron so future R sessions use it too?"
+    ))
+  } else {
+    isTRUE(persist)
+  }
+
+  if (should_persist) {
+    update_renviron_line("QUARTO_PATH", path, renviron_path)
+    message(
+      "Saved to ", renviron_path,
+      ". Future R sessions will use this automatically."
+    )
+  }
+
+  invisible(path)
+}
+
+#' Add or replace a single `KEY="value"` line in a `.Renviron`-style file
+#'
+#' Every other line in the file is left untouched: reads the file if it
+#' exists (an empty vector if it doesn't yet), replaces the first existing
+#' line matching `^key\s*=` if there is one (dropping any further
+#' duplicates, which should never legitimately exist but would be
+#' ambiguous for R to parse if they did), or appends a new line if there's
+#' no existing match.
+#'
+#' @param key Character. Environment variable name.
+#' @param value Character. Value to assign (written as a quoted string).
+#' @param renviron_path Character. Path to the file to update. Created if
+#'   it doesn't exist yet.
+#' @return Invisibly, `renviron_path`.
+#' @keywords internal
+update_renviron_line <- function(key, value, renviron_path) {
+  lines <- if (file.exists(renviron_path)) {
+    readLines(renviron_path, warn = FALSE)
+  } else {
+    character(0)
+  }
+
+  pattern <- paste0("^", key, "\\s*=")
+  new_line <- paste0(key, "=\"", value, "\"")
+  match_idx <- grep(pattern, lines)
+
+  if (length(match_idx) > 0) {
+    lines[match_idx[1]] <- new_line
+    if (length(match_idx) > 1) lines <- lines[-match_idx[-1]]
+  } else {
+    lines <- c(lines, new_line)
+  }
+
+  writeLines(lines, renviron_path)
+  invisible(renviron_path)
 }

@@ -47,7 +47,10 @@
 // severity-palette() comment.
 #let severity = severity-palette(theme, "{{{severity_level}}}")
 
-#apply-base-styles([{{{doc_title}}}], "{{{org_full}}}", theme, footer)[
+// footer is still passed here (not self-placed) -- see the identical
+// comment in overdose_spike_alert/template.typ (same rationale: no
+// #pagebreak() to hook a per-page placement onto).
+#apply-base-styles([{{{doc_title}}}], "{{{org_full}}}", theme, footer: footer)[
 
 #block(width: 100%, fill: theme-grad.brand-blue-grad, clip: true, inset: (x: 20pt, y: 10pt), above: 0pt, below: 0pt)[
   #place(top + right, dx: 40pt, dy: -30pt)[
