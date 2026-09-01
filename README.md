@@ -78,6 +78,20 @@ data <- list(
   org_full = "Sample Health Department",
   contact_url = "https://example.org/",
   contact_email = "contact@example.org",
+  # Every template needs a logo lockup and header texture. The paths
+  # below point at onepagr's own bundled placeholder assets (staged
+  # automatically for every render_onepager() call, no extra_assets
+  # needed) -- swap these for your own project's logo files once you
+  # have them; see vignette("theming") for how.
+  logo_primary_path = "assets/primary-org-white.png",
+  logo_primary_alt = "Sample Health Department logo",
+  logo_partner_a_path = "assets/partner-org-a-white.png",
+  logo_partner_a_alt = "Partner Organization A logo",
+  show_partner_a = "false",
+  logo_partner_b_path = "assets/partner-org-b-white.png",
+  logo_partner_b_alt = "Partner Organization B logo",
+  show_partner_b = "false",
+  header_texture_path = "assets/header-texture.png",
   severity_level = "critical",
   alert_area = "Sample County",
   alert_issued_at = "August 26, 2026, 9:00 AM",
