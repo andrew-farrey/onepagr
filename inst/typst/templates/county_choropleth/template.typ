@@ -67,7 +67,7 @@
 // excluded from the PDF's accessibility tree, alt text or not, so a
 // template with a known fixed page count self-places the footer as real
 // body content instead.
-#apply-base-styles([{{{doc_title}}}], "{{{org_full}}}", theme, margin-bottom: 0.056in)[
+#apply-base-styles([{{{doc_title}}}], "{{{org_full}}}", theme, margin-bottom: 0pt)[
 
 // ============================================================
 // HEADER
@@ -177,20 +177,34 @@
 // this page's other content does -- unlike before, when `page(footer:)`
 // content was free (rendered in the page's dedicated footer region, not
 // counted against this budget at all). apply-base-styles()'s
-// margin-bottom is also cut from its 0.85in default to 0.056in (4pt)
-// here specifically because that default reserved room for the OLD
-// page(footer:) mechanism this template no longer uses -- keeping it
-// would have double-spent vertical budget (reserved margin AND a
-// floated footer both eating into the same space). Net result, swept
-// fresh at this file's current combined state: the cliff is now 255pt
-// (3 pages) vs. 254pt (2 pages) -- 250pt has a real but thin 4pt margin,
-// tighter than any previous measurement in this file's history. Every
-// number above this line is now historical context, not current fact --
-// this is the one that's actually true right now. Re-sweep directly
-// (same method as test-county-choropleth.R's page-count tests) after
-// ANY future change near this page OR to the shared footer/margin
-// mechanics -- do not trust any number in this comment, including this
-// one, without re-verifying it first.
+// margin-bottom is also cut from its 0.85in default here specifically
+// because that default reserved room for the OLD page(footer:)
+// mechanism this template no longer uses -- keeping it would have
+// double-spent vertical budget (reserved margin AND a floated footer
+// both eating into the same space).
+//
+// Re-verified a FOURTH time: margin-bottom was first cut to 0.056in
+// (4pt), not 0pt, as a safety buffer -- wrong call, caught by a real
+// analyst reviewing real output, not by any check in this package.
+// Once the footer moved off page(footer:), ANY positive margin-bottom
+// shows up as a literal visible white gap between the footer's own
+// fill and the true bottom edge of the page: the footer is real content
+// now, sized to its own height, sitting ABOVE the margin rather than
+// filling it the way the old page(footer:) region did automatically.
+// Confirmed pixel-exact: the gap's rendered height matched margin-bottom
+// exactly. "Small buffer" was the wrong instinct here -- margin-bottom
+// needs to be exactly 0pt for this pattern, full stop, not tuned like a
+// safety margin the way headline-map-height is. Fixed to 0pt.
+//
+// That freed 4pt back into this page's budget: re-swept fresh at 0pt,
+// the cliff is now 259pt (3 pages) vs. 258pt (2 pages) -- 250pt has a
+// real 8pt margin. Every number above this line is now historical
+// context, not current fact -- this is the one that's actually true
+// right now. Re-sweep directly (same method as
+// test-county-choropleth.R's page-count tests) after ANY future change
+// near this page OR to the shared footer/margin mechanics -- do not
+// trust any number in this comment, including this one, without
+// re-verifying it first.
 #let headline-map-height = 250pt
 #grid(columns: (80fr, 20fr), column-gutter: 12pt,
   [

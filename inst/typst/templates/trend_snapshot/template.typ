@@ -76,19 +76,28 @@
 // float: true)), NOT passed here -- see apply-base-styles()'s own
 // comment in components.typ and county_choropleth/template.typ (where
 // this pattern was verified first, including why `float: true` is
-// required, not optional) for why. margin-bottom is reduced from
-// apply-base-styles()'s 0.85in default to the same 0.056in (4pt) value
-// county_choropleth uses, for the same reason: that default reserved
-// room for the OLD page(footer:) footer specifically, which the floated
-// footer no longer needs. Confirmed directly (real compile, checked page
-// count and the PDF's own structure tree) that this template still
-// holds at 2 pages with this shared value and gains real tagged /Figure
-// entries for its footer logos -- NOT independently cliff-swept against
-// its own content the way county_choropleth's headline-map-height was,
-// since this template has no equivalent adjustable element to sweep. If
-// this page's content grows in the future, re-verify the page count
-// directly rather than assuming this margin still holds.
-#apply-base-styles([{{{doc_title}}}], "{{{org_full}}}", theme, margin-bottom: 0.056in)[
+// required, not optional) for why. margin-bottom is 0pt, not just
+// reduced from apply-base-styles()'s 0.85in default -- that default
+// reserved room for the OLD page(footer:) footer specifically, which the
+// floated footer no longer needs, and unlike that old mechanism, this
+// one does NOT tolerate a small positive margin as a safety buffer: any
+// margin-bottom above 0pt shows up as a literal visible white gap
+// between the footer's own fill and the true bottom edge of the page,
+// since the footer is now real content sized to its own height rather
+// than furniture that fills whatever margin region it's given. Caught on
+// county_choropleth by a real analyst reviewing real output (not by any
+// check in this package), confirmed pixel-exact there, fixed here for
+// consistency across the whole template family rather than leaving this
+// template with a different, undecided gap. Confirmed directly (real
+// compile, checked page count and the PDF's own structure tree) that
+// this template still holds at 2 pages at 0pt and gains real tagged
+// /Figure entries for its footer logos -- NOT independently cliff-swept
+// against its own content the way county_choropleth's
+// headline-map-height was, since this template has no equivalent
+// adjustable element to sweep. If this page's content grows in the
+// future, re-verify the page count directly rather than assuming this
+// margin still holds.
+#apply-base-styles([{{{doc_title}}}], "{{{org_full}}}", theme, margin-bottom: 0pt)[
 
 // ============================================================
 // HEADER (identical pattern to onepager_template.typ -- page furniture
