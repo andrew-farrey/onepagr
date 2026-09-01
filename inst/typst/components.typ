@@ -184,7 +184,18 @@
       let logo-img = image(l.at(0), height: 32pt, alt: l.at(1))
       cells.push(
         if i > 0 {
-          box(inset: (left: 15pt), stroke: (left: 0.6pt + white.transparentize(45%)))[#logo-img]
+          // right: 8pt, not 0 -- the divider stroke sits at this box's
+          // LEFT edge, so a left-only inset put 15pt of gap between the
+          // divider and the logo but only the 7pt column-gutter (which
+          // is outside this box entirely) between the logo and the NEXT
+          // divider, visibly off-center toward the right divider.
+          // Confirmed directly in the svi-linkage-code consuming project
+          // (rendering this cell in isolation showed the logo sitting
+          // closer to its right-hand divider than its left) -- same bug,
+          // same box/inset/gutter structure, ported back here. 8pt (15pt
+          // inset minus the 7pt gutter it's compensating for) equalizes
+          // the two gaps at 15pt each.
+          box(inset: (left: 15pt, right: 8pt), stroke: (left: 0.6pt + white.transparentize(45%)))[#logo-img]
         } else {
           logo-img
         }
