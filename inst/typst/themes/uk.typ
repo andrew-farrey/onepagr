@@ -17,6 +17,12 @@
   // -- Palette ----------------------------------------------------------
   brand-blue: rgb("#0033A0"),
   brand-midnight: rgb("#002147"),
+  // county_choropleth's map-box border. A separate, analyst-supplied
+  // brand spec (Midnight, CMYK 95/74/7/44, RGB 27/54/93, PMS 534) --
+  // deliberately NOT the same value as brand-midnight above despite the
+  // shared name: the two were sourced independently and happen to diverge
+  // (#1B365D here vs. #002147 above), so don't collapse them into one key.
+  map-border-color: rgb("#1B365D"),
   // Large-text/decorative use only (stat numbers, strokes) -- verified
   // >=3:1 against card-bg (both theme-grad ends: 4.88:1 light, 3.90:1
   // dark) but NOT the 4.5:1 normal-text threshold. See brand-accent-text

@@ -43,6 +43,12 @@
   brand-blue: rgb("#0C68F0"),
   // Bootstrap $primary shaded 60% toward black (shade-color formula).
   brand-midnight: rgb("#052C65"),
+  // county_choropleth's map-box border. No separate brand spec for this
+  // brand-neutral theme (unlike uk.typ's map-border-color, which diverges
+  // from its own brand-midnight on purpose), so this just reuses
+  // brand-midnight -- a replacement theme is free to diverge the same way
+  // uk.typ does if it has its own separate brand spec to honor.
+  map-border-color: rgb("#052C65"),
   // Bootstrap $success (#198754) -- large-text/decorative use only (stat
   // numbers, strokes); see brand-accent-text below for small-text use.
   brand-accent: rgb("#198754"),
