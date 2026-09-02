@@ -61,6 +61,22 @@
   strip-links: false,
 )
 
+// Map-box border: a plain 1pt black stroke read as "so thin it disappears
+// unless you zoom in" on a real compiled PDF. Color is an analyst-supplied
+// brand spec (Midnight, CMYK 95/74/7/44, RGB 27/54/93, PMS 534) -- NOT the
+// same value as theme.brand-midnight (#002147) despite the name overlap,
+// so it's its own token rather than a reuse of that one. Weight 2pt is the
+// first step up from 1pt that reads as a deliberate frame at normal
+// PDF-viewer zoom without matching theme.stroke-accent (3pt, used for the
+// header's own top border). Bound here at true top-level scope (before
+// EITHER page's #pad(...)[...] body opens) rather than just above the
+// headline box, since Typst's #let is block-scoped and page 2's body is a
+// separate #pad(...)[...] block from page 1's -- binding it inside page
+// 1's block only compiled there and failed page 2's component boxes with
+// "unknown variable: map-border-color".
+#let map-border-color = rgb("#1B365D")
+#let map-border-weight = 2pt
+
 // footer is placed explicitly per page below (#place(bottom + center)),
 // NOT passed here -- see apply-base-styles()'s own comment in
 // components.typ for why: page(footer:) content is unconditionally
@@ -209,7 +225,7 @@
 #grid(columns: (80fr, 20fr), column-gutter: 12pt,
   [
     #figure(
-      box(stroke: 1pt + black, width: 100%, height: headline-map-height)[
+      box(stroke: map-border-weight + map-border-color, width: 100%, height: headline-map-height)[
         #align(center + horizon)[#image("{{{map0_path}}}", height: 100%, fit: "contain")]
       ],
       alt: "Kentucky county map, with each county labeled by name. Each county is shaded by a 3-by-3 bivariate color grid combining its overall Social Vulnerability Index tertile with its crude drug overdose death rate tertile. Dark green marks counties in the highest tertile for both measures; light gray marks counties in the lowest tertile for both.",
@@ -369,39 +385,39 @@
 #grid(columns: (1fr, 1fr), column-gutter: 10pt, row-gutter: component-map-row-gutter,
   [
     #figure(
-      box(stroke: 1pt + black, width: 100%, height: component-map-height)[
+      box(stroke: map-border-weight + map-border-color, width: 100%, height: component-map-height)[
         #align(center + horizon)[#image("{{{map1_path}}}", height: 100%, fit: "contain")]
       ],
       alt: "Kentucky county map, bivariate choropleth of unemployment rate against overdose death rate, using the same 3-by-3 color grid as the headline map.",
     )
-    #text(size: 7.5pt, fill: theme.text-secondary)[*{{{map_title1}}}.* {{{map1_caption}}}]
+    #text(size: 7.5pt, fill: theme.text-secondary)[#text(size: 8.5pt, weight: "medium")[*{{{map_title1}}}.*] {{{map1_caption}}}]
   ],
   [
     #figure(
-      box(stroke: 1pt + black, width: 100%, height: component-map-height)[
+      box(stroke: map-border-weight + map-border-color, width: 100%, height: component-map-height)[
         #align(center + horizon)[#image("{{{map2_path}}}", height: 100%, fit: "contain")]
       ],
       alt: "Kentucky county map, bivariate choropleth of the percentage of the population without health insurance against overdose death rate, using the same 3-by-3 color grid as the headline map.",
     )
-    #text(size: 7.5pt, fill: theme.text-secondary)[*{{{map_title2}}}.* {{{map2_caption}}}]
+    #text(size: 7.5pt, fill: theme.text-secondary)[#text(size: 8.5pt, weight: "medium")[*{{{map_title2}}}.*] {{{map2_caption}}}]
   ],
   [
     #figure(
-      box(stroke: 1pt + black, width: 100%, height: component-map-height)[
+      box(stroke: map-border-weight + map-border-color, width: 100%, height: component-map-height)[
         #align(center + horizon)[#image("{{{map3_path}}}", height: 100%, fit: "contain")]
       ],
       alt: "Kentucky county map, bivariate choropleth of the percentage of persons below 150 percent of the poverty line against overdose death rate, using the same 3-by-3 color grid as the headline map.",
     )
-    #text(size: 7.5pt, fill: theme.text-secondary)[*{{{map_title3}}}.* {{{map3_caption}}}]
+    #text(size: 7.5pt, fill: theme.text-secondary)[#text(size: 8.5pt, weight: "medium")[*{{{map_title3}}}.*] {{{map3_caption}}}]
   ],
   [
     #figure(
-      box(stroke: 1pt + black, width: 100%, height: component-map-height)[
+      box(stroke: map-border-weight + map-border-color, width: 100%, height: component-map-height)[
         #align(center + horizon)[#image("{{{map4_path}}}", height: 100%, fit: "contain")]
       ],
       alt: "Kentucky county map, bivariate choropleth of the percentage of housing units that are cost-burdened against overdose death rate, using the same 3-by-3 color grid as the headline map.",
     )
-    #text(size: 7.5pt, fill: theme.text-secondary)[*{{{map_title4}}}.* {{{map4_caption}}}]
+    #text(size: 7.5pt, fill: theme.text-secondary)[#text(size: 8.5pt, weight: "medium")[*{{{map_title4}}}.*] {{{map4_caption}}}]
   ],
 )
 
