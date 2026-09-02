@@ -14,6 +14,9 @@ check and is built to pass WCAG 2.2 AA color contrast and PDF/UA-1
 structural tagging, not as a final pass but as a requirement checked at
 every step of development.
 
+Full documentation, including function reference and vignettes, is
+available at <https://andrew-farrey.github.io/onepagr/>.
+
 ## Why
 
 Public health teams and similar analysis groups often need to turn a
@@ -213,3 +216,6 @@ unmodified source SVG.
 ```r
 citation("onepagr")
 ```
+
+Machine-readable citation metadata is also available in
+[`CITATION.cff`](https://github.com/andrew-farrey/onepagr/blob/master/CITATION.cff).
