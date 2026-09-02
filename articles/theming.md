@@ -68,6 +68,7 @@ most for an overall look:
 | `card-bg`, `callout-bg`, `lessons-bg` | Box background tints |
 | `text-secondary`, `text-muted` | Body and caption text colors |
 | `severity-warning`, `severity-critical` (+ their `-bg`/`-text` variants) | Alert-template severity coloring (`overdose_spike_alert`, `syndromic_alert`) |
+| `map-border-color` | Map-box border stroke (`county_choropleth`) – kept separate from `brand-midnight` since a real brand spec for this can diverge from it |
 
 The full key list (spacing, stroke widths, radius, margin) is the same
 across every theme file; see `default.typ`’s own comments for what each
