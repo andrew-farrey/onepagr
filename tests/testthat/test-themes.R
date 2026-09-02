@@ -130,6 +130,43 @@ test_that("check_theme surfaces the raw Typst error when eval fails", {
   expect_length(result$missing, 0)
 })
 
+test_that("check_theme errors clearly when Quarto is not found", {
+  testthat::local_mocked_bindings(
+    quarto_path = function() NULL,
+    .package = "quarto"
+  )
+  expect_error(check_theme("default"), "Quarto was not found")
+})
+
+test_that("check_theme reports theme-grad and radius-card sub-key problems", {
+  tmp <- tempfile(fileext = ".typ")
+  # Exercises every remaining branch of the problem-report message: a
+  # theme-grad key present with the wrong type (card-bg-grad, a string
+  # instead of a gradient), a radius-card sub-key present with the wrong
+  # type (top-right, a color instead of a length), and a radius-card
+  # sub-key missing entirely (bottom-right).
+  writeLines(c(
+    "#let theme = (",
+    "  radius-card: (top-right: rgb(\"#000000\")),",
+    ")",
+    "#let theme-grad = (card-bg-grad: \"not-a-gradient\")"
+  ), tmp)
+  on.exit(unlink(tmp))
+
+  result <- suppressMessages(check_theme(theme_path = tmp))
+  expect_false(result$ok)
+  expect_null(result$error)
+
+  expect_equal(result$type_mismatches_grad$key, "card-bg-grad")
+  expect_equal(result$type_mismatches_grad$expected, "gradient")
+  expect_equal(result$type_mismatches_grad$actual, "str")
+
+  expect_equal(result$radius_card_missing, "bottom-right")
+  expect_equal(result$radius_card_type_mismatches$key, "top-right")
+  expect_equal(result$radius_card_type_mismatches$expected, "length")
+  expect_equal(result$radius_card_type_mismatches$actual, "color")
+})
+
 test_that("check_theme flags an extra key as unknown without failing ok", {
   default_path <- resolve_theme("default")
   lines <- readLines(default_path, warn = FALSE)

@@ -5,5 +5,12 @@ bibentry(
   title   = "onepagr: Accessible One-Page Reports from Typst Templates",
   author  = person("Andrew", "Farrey", email = "afarrey11@outlook.com"),
   year    = format(Sys.Date(), "%Y"),
-  note    = sprintf("R package version %s", utils::packageVersion("onepagr"))
+  # meta$Version (supplied by citation() when it sources this file, read
+  # straight from DESCRIPTION) works whether or not onepagr is actually
+  # installed -- utils::packageVersion("onepagr") errors with "there is
+  # no package called 'onepagr'" when it isn't, which is exactly the
+  # state CRAN's own incoming-feasibility check reads this file in
+  # (confirmed directly via a real `R CMD check --as-cran` run against
+  # the built tarball, not assumed).
+  note    = sprintf("R package version %s", meta$Version)
 )

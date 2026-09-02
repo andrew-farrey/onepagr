@@ -75,6 +75,39 @@ test_that("typst_version_via_quarto parses the real bundled Typst version", {
   expect_s3_class(version, "package_version")
 })
 
+test_that("download_with_timeout raises the timeout and restores it after", {
+  old <- getOption("timeout")
+  on.exit(options(timeout = old))
+  options(timeout = 5)
+
+  seen_timeout <- NULL
+  testthat::local_mocked_bindings(
+    download.file = function(url, destfile, mode) {
+      seen_timeout <<- getOption("timeout")
+      invisible(0)
+    },
+    .package = "utils"
+  )
+
+  download_with_timeout("https://example.org/f", tempfile(), min_timeout = 600)
+  expect_equal(seen_timeout, 600)
+  expect_equal(getOption("timeout"), 5)
+})
+
+test_that("download_with_timeout surfaces a clear message on failure", {
+  testthat::local_mocked_bindings(
+    download.file = function(url, destfile, mode) {
+      stop("cannot open URL")
+    },
+    .package = "utils"
+  )
+
+  expect_error(
+    download_with_timeout("https://example.org/f", tempfile()),
+    "Failed to download.*cannot open URL.*install Quarto manually"
+  )
+})
+
 # install_quarto() itself is NEVER unit-tested end-to-end against a real
 # network download -- same reasoning as
 # reticulate::install_miniconda()/keras::install_keras() not

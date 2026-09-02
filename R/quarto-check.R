@@ -82,6 +82,43 @@ check_quarto <- function(min_typst_version = "0.15.1") {
   ))
 }
 
+#' Download a URL with a generous timeout and a clear failure message
+#'
+#' Internal. `download.file()` alone uses the session's current
+#' `options("timeout")` (60 seconds by default) -- too short for a Quarto
+#' release archive (100+ MB) on anything but a fast connection. Raises it
+#' for the duration of this one call only, always restored afterward
+#' (even on error), and converts any download failure (no connection, DNS
+#' failure, a 404 from a bad `version`) into one clear, onepagr-specific
+#' message instead of `download.file()`'s own low-level error.
+#'
+#' @param url Character. URL to download.
+#' @param dest Character. Destination file path.
+#' @param min_timeout Numeric. Minimum timeout, in seconds, for this
+#'   download if the session's current `options("timeout")` is smaller.
+#'   Default `600` (10 minutes) -- generous for a large release archive on
+#'   a slow connection.
+#' @return Invisibly, `dest`.
+#' @keywords internal
+download_with_timeout <- function(url, dest, min_timeout = 600) {
+  old_timeout <- getOption("timeout")
+  on.exit(options(timeout = old_timeout), add = TRUE)
+  options(timeout = max(old_timeout, min_timeout))
+
+  tryCatch(
+    utils::download.file(url, dest, mode = "wb"),
+    error = function(e) {
+      stop(
+        "Failed to download ", url, ": ", conditionMessage(e),
+        ". Check your internet connection, or install Quarto manually ",
+        "from https://quarto.org/docs/get-started/.",
+        call. = FALSE
+      )
+    }
+  )
+  invisible(dest)
+}
+
 #' Install Quarto to a user-local directory
 #'
 #' Downloads the official Quarto release for this OS from
@@ -138,7 +175,7 @@ install_quarto <- function(version = "1.10.18") {
   if (sysname == "Windows") {
     file_name <- sprintf("quarto-%s-win.msi", version)
     dest <- file.path(install_dir, file_name)
-    utils::download.file(paste0(base_url, file_name), dest, mode = "wb")
+    download_with_timeout(paste0(base_url, file_name), dest)
     message(
       "Downloaded the Quarto ", version, " installer to ", dest,
       ". Opening it now -- complete the installer, then restart R."
@@ -153,7 +190,7 @@ install_quarto <- function(version = "1.10.18") {
     sprintf("quarto-%s-linux-amd64.tar.gz", version)
   }
   dest <- file.path(install_dir, file_name)
-  utils::download.file(paste0(base_url, file_name), dest, mode = "wb")
+  download_with_timeout(paste0(base_url, file_name), dest)
   utils::untar(dest, exdir = install_dir)
   unlink(dest)
 
