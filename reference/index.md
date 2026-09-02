@@ -5,6 +5,8 @@
 - [`check_quarto()`](https://andrew-farrey.github.io/onepagr/reference/check_quarto.md)
   : Check whether Quarto is installed and its bundled Typst is new
   enough
+- [`check_theme()`](https://andrew-farrey.github.io/onepagr/reference/check_theme.md)
+  : Check a theme's dictionary structure against onepagr's real contract
 - [`compile_typst()`](https://andrew-farrey.github.io/onepagr/reference/compile_typst.md)
   : Compile a .typ file with whisker-substituted data via Quarto/Typst
 - [`export_template()`](https://andrew-farrey.github.io/onepagr/reference/export_template.md)
