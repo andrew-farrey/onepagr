@@ -37,6 +37,10 @@ typst_version_via_quarto <- function(quarto_bin) {
 #'   (`package_version` or `NA`), `typst_version` (`package_version` or
 #'   `NA`), and `ok` (logical, `TRUE` if available and the bundled Typst
 #'   meets `min_typst_version`).
+#' @examples
+#' # Safe to call whether or not Quarto is installed -- reports back
+#' # either way rather than erroring.
+#' check_quarto()
 #' @export
 check_quarto <- function(min_typst_version = "0.15.1") {
   available <- quarto::quarto_available()
@@ -161,6 +165,12 @@ download_with_timeout <- function(url, dest, min_timeout = 600) {
 #'   `"1.10.18"`.
 #' @return Character, the install directory (macOS/Linux) or the
 #'   downloaded installer path (Windows), invisibly.
+#' @examples
+#' \dontrun{
+#' # Never run automatically -- downloads ~100+ MB and (on Windows) opens
+#' # an installer. Only ever run this yourself, deliberately.
+#' install_quarto()
+#' }
 #' @export
 install_quarto <- function(version = "1.10.18") {
   sysname <- Sys.info()[["sysname"]]
@@ -233,6 +243,13 @@ install_quarto <- function(version = "1.10.18") {
 #'   an argument mainly so this is testable without touching a real
 #'   `.Renviron`; most callers should leave it at the default.
 #' @return Invisibly, `path`.
+#' @examples
+#' \dontrun{
+#' # Never run automatically -- points onepagr at a real Quarto binary on
+#' # your system and, with consent, edits ~/.Renviron. Adjust the path to
+#' # a real quarto install before running.
+#' set_quarto_path("/opt/quarto/bin/quarto")
+#' }
 #' @export
 set_quarto_path <- function(
   path, persist = NA, renviron_path = path.expand("~/.Renviron")

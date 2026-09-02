@@ -10,6 +10,9 @@
 #' @param theme_path Character or NULL. Explicit path override; when
 #'   supplied, `theme` is ignored entirely.
 #' @return Character, an absolute path to a .typ theme file.
+#' @examples
+#' resolve_theme("uk")
+#' resolve_theme("default")
 #' @export
 resolve_theme <- function(theme = "default", theme_path = NULL) {
   if (!is.null(theme_path)) {
@@ -41,6 +44,8 @@ resolve_theme <- function(theme = "default", theme_path = NULL) {
 #' List built-in theme names
 #'
 #' @return Character vector of built-in theme names (without file extension).
+#' @examples
+#' list_themes()
 #' @export
 list_themes <- function() {
   themes_dir <- system.file("typst", "themes", package = "onepagr")
@@ -52,6 +57,8 @@ list_themes <- function() {
 #'
 #' @param template Character. A built-in template name (e.g. "cohort_summary").
 #' @return Character, absolute path to the template's `template.typ` file.
+#' @examples
+#' resolve_template("cohort_summary")
 #' @export
 resolve_template <- function(template) {
   path <- system.file(
@@ -71,6 +78,8 @@ resolve_template <- function(template) {
 #' List built-in template names
 #'
 #' @return Character vector of built-in template names.
+#' @examples
+#' list_templates()
 #' @export
 list_templates <- function() {
   templates_dir <- system.file("typst", "templates", package = "onepagr")
@@ -310,6 +319,12 @@ check_theme_dict <- function(actual_matrix, expected_types) {
 #'   (character vector of keys present in `theme` but outside onepagr's
 #'   known schema -- informational only, not a failure; could be a typo,
 #'   or a key your own templates read directly).
+#' @examples
+#' \dontrun{
+#' # Needs Quarto (bundling Typst) on the system -- see check_quarto().
+#' check_theme("uk")
+#' check_theme("default")
+#' }
 #' @export
 check_theme <- function(theme = "default", theme_path = NULL) {
   path <- resolve_theme(theme, theme_path)

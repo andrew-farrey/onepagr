@@ -12,3 +12,6 @@ Character vector of built-in theme names (without file extension).
 \description{
 List built-in theme names
 }
+\examples{
+list_themes()
+}

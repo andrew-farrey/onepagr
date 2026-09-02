@@ -15,3 +15,6 @@ Character, absolute path to the template's \code{template.typ} file.
 \description{
 Resolve a built-in template name to its installed template.typ path
 }
+\examples{
+resolve_template("cohort_summary")
+}

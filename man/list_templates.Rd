@@ -12,3 +12,6 @@ Character vector of built-in template names.
 \description{
 List built-in template names
 }
+\examples{
+list_templates()
+}

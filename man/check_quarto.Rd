@@ -32,3 +32,8 @@ Typst 0.15.1 specifically, bundled by Quarto 1.10.18 -- confirmed
 directly by running \verb{quarto typst --version} in the dev environment
 every template in this package was verified against).
 }
+\examples{
+# Safe to call whether or not Quarto is installed -- reports back
+# either way rather than erroring.
+check_quarto()
+}

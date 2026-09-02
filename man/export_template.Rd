@@ -33,3 +33,9 @@ exported, the copy is the user's own; nothing in onepagr
 auto-regenerates over it. Compile an exported template directly with
 \code{\link[=compile_typst]{compile_typst()}}.
 }
+\examples{
+dest <- file.path(tempdir(), "my-cohort-summary")
+export_template("cohort_summary", dest, theme = "uk")
+list.files(dest)
+unlink(dest, recursive = TRUE)
+}

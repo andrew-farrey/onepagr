@@ -19,6 +19,9 @@
 #'
 #' @param path Character. Path to a .typ file.
 #' @return Character vector of unique token names, in first-appearance order.
+#' @examples
+#' path <- resolve_template("cohort_summary")
+#' extract_required_tokens(path)
 #' @export
 extract_required_tokens <- function(path) {
   lines <- readLines(path, warn = FALSE)
@@ -40,6 +43,14 @@ extract_required_tokens <- function(path) {
 #' @param path Character. Path to a .typ file.
 #' @param data Named list of whisker substitution values.
 #' @return Invisibly `TRUE` if validation passes.
+#' @examples
+#' path <- resolve_template("cohort_summary")
+#' required <- extract_required_tokens(path)
+#' # Placeholder values -- validate_template_data() only checks presence/
+#' # non-NA, not real content, so this always passes regardless of which
+#' # tokens a given template actually needs.
+#' data <- setNames(as.list(rep("placeholder", length(required))), required)
+#' validate_template_data(path, data)
 #' @export
 validate_template_data <- function(path, data) {
   required <- extract_required_tokens(path)
@@ -82,6 +93,15 @@ validate_template_data <- function(path, data) {
 #'   alongside system fonts, not instead of them). Default `NULL` (system
 #'   fonts only).
 #' @return Character, the `output` path, invisibly.
+#' @examples
+#' \dontrun{
+#' # Needs Quarto (bundling Typst) on the system -- see check_quarto().
+#' typ <- tempfile(fileext = ".typ")
+#' writeLines(
+#'   c("#set document(title: [Example])", "#text[{{{greeting}}}]"), typ
+#' )
+#' compile_typst(typ, list(greeting = "Hello!"), tempfile(fileext = ".pdf"))
+#' }
 #' @export
 compile_typst <- function(path, data, output, font_dir = NULL) {
   validate_template_data(path, data)

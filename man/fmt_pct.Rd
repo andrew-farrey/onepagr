@@ -19,3 +19,7 @@ Thin wrapper around \code{\link[scales:percent]{scales::percent()}}. Input is al
 scale (e.g. 84, not 0.84), matching the convention used throughout
 onepagr's reference templates and R data-prep scripts.
 }
+\examples{
+fmt_pct(84.2)
+fmt_pct(84.216, digits = 1)
+}

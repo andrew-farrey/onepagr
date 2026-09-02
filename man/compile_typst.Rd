@@ -36,3 +36,13 @@ file -- a package-shipped template or a user's own
 derived by scanning the file itself, not a separately-maintained
 manifest.
 }
+\examples{
+\dontrun{
+# Needs Quarto (bundling Typst) on the system -- see check_quarto().
+typ <- tempfile(fileext = ".typ")
+writeLines(
+  c("#set document(title: [Example])", "#text[{{{greeting}}}]"), typ
+)
+compile_typst(typ, list(greeting = "Hello!"), tempfile(fileext = ".pdf"))
+}
+}

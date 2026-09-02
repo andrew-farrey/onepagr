@@ -43,3 +43,11 @@ Like \code{\link[=install_quarto]{install_quarto()}}, this is only ever invoked 
 or on the user's behalf immediately after a real install -- never called
 automatically by \code{\link[=render_onepager]{render_onepager()}} or any other rendering function.
 }
+\examples{
+\dontrun{
+# Never run automatically -- points onepagr at a real Quarto binary on
+# your system and, with consent, edits ~/.Renviron. Adjust the path to
+# a real quarto install before running.
+set_quarto_path("/opt/quarto/bin/quarto")
+}
+}

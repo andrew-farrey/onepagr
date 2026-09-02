@@ -52,3 +52,10 @@ this default against a live install (\verb{quarto typst --version}) before
 bumping it, rather than assuming a newer Quarto version number implies
 a newer bundled Typst.
 }
+\examples{
+\dontrun{
+# Never run automatically -- downloads ~100+ MB and (on Windows) opens
+# an installer. Only ever run this yourself, deliberately.
+install_quarto()
+}
+}

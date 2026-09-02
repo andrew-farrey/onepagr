@@ -16,3 +16,6 @@ Character vector.
 Thin wrapper around \code{\link[scales:comma]{scales::comma()}} tuned to onepagr's integer-count
 formatting needs: no decimal places, comma-grouped.
 }
+\examples{
+fmt_n(c(1234, 56789))
+}

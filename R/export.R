@@ -20,6 +20,11 @@
 #'   theme .typ file, to resolve and copy in as `theme.typ`. Default
 #'   `"default"`.
 #' @return Character, `dest`, invisibly.
+#' @examples
+#' dest <- file.path(tempdir(), "my-cohort-summary")
+#' export_template("cohort_summary", dest, theme = "uk")
+#' list.files(dest)
+#' unlink(dest, recursive = TRUE)
 #' @export
 export_template <- function(template, dest, theme = "default") {
   template_path <- resolve_template(template)

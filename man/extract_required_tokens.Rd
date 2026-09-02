@@ -31,3 +31,7 @@ for any Typst source -- the one caveat is a literal \verb{//} inside a
 string constant in the template's own code (not data, which arrives
 via tokens), which onepagr's built-in templates never do.
 }
+\examples{
+path <- resolve_template("cohort_summary")
+extract_required_tokens(path)
+}

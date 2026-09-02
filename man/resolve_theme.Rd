@@ -22,3 +22,7 @@ Character, an absolute path to a .typ theme file.
 is treated as a file path instead. \code{theme_path}, when supplied, always
 wins and is used verbatim without any registry lookup.
 }
+\examples{
+resolve_theme("uk")
+resolve_theme("default")
+}
