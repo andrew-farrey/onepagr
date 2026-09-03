@@ -17,3 +17,10 @@ resolve_template(template)
 ## Value
 
 Character, absolute path to the template's `template.typ` file.
+
+## Examples
+
+``` r
+resolve_template("cohort_summary")
+#> [1] "/home/runner/work/_temp/Library/onepagr/typst/templates/cohort_summary/template.typ"
+```

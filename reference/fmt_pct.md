@@ -25,3 +25,12 @@ fmt_pct(x, digits = 0)
 ## Value
 
 Character vector.
+
+## Examples
+
+``` r
+fmt_pct(84.2)
+#> [1] "84%"
+fmt_pct(84.216, digits = 1)
+#> [1] "84.2%"
+```

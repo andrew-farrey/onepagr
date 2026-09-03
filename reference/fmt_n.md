@@ -20,3 +20,10 @@ fmt_n(x)
 ## Value
 
 Character vector.
+
+## Examples
+
+``` r
+fmt_n(c(1234, 56789))
+#> [1] "1,234"  "56,789"
+```

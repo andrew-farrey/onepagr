@@ -70,6 +70,17 @@ as blank text.</p>
     <p>Invisibly <code>TRUE</code> if validation passes.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="resolve_template.html">resolve_template</a></span><span class="op">(</span><span class="st">"cohort_summary"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">required</span> <span class="op">&lt;-</span> <span class="fu"><a href="extract_required_tokens.html">extract_required_tokens</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Placeholder values -- validate_template_data() only checks presence/</span></span></span>
+<span class="r-in"><span><span class="co"># non-NA, not real content, so this always passes regardless of which</span></span></span>
+<span class="r-in"><span><span class="co"># tokens a given template actually needs.</span></span></span>
+<span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"placeholder"</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">required</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, <span class="va">required</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">validate_template_data</span><span class="op">(</span><span class="va">path</span>, <span class="va">data</span><span class="op">)</span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

@@ -11,3 +11,10 @@ list_themes()
 ## Value
 
 Character vector of built-in theme names (without file extension).
+
+## Examples
+
+``` r
+list_themes()
+#> [1] "default" "uk"     
+```

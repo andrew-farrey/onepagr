@@ -33,3 +33,11 @@ Invisibly, a list with `available` (logical), `quarto_version`
 (`package_version` or `NA`), `typst_version` (`package_version` or
 `NA`), and `ok` (logical, `TRUE` if available and the bundled Typst
 meets `min_typst_version`).
+
+## Examples
+
+``` r
+# Safe to call whether or not Quarto is installed -- reports back
+# either way rather than erroring.
+check_quarto()
+```

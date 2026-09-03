@@ -45,3 +45,16 @@ compile_typst(path, data, output, font_dir = NULL)
 ## Value
 
 Character, the `output` path, invisibly.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+# Needs Quarto (bundling Typst) on the system -- see check_quarto().
+typ <- tempfile(fileext = ".typ")
+writeLines(
+  c("#set document(title: [Example])", "#text[{{{greeting}}}]"), typ
+)
+compile_typst(typ, list(greeting = "Hello!"), tempfile(fileext = ".pdf"))
+} # }
+```

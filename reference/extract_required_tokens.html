@@ -85,6 +85,45 @@ string constant in the template's own code (not data, which arrives
 via tokens), which onepagr's built-in templates never do.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="resolve_template.html">resolve_template</a></span><span class="op">(</span><span class="st">"cohort_summary"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">extract_required_tokens</span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "contact_email"                   "logo_partner_a_path"            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3] "logo_partner_a_alt"              "show_partner_a"                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5] "logo_primary_path"               "logo_primary_alt"               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "logo_partner_b_path"             "logo_partner_b_alt"             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "show_partner_b"                  "org_full"                       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11] "contact_url"                     "doc_title"                      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13] "header_texture_path"             "doc_subtitle"                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [15] "strip_data"                      "strip_period"                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [17] "strip_design"                    "strip_geography"                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19] "n_decedents"                     "n_ems_total"                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [21] "pct_linked"                      "n_prior_ems"                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [23] "n_eligible_decedents"            "n_unlinked_decedents"           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [25] "wc_linked_median"                "wc_unlinked_median"             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [27] "n_prior_od_ems"                  "pct_linked_male_width"          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [29] "n_male"                          "pct_linked_female_width"        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [31] "n_female"                        "pct_linked_appalachian_width"   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [33] "n_appalachian"                   "pct_linked_nonappalachian_width"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [35] "n_nonappalachian"                "pct_linked_white_width"         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [37] "n_white"                         "pct_linked_black_width"         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [39] "n_black"                         "pct_linked_other_width"         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [41] "n_other"                         "pct_any_prior_enc"              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [43] "pct_od_prior_enc"                "mean_prior_enc"                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [45] "median_prior_enc"                "n_od_ems_denom"                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [47] "pct_naloxone_width"              "pct_no_naloxone_width"          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [49] "pct_naloxone"                    "n_naloxone_enc"                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [51] "pct_no_naloxone"                 "n_no_naloxone_enc"              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [53] "pct_decedent_nax"                "domain_diff_scene"              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [55] "domain_diff_history"             "domain_diff_drug"               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [57] "domain_diff_medication"          "domain_diff_mental"             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [59] "timing_denom"                    "median_days"                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [61] "timing_iqr"                      "mean_days"                      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [63] "lessons_learned_text"            "disclaimer_text"                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [65] "footnote_sources"               </span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

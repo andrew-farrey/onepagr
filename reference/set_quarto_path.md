@@ -54,3 +54,14 @@ this is only ever invoked directly by the user or on the user's behalf
 immediately after a real install – never called automatically by
 [`render_onepager()`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md)
 or any other rendering function.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+# Never run automatically -- points onepagr at a real Quarto binary on
+# your system and, with consent, edits ~/.Renviron. Adjust the path to
+# a real quarto install before running.
+set_quarto_path("/opt/quarto/bin/quarto")
+} # }
+```

@@ -40,3 +40,13 @@ export_template(template, dest, theme = "default")
 ## Value
 
 Character, `dest`, invisibly.
+
+## Examples
+
+``` r
+dest <- file.path(tempdir(), "my-cohort-summary")
+export_template("cohort_summary", dest, theme = "uk")
+list.files(dest)
+#> [1] "assets"         "components.typ" "template.typ"   "theme.typ"     
+unlink(dest, recursive = TRUE)
+```

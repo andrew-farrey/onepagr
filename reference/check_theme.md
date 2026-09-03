@@ -64,3 +64,13 @@ Callable standalone while developing a new theme (before ever calling
 or from another onepagr function or your own test suite that wants to
 validate a theme up front – nothing about it is tied to a particular
 call site.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+# Needs Quarto (bundling Typst) on the system -- see check_quarto().
+check_theme("uk")
+check_theme("default")
+} # }
+```

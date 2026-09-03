@@ -54,3 +54,13 @@ Typst 0.15.1, the version this package's templates were actually
 developed and tested against – re-verify this default against a live
 install (`quarto typst --version`) before bumping it, rather than
 assuming a newer Quarto version number implies a newer bundled Typst.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+# Never run automatically -- downloads ~100+ MB and (on Windows) opens
+# an installer. Only ever run this yourself, deliberately.
+install_quarto()
+} # }
+```

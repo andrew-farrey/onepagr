@@ -26,3 +26,12 @@ resolve_theme(theme = "default", theme_path = NULL)
 ## Value
 
 Character, an absolute path to a .typ theme file.
+
+## Examples
+
+``` r
+resolve_theme("uk")
+#> [1] "/home/runner/work/_temp/Library/onepagr/typst/themes/uk.typ"
+resolve_theme("default")
+#> [1] "/home/runner/work/_temp/Library/onepagr/typst/themes/default.typ"
+```

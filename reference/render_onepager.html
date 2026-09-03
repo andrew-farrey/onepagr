@@ -151,6 +151,50 @@ independently recompilable, not hidden in a disposable tempdir. Set
 return only the PDF.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="co"># Needs Quarto (bundling Typst) on the system -- see check_quarto().</span></span></span>
+<span class="r-in"><span><span class="co"># logo_*_path/header_texture_path below point at onepagr's own bundled</span></span></span>
+<span class="r-in"><span><span class="co"># placeholder assets (staged automatically); swap in your own images</span></span></span>
+<span class="r-in"><span><span class="co"># via extra_assets for real use -- see vignette("theming").</span></span></span>
+<span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  doc_title <span class="op">=</span> <span class="st">"OVERDOSE SPIKE ALERT"</span>,</span></span>
+<span class="r-in"><span>  doc_subtitle <span class="op">=</span> <span class="st">"Sample County Surveillance"</span>,</span></span>
+<span class="r-in"><span>  org_full <span class="op">=</span> <span class="st">"Sample Health Department"</span>,</span></span>
+<span class="r-in"><span>  contact_url <span class="op">=</span> <span class="st">"https://example.org/"</span>,</span></span>
+<span class="r-in"><span>  contact_email <span class="op">=</span> <span class="st">"contact@example.org"</span>,</span></span>
+<span class="r-in"><span>  logo_primary_path <span class="op">=</span> <span class="st">"assets/primary-org-white.png"</span>,</span></span>
+<span class="r-in"><span>  logo_primary_alt <span class="op">=</span> <span class="st">"Sample Health Department logo"</span>,</span></span>
+<span class="r-in"><span>  logo_partner_a_path <span class="op">=</span> <span class="st">"assets/partner-org-a-white.png"</span>,</span></span>
+<span class="r-in"><span>  logo_partner_a_alt <span class="op">=</span> <span class="st">"Partner Organization A logo"</span>,</span></span>
+<span class="r-in"><span>  show_partner_a <span class="op">=</span> <span class="st">"false"</span>,</span></span>
+<span class="r-in"><span>  logo_partner_b_path <span class="op">=</span> <span class="st">"assets/partner-org-b-white.png"</span>,</span></span>
+<span class="r-in"><span>  logo_partner_b_alt <span class="op">=</span> <span class="st">"Partner Organization B logo"</span>,</span></span>
+<span class="r-in"><span>  show_partner_b <span class="op">=</span> <span class="st">"false"</span>,</span></span>
+<span class="r-in"><span>  header_texture_path <span class="op">=</span> <span class="st">"assets/header-texture.png"</span>,</span></span>
+<span class="r-in"><span>  severity_level <span class="op">=</span> <span class="st">"critical"</span>,</span></span>
+<span class="r-in"><span>  alert_area <span class="op">=</span> <span class="st">"Sample County"</span>,</span></span>
+<span class="r-in"><span>  alert_issued_at <span class="op">=</span> <span class="st">"August 26, 2026, 9:00 AM"</span>,</span></span>
+<span class="r-in"><span>  n_events <span class="op">=</span> <span class="st">"14"</span>,</span></span>
+<span class="r-in"><span>  window_days <span class="op">=</span> <span class="st">"3"</span>,</span></span>
+<span class="r-in"><span>  n_spikes <span class="op">=</span> <span class="st">"2"</span>,</span></span>
+<span class="r-in"><span>  spike_window_days <span class="op">=</span> <span class="st">"30"</span>,</span></span>
+<span class="r-in"><span>  threshold <span class="op">=</span> <span class="st">"8"</span>,</span></span>
+<span class="r-in"><span>  narrative_text <span class="op">=</span> <span class="st">"Sample County has recorded 14 suspected overdoses."</span>,</span></span>
+<span class="r-in"><span>  geo_breakdown_text <span class="op">=</span> <span class="st">"- Northside: 6 events\n- Downtown: 5 events"</span>,</span></span>
+<span class="r-in"><span>  actions_text <span class="op">=</span> <span class="st">"- Increase naloxone distribution in the affected area"</span>,</span></span>
+<span class="r-in"><span>  show_resources <span class="op">=</span> <span class="st">"true"</span>,</span></span>
+<span class="r-in"><span>  resources_text <span class="op">=</span> <span class="st">"Sample Health Department, (555) 123-4567."</span>,</span></span>
+<span class="r-in"><span>  footnote_sources <span class="op">=</span> <span class="st">"Sample Overdose Detection Mapping System"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">render_onepager</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">data</span>, template <span class="op">=</span> <span class="st">"overdose_spike_alert"</span>, theme <span class="op">=</span> <span class="st">"uk"</span>,</span></span>
+<span class="r-in"><span>  output <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"alert.pdf"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
