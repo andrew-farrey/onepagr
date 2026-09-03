@@ -20,7 +20,7 @@ meets \code{min_typst_version}).
 }
 \description{
 Wraps the \code{quarto} package's \code{quarto_available()} to check Quarto is
-present, then checks the \strong{Typst version Quarto actually bundles} --
+present, then checks the \strong{Typst version Quarto actually bundles},
 not Quarto's own version number, which is NOT a reliable proxy for
 this: confirmed directly (via web research plus this package's own
 pinned dev environment) that Quarto sat on Typst 0.11.x across
@@ -28,12 +28,12 @@ multiple Quarto 1.4-1.7.x releases before eventually bundling a newer
 one, so a Quarto-version floor can pass while the bundled Typst is
 still too old for \verb{--pdf-standard ua-1} (added in Typst 0.14.0) or
 \verb{--features a11y-extras} (this package is built and tested against
-Typst 0.15.1 specifically, bundled by Quarto 1.10.18 -- confirmed
+Typst 0.15.1 specifically, bundled by Quarto 1.10.18, confirmed
 directly by running \verb{quarto typst --version} in the dev environment
 every template in this package was verified against).
 }
 \examples{
-# Safe to call whether or not Quarto is installed -- reports back
+# Safe to call whether or not Quarto is installed; it reports back
 # either way rather than erroring.
 check_quarto()
 }

@@ -23,13 +23,13 @@ found in \code{theme} / \code{theme-grad}), \code{type_mismatches} /
 columns), \code{radius_card_missing} / \code{radius_card_type_mismatches} (same
 shape, for the nested \code{radius-card} dictionary), and \code{unknown}
 (character vector of keys present in \code{theme} but outside onepagr's
-known schema -- informational only, not a failure; could be a typo,
+known schema, informational only, not a failure; could be a typo,
 or a key your own templates read directly).
 }
 \description{
 Validates a theme \code{.typ} file's \code{theme} and \code{theme-grad} exports by
 actually evaluating them with Typst (\verb{typst eval}, via Quarto's bundled
-binary) rather than a hand-rolled text parser -- so a theme flagged
+binary) rather than a hand-rolled text parser, so a theme flagged
 here is confirmed to fail (or nearly fail) the exact same way it would
 at real render time, not just suspected to. Checks:
 }
@@ -42,13 +42,13 @@ raise).
 dereference is present, in both \code{theme} and \code{theme-grad}.
 \item Each present key's real Typst-evaluated type matches what onepagr
 expects (e.g. a color key set to a bare string, or a length key set
-to a color) -- exactly the kind of mistake that would otherwise
+to a color), exactly the kind of mistake that would otherwise
 surface as a much less legible Typst error deep inside
 \code{components.typ}, pointing at the component's own code rather than
 the theme file that actually caused it.
 }
 
-Does \strong{not} check color contrast or WCAG compliance -- a value can be
+Does \strong{not} check color contrast or WCAG compliance: a value can be
 a perfectly well-formed \code{color} and still fail WCAG (or vice versa,
 though a malformed value can never pass it). That's a semantic
 judgment, not a structural one, and belongs in a separate
@@ -56,12 +56,12 @@ contrast-checking function, not folded in here.
 
 Callable standalone while developing a new theme (before ever calling
 \code{\link[=render_onepager]{render_onepager()}}), or from another onepagr function or your own test
-suite that wants to validate a theme up front -- nothing about it is
+suite that wants to validate a theme up front; nothing about it is
 tied to a particular call site.
 }
 \examples{
 \dontrun{
-# Needs Quarto (bundling Typst) on the system -- see check_quarto().
+# Needs Quarto (bundling Typst) on the system: see check_quarto().
 check_theme("uk")
 check_theme("default")
 }

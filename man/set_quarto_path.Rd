@@ -12,7 +12,7 @@ set_quarto_path(path, persist = NA, renviron_path = path.expand("~/.Renviron"))
 \item{persist}{Logical or \code{NA}. \code{NA} (default): if the session is
 interactive, asks before writing to \code{renviron_path}; if not
 interactive, does not persist. \code{TRUE}/\code{FALSE}: persist or don't, with
-no prompt -- for scripts and non-interactive use.}
+no prompt, for scripts and non-interactive use.}
 
 \item{renviron_path}{Character. Path to the \code{.Renviron} file to update
 when persisting. Default the current user's \verb{~/.Renviron}. Exposed as
@@ -25,7 +25,7 @@ Invisibly, \code{path}.
 \description{
 Sets \code{QUARTO_PATH} for the current R session immediately. With consent,
 also persists it to the user-level \verb{~/.Renviron} so future sessions pick
-it up automatically -- the whole reason this function exists is so a
+it up automatically; the whole reason this function exists is so a
 consuming team never has to learn what \code{.Renviron} is or hand-edit one:
 \code{\link[=install_quarto]{install_quarto()}} calls this automatically on macOS/Linux once it knows
 the real installed binary path, and this can also be called directly to
@@ -40,14 +40,14 @@ one analysis project, so it should follow the user across projects
 rather than being redeclared per-project.
 
 Like \code{\link[=install_quarto]{install_quarto()}}, this is only ever invoked directly by the user
-or on the user's behalf immediately after a real install -- never called
+or on the user's behalf immediately after a real install, never called
 automatically by \code{\link[=render_onepager]{render_onepager()}} or any other rendering function.
 }
 \examples{
 \dontrun{
-# Never run automatically -- points onepagr at a real Quarto binary on
-# your system and, with consent, edits ~/.Renviron. Adjust the path to
-# a real quarto install before running.
+# Never run automatically: points onepagr at a real Quarto binary on
+# your system and, with consent, edits ~/.Renviron. Adjust the path
+# to a real quarto install before running.
 set_quarto_path("/opt/quarto/bin/quarto")
 }
 }

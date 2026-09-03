@@ -17,7 +17,7 @@ Internal. Derived by grep-ing every real \verb{theme.<key>} /
 \verb{theme-grad.<key>} reference across \code{inst/typst/components.typ} and
 every \verb{inst/typst/templates/*/template.typ} (not assumed), then
 cross-checked directly against both shipped theme files' own key sets
-via a real \verb{typst eval} run -- confirmed identical key-for-key between
+via a real \verb{typst eval} run: confirmed identical key-for-key between
 \code{default.typ} and \code{uk.typ}. If a future template or component
 introduces a new theme token, add it here too; \code{test-themes.R} diffs
 this list against both shipped theme files' real key sets and fails

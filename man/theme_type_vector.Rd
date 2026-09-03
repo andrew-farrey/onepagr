@@ -14,8 +14,8 @@ Named character vector, type by key.
 }
 \description{
 Internal. Handles the two edge cases \code{jsonlite::fromJSON()} produces for
-an empty or absent key/type array: \code{NULL} (the key -- e.g. \code{radius-card}
--- wasn't present or wasn't a dictionary at all) and \code{list()} (an empty
+an empty or absent key/type array: \code{NULL} (the key, e.g. \code{radius-card},
+wasn't present or wasn't a dictionary at all) and \code{list()} (an empty
 Typst dictionary, valid but pathological). Both become \code{character(0)}
 rather than erroring on \code{NULL[, 2]}/\code{list()[, 2]}-style indexing.
 }

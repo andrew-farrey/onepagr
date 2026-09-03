@@ -1,19 +1,19 @@
 #' Extract required whisker tokens from a .typ file
 #'
-#' Scans for `{{{token}}}` (triple-brace, unescaped) occurrences -- onepagr
+#' Scans for `{{{token}}}` (triple-brace, unescaped) occurrences: onepagr
 #' templates never use double-brace `{{token}}` (double-brace HTML-escapes
 #' and corrupts any value containing "&", "<", or ">"). Section markers
-#' and comments are not matched -- onepagr templates use flat
+#' and comments are not matched: onepagr templates use flat
 #' triple-brace substitution only, no Mustache sections or partials.
 #'
 #' `//` line comments are stripped before scanning: Typst templates
 #' routinely document the triple-brace convention with a literal
 #' `{{{token}}}` example in a header comment (this is a real case, not
-#' hypothetical -- the reference trend-snapshot template does exactly
+#' hypothetical; the reference trend-snapshot template does exactly
 #' this), and without stripping comments first, that illustrative example
 #' is indistinguishable from a real required token. `//` is unambiguously
 #' a comment marker in Typst (division is a single `/`), so this is safe
-#' for any Typst source -- the one caveat is a literal `//` inside a
+#' for any Typst source: the one caveat is a literal `//` inside a
 #' string constant in the template's own code (not data, which arrives
 #' via tokens), which onepagr's built-in templates never do.
 #'
@@ -46,7 +46,7 @@ extract_required_tokens <- function(path) {
 #' @examples
 #' path <- resolve_template("cohort_summary")
 #' required <- extract_required_tokens(path)
-#' # Placeholder values -- validate_template_data() only checks presence/
+#' # Placeholder values: validate_template_data() only checks presence/
 #' # non-NA, not real content, so this always passes regardless of which
 #' # tokens a given template actually needs.
 #' data <- setNames(as.list(rep("placeholder", length(required))), required)
@@ -73,8 +73,8 @@ validate_template_data <- function(path, data) {
 #' Low-level primitive: whisker-renders `path` against `data`, writes the
 #' result next to `path`, then compiles it to `output` via `quarto typst
 #' compile --pdf-standard ua-1 --features a11y-extras`. Works on any .typ
-#' file -- a package-shipped template or a user's own
-#' `export_template()`-edited copy -- since required-token validation is
+#' file (a package-shipped template or a user's own
+#' `export_template()`-edited copy) since required-token validation is
 #' derived by scanning the file itself, not a separately-maintained
 #' manifest.
 #'
@@ -86,7 +86,7 @@ validate_template_data <- function(path, data) {
 #' @param font_dir Character or `NULL`. A directory of font files (`.ttf`/
 #'   `.otf`) to make available to Typst for this compile, passed through
 #'   as `--font-path`. Typst does not merge this with the system font
-#'   list -- both system fonts and this directory are searched, so a
+#'   list: both system fonts and this directory are searched, so a
 #'   theme's `text-font`/`heading-font` tokens can name either a
 #'   system-installed font or one shipped here (confirmed directly:
 #'   `quarto typst fonts --font-path <dir>` lists a font from `<dir>`
@@ -95,7 +95,7 @@ validate_template_data <- function(path, data) {
 #' @return Character, the `output` path, invisibly.
 #' @examples
 #' \dontrun{
-#' # Needs Quarto (bundling Typst) on the system -- see check_quarto().
+#' # Needs Quarto (bundling Typst) on the system: see check_quarto().
 #' typ <- tempfile(fileext = ".typ")
 #' writeLines(
 #'   c("#set document(title: [Example])", "#text[{{{greeting}}}]"), typ
@@ -130,7 +130,7 @@ compile_typst <- function(path, data, output, font_dir = NULL) {
   font_args <- if (!is.null(font_dir)) c("--font-path", shQuote(font_dir))
   # suppressWarnings() only silences system2()'s own "had status N" warning,
   # which fires unconditionally on a non-zero exit whenever stdout is
-  # captured as text -- redundant here since a non-zero exit is already
+  # captured as text: redundant here since a non-zero exit is already
   # surfaced below via the file.exists() check and a stop() carrying the
   # full captured output, a clearer message than the warning's bare status
   # code. system2() has no other warning path: a missing executable is a

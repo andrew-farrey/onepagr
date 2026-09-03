@@ -22,7 +22,7 @@ Character, \code{dest}, invisibly.
 \description{
 Copies a template's full self-contained folder (\code{template.typ} plus
 the resolved \code{theme.typ}, \code{components.typ}, and assets it needs to
-compile independently) into \code{dest}, before any real data exists -- for
+compile independently) into \code{dest}, before any real data exists, for
 exploration, hand-editing, or handing to an AI coding assistant to
 extend. That last case is a deliberate design goal, not an
 afterthought: \code{render_onepager()} also never hides the \code{.typ} source

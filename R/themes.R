@@ -93,7 +93,7 @@ list_templates <- function() {
 #' `theme-grad.<key>` reference across `inst/typst/components.typ` and
 #' every `inst/typst/templates/*/template.typ` (not assumed), then
 #' cross-checked directly against both shipped theme files' own key sets
-#' via a real `typst eval` run -- confirmed identical key-for-key between
+#' via a real `typst eval` run: confirmed identical key-for-key between
 #' `default.typ` and `uk.typ`. If a future template or component
 #' introduces a new theme token, add it here too; `test-themes.R` diffs
 #' this list against both shipped theme files' real key sets and fails
@@ -137,17 +137,17 @@ onepagr_theme_schema <- function() {
 #'
 #' Internal. Runs `typst eval` (via Quarto's bundled Typst) against a
 #' small generated snippet that imports `theme`/`theme-grad` from `path`
-#' and maps every key to `repr(type(value))` -- so what comes back
+#' and maps every key to `repr(type(value))`, so what comes back
 #' describes exactly what Typst itself would see at real compile time, not
 #' a guess from regex-parsing the file's text. `--root` is set to `path`'s
 #' own directory and the import references just its basename, since
 #' Typst's `#import` rejects an absolute filesystem path outright
 #' (confirmed directly: "path contains invalid component" on a Windows
-#' drive letter) -- it only resolves paths relative to `--root`.
+#' drive letter); it only resolves paths relative to `--root`.
 #'
 #' @param path Character. Absolute path to a theme `.typ` file.
 #' @return A list with `error` (character or `NULL`; the raw Typst stderr
-#'   if the file failed to evaluate at all -- when non-`NULL`, `theme`/
+#'   if the file failed to evaluate at all; when non-`NULL`, `theme`/
 #'   `theme_grad`/`radius_card` are all `NULL`), `theme` (2-column
 #'   character matrix of key/type pairs, or `NULL`), `theme_grad` (same
 #'   shape), and `radius_card` (same shape, or `NULL` if
@@ -164,10 +164,10 @@ introspect_theme_typ <- function(path) {
   }
   if (!typst_eval_supported(quarto_bin)) {
     stop(
-      "check_theme() needs a Typst build that supports `typst eval`, ",
+      "check_theme() needs a Typst build that supports typst eval, ",
       "which the one on this system doesn't (confirmed by probing it ",
       "directly, not assuming a version cutoff). Update Quarto, which ",
-      "bundles Typst -- see onepagr::check_quarto() and ",
+      "bundles Typst: see onepagr::check_quarto() and ",
       "onepagr::install_quarto().",
       call. = FALSE
     )
@@ -218,8 +218,8 @@ introspect_theme_typ <- function(path) {
 #' Reduce a `typst eval`-parsed key/type matrix to a named vector
 #'
 #' Internal. Handles the two edge cases `jsonlite::fromJSON()` produces for
-#' an empty or absent key/type array: `NULL` (the key -- e.g. `radius-card`
-#' -- wasn't present or wasn't a dictionary at all) and `list()` (an empty
+#' an empty or absent key/type array: `NULL` (the key, e.g. `radius-card`,
+#' wasn't present or wasn't a dictionary at all) and `list()` (an empty
 #' Typst dictionary, valid but pathological). Both become `character(0)`
 #' rather than erroring on `NULL[, 2]`/`list()[, 2]`-style indexing.
 #'
@@ -254,7 +254,7 @@ check_theme_dict <- function(actual_matrix, expected_types) {
   present <- intersect(names(expected_types), names(actual_types))
 
   # A "length" token (e.g. a stroke width) is also accepted as Typst's
-  # "relative" type -- a length with a "+ N%" component -- since that's
+  # "relative" type (a length with a "+ N%" component), since that's
   # still a legitimate value in every length-typed slot this package's
   # templates use one in, just not the plain form the shipped themes
   # happen to use.
@@ -287,7 +287,7 @@ check_theme_dict <- function(actual_matrix, expected_types) {
 #'
 #' Validates a theme `.typ` file's `theme` and `theme-grad` exports by
 #' actually evaluating them with Typst (`typst eval`, via Quarto's bundled
-#' binary) rather than a hand-rolled text parser -- so a theme flagged
+#' binary) rather than a hand-rolled text parser, so a theme flagged
 #' here is confirmed to fail (or nearly fail) the exact same way it would
 #' at real render time, not just suspected to. Checks:
 #'
@@ -298,12 +298,12 @@ check_theme_dict <- function(actual_matrix, expected_types) {
 #'    dereference is present, in both `theme` and `theme-grad`.
 #' 3. Each present key's real Typst-evaluated type matches what onepagr
 #'    expects (e.g. a color key set to a bare string, or a length key set
-#'    to a color) -- exactly the kind of mistake that would otherwise
+#'    to a color), exactly the kind of mistake that would otherwise
 #'    surface as a much less legible Typst error deep inside
 #'    `components.typ`, pointing at the component's own code rather than
 #'    the theme file that actually caused it.
 #'
-#' Does **not** check color contrast or WCAG compliance -- a value can be
+#' Does **not** check color contrast or WCAG compliance: a value can be
 #' a perfectly well-formed `color` and still fail WCAG (or vice versa,
 #' though a malformed value can never pass it). That's a semantic
 #' judgment, not a structural one, and belongs in a separate
@@ -311,7 +311,7 @@ check_theme_dict <- function(actual_matrix, expected_types) {
 #'
 #' Callable standalone while developing a new theme (before ever calling
 #' [render_onepager()]), or from another onepagr function or your own test
-#' suite that wants to validate a theme up front -- nothing about it is
+#' suite that wants to validate a theme up front; nothing about it is
 #' tied to a particular call site.
 #'
 #' @param theme Character. A built-in theme name (e.g. "uk") or a path to
@@ -327,11 +327,11 @@ check_theme_dict <- function(actual_matrix, expected_types) {
 #'   columns), `radius_card_missing` / `radius_card_type_mismatches` (same
 #'   shape, for the nested `radius-card` dictionary), and `unknown`
 #'   (character vector of keys present in `theme` but outside onepagr's
-#'   known schema -- informational only, not a failure; could be a typo,
+#'   known schema, informational only, not a failure; could be a typo,
 #'   or a key your own templates read directly).
 #' @examples
 #' \dontrun{
-#' # Needs Quarto (bundling Typst) on the system -- see check_quarto().
+#' # Needs Quarto (bundling Typst) on the system: see check_quarto().
 #' check_theme("uk")
 #' check_theme("default")
 #' }
@@ -438,7 +438,7 @@ check_theme <- function(theme = "default", theme_path = NULL) {
     message(
       "Note: theme \"", path, "\" defines key(s) onepagr doesn't use: ",
       paste(result$unknown, collapse = ", "),
-      ". Not an error -- could be a typo, or intentional for your own ",
+      ". Not an error: could be a typo, or intentional for your own ",
       "templates."
     )
   }

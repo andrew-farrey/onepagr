@@ -11,7 +11,7 @@ introspect_theme_typ(path)
 }
 \value{
 A list with \code{error} (character or \code{NULL}; the raw Typst stderr
-if the file failed to evaluate at all -- when non-\code{NULL}, \code{theme}/
+if the file failed to evaluate at all; when non-\code{NULL}, \code{theme}/
 \code{theme_grad}/\code{radius_card} are all \code{NULL}), \code{theme} (2-column
 character matrix of key/type pairs, or \code{NULL}), \code{theme_grad} (same
 shape), and \code{radius_card} (same shape, or \code{NULL} if
@@ -20,12 +20,12 @@ shape), and \code{radius_card} (same shape, or \code{NULL} if
 \description{
 Internal. Runs \verb{typst eval} (via Quarto's bundled Typst) against a
 small generated snippet that imports \code{theme}/\code{theme-grad} from \code{path}
-and maps every key to \code{repr(type(value))} -- so what comes back
+and maps every key to \code{repr(type(value))}, so what comes back
 describes exactly what Typst itself would see at real compile time, not
 a guess from regex-parsing the file's text. \code{--root} is set to \code{path}'s
 own directory and the import references just its basename, since
 Typst's \verb{#import} rejects an absolute filesystem path outright
 (confirmed directly: "path contains invalid component" on a Windows
-drive letter) -- it only resolves paths relative to \code{--root}.
+drive letter); it only resolves paths relative to \code{--root}.
 }
 \keyword{internal}

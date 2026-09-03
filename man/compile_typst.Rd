@@ -18,7 +18,7 @@ Typst's relative \verb{#import} paths resolve correctly.}
 \item{font_dir}{Character or \code{NULL}. A directory of font files (\code{.ttf}/
 \code{.otf}) to make available to Typst for this compile, passed through
 as \code{--font-path}. Typst does not merge this with the system font
-list -- both system fonts and this directory are searched, so a
+list: both system fonts and this directory are searched, so a
 theme's \code{text-font}/\code{heading-font} tokens can name either a
 system-installed font or one shipped here (confirmed directly:
 \verb{quarto typst fonts --font-path <dir>} lists a font from \verb{<dir>}
@@ -31,14 +31,14 @@ Character, the \code{output} path, invisibly.
 \description{
 Low-level primitive: whisker-renders \code{path} against \code{data}, writes the
 result next to \code{path}, then compiles it to \code{output} via \verb{quarto typst compile --pdf-standard ua-1 --features a11y-extras}. Works on any .typ
-file -- a package-shipped template or a user's own
-\code{export_template()}-edited copy -- since required-token validation is
+file (a package-shipped template or a user's own
+\code{export_template()}-edited copy) since required-token validation is
 derived by scanning the file itself, not a separately-maintained
 manifest.
 }
 \examples{
 \dontrun{
-# Needs Quarto (bundling Typst) on the system -- see check_quarto().
+# Needs Quarto (bundling Typst) on the system: see check_quarto().
 typ <- tempfile(fileext = ".typ")
 writeLines(
   c("#set document(title: [Example])", "#text[{{{greeting}}}]"), typ

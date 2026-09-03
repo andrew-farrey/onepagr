@@ -13,21 +13,21 @@ extract_required_tokens(path)
 Character vector of unique token names, in first-appearance order.
 }
 \description{
-Scans for \code{{{{token}}}} (triple-brace, unescaped) occurrences -- onepagr
+Scans for \code{{{{token}}}} (triple-brace, unescaped) occurrences: onepagr
 templates never use double-brace \code{{{token}}} (double-brace HTML-escapes
 and corrupts any value containing "&", "<", or ">"). Section markers
-and comments are not matched -- onepagr templates use flat
+and comments are not matched: onepagr templates use flat
 triple-brace substitution only, no Mustache sections or partials.
 }
 \details{
 \verb{//} line comments are stripped before scanning: Typst templates
 routinely document the triple-brace convention with a literal
 \code{{{{token}}}} example in a header comment (this is a real case, not
-hypothetical -- the reference trend-snapshot template does exactly
+hypothetical; the reference trend-snapshot template does exactly
 this), and without stripping comments first, that illustrative example
 is indistinguishable from a real required token. \verb{//} is unambiguously
 a comment marker in Typst (division is a single \code{/}), so this is safe
-for any Typst source -- the one caveat is a literal \verb{//} inside a
+for any Typst source: the one caveat is a literal \verb{//} inside a
 string constant in the template's own code (not data, which arrives
 via tokens), which onepagr's built-in templates never do.
 }

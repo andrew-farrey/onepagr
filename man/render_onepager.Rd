@@ -42,14 +42,14 @@ next to \code{output} (\code{TRUE}, default) or use a disposable tempdir
 (\code{FALSE}).}
 
 \item{extra_assets}{Character vector of file paths to stage into the
-compile work directory alongside the theme/components/package assets
--- for per-run generated images (e.g. charts/maps produced fresh by
+compile work directory alongside the theme/components/package assets,
+for per-run generated images (e.g. charts/maps produced fresh by
 the calling script) that a template's own \verb{#image()} calls need to
 reference. Typst's compiler sandboxes file access to the directory
 being compiled from and rejects absolute filesystem paths outright
 (confirmed directly: \verb{#image("C:/abs/path/map.png")} fails to
 compile with "path contains invalid component" even after fixing
-Windows backslashes to forward slashes -- this isn't a path-syntax
+Windows backslashes to forward slashes: this isn't a path-syntax
 issue, Typst does not permit escaping its compile root at all). Each
 file is copied in by its basename (overwriting on conflict); pass
 just that basename as the corresponding whisker token's value (e.g.
@@ -59,7 +59,7 @@ of \code{"map0.png"}, not the original full path). Default \code{character(0)}
 package assets).}
 
 \item{font_dir}{Character or \code{NULL}. Passed through to
-\code{\link[=compile_typst]{compile_typst()}}'s \code{font_dir} argument -- a directory of font files
+\code{\link[=compile_typst]{compile_typst()}}'s \code{font_dir} argument, a directory of font files
 to make available for this compile, in addition to system fonts, for
 a theme's \code{text-font}/\code{heading-font} tokens that name a font not
 installed system-wide (e.g. a Posit Workbench deployment without
@@ -78,17 +78,17 @@ of silently rendering blank.
 \details{
 By default (\code{keep_typst = TRUE}) the resolved, whisker-substituted
 \code{.typ} file is written next to \code{output}, along with the theme,
-components, and assets it was compiled with -- self-contained and
+components, and assets it was compiled with, self-contained and
 independently recompilable, not hidden in a disposable tempdir. Set
 \code{keep_typst = FALSE} to compile in a disposable tempdir instead and
 return only the PDF.
 }
 \examples{
 \dontrun{
-# Needs Quarto (bundling Typst) on the system -- see check_quarto().
+# Needs Quarto (bundling Typst) on the system: see check_quarto().
 # logo_*_path/header_texture_path below point at onepagr's own bundled
 # placeholder assets (staged automatically); swap in your own images
-# via extra_assets for real use -- see vignette("theming").
+# via extra_assets for real use: see vignette("theming").
 data <- list(
   doc_title = "OVERDOSE SPIKE ALERT",
   doc_subtitle = "Sample County Surveillance",

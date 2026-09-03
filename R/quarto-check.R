@@ -18,14 +18,14 @@ typst_version_via_quarto <- function(quarto_bin) {
 #'
 #' [check_theme()] depends entirely on `typst eval` (via
 #' `introspect_theme_typ()`), which cannot be assumed present just because
-#' Typst itself is -- confirmed directly on a real R-devel win-builder
+#' Typst itself is: confirmed directly on a real R-devel win-builder
 #' CRAN check, where `typst eval` errored with `unrecognized subcommand
 #' 'eval'` even though Quarto/Typst were otherwise available and every
 #' `typst compile`-based test ran fine there. Probes the real capability
 #' (`typst eval "1"`, about as minimal a Typst expression as exists)
 #' rather than checking a specific version-number floor, since the exact
 #' Typst version `eval` was introduced in isn't independently confirmed
-#' here -- verifying the real behavior directly is more honest than
+#' here: verifying the real behavior directly is more honest than
 #' assuming a version cutoff.
 #'
 #' @param quarto_bin Character. Path to the quarto binary.
@@ -43,7 +43,7 @@ typst_eval_supported <- function(quarto_bin) {
 #' Check whether Quarto is installed and its bundled Typst is new enough
 #'
 #' Wraps the `quarto` package's `quarto_available()` to check Quarto is
-#' present, then checks the **Typst version Quarto actually bundles** --
+#' present, then checks the **Typst version Quarto actually bundles**,
 #' not Quarto's own version number, which is NOT a reliable proxy for
 #' this: confirmed directly (via web research plus this package's own
 #' pinned dev environment) that Quarto sat on Typst 0.11.x across
@@ -51,7 +51,7 @@ typst_eval_supported <- function(quarto_bin) {
 #' one, so a Quarto-version floor can pass while the bundled Typst is
 #' still too old for `--pdf-standard ua-1` (added in Typst 0.14.0) or
 #' `--features a11y-extras` (this package is built and tested against
-#' Typst 0.15.1 specifically, bundled by Quarto 1.10.18 -- confirmed
+#' Typst 0.15.1 specifically, bundled by Quarto 1.10.18, confirmed
 #' directly by running `quarto typst --version` in the dev environment
 #' every template in this package was verified against).
 #'
@@ -64,7 +64,7 @@ typst_eval_supported <- function(quarto_bin) {
 #'   `NA`), and `ok` (logical, `TRUE` if available and the bundled Typst
 #'   meets `min_typst_version`).
 #' @examples
-#' # Safe to call whether or not Quarto is installed -- reports back
+#' # Safe to call whether or not Quarto is installed; it reports back
 #' # either way rather than erroring.
 #' check_quarto()
 #' @export
@@ -95,12 +95,12 @@ check_quarto <- function(min_typst_version = "0.15.1") {
       if (is.na(typst_ver)) "(version could not be determined)" else typst_ver,
       ", but onepagr needs at least Typst ", min_typst_version,
       " for --pdf-standard ua-1 / --features a11y-extras support. ",
-      "Quarto's own version number is NOT a reliable indicator of this --",
+      "Quarto's own version number is NOT a reliable indicator of this:",
       " some Quarto releases went several versions without updating their",
       " bundled Typst. Update Quarto from ",
       "https://quarto.org/docs/get-started/, or run ",
       "onepagr::install_quarto(). On Posit Workbench specifically, the ",
-      "system Quarto is often pinned to an old version -- install a ",
+      "system Quarto is often pinned to an old version; install a ",
       "user-local copy and point QUARTO_PATH at its binary rather than ",
       "waiting on an admin-managed upgrade. After installing, re-run ",
       "onepagr::check_quarto() to confirm the bundled Typst is new enough."
@@ -115,7 +115,7 @@ check_quarto <- function(min_typst_version = "0.15.1") {
 #' Download a URL with a generous timeout and a clear failure message
 #'
 #' Internal. `download.file()` alone uses the session's current
-#' `options("timeout")` (60 seconds by default) -- too short for a Quarto
+#' `options("timeout")` (60 seconds by default), too short for a Quarto
 #' release archive (100+ MB) on anything but a fast connection. Raises it
 #' for the duration of this one call only, always restored afterward
 #' (even on error), and converts any download failure (no connection, DNS
@@ -126,7 +126,7 @@ check_quarto <- function(min_typst_version = "0.15.1") {
 #' @param dest Character. Destination file path.
 #' @param min_timeout Numeric. Minimum timeout, in seconds, for this
 #'   download if the session's current `options("timeout")` is smaller.
-#'   Default `600` (10 minutes) -- generous for a large release archive on
+#'   Default `600` (10 minutes), generous for a large release archive on
 #'   a slow connection.
 #' @return Invisibly, `dest`.
 #' @keywords internal
@@ -154,26 +154,26 @@ download_with_timeout <- function(url, dest, min_timeout = 600) {
 #' Downloads the official Quarto release for this OS from
 #' quarto-dev/quarto-cli's GitHub release distribution and installs it to
 #' a user-local directory (via [tools::R_user_dir()], no admin rights
-#' required) -- matching the `~/opt/quarto-*` pattern this package's
+#' required), matching the `~/opt/quarto-*` pattern this package's
 #' reference implementation used on Posit Workbench, where the system
 #' Quarto is pinned to an old version and users can't install
 #' system-wide.
 #'
 #' This function is NEVER called automatically by any other onepagr
-#' function -- it must be invoked directly by the user, matching the
+#' function; it must be invoked directly by the user, matching the
 #' precedent set by `reticulate::install_miniconda()` and
 #' `keras::install_keras()`. It downloads from an official GitHub release
 #' URL over HTTPS only.
 #'
 #' On Windows, this downloads the official `.msi` installer and opens it
-#' for the user to complete -- Windows installers are not silently run by
+#' for the user to complete; Windows installers are not silently run by
 #' this function, to avoid requiring elevated-privilege automation. On
 #' macOS and Linux, the release archive is downloaded and extracted
 #' directly into the user-local install directory.
 #'
 #' Before shipping: verify the exact release archive filename pattern
 #' used below against quarto-dev/quarto-cli's current GitHub releases page
-#' (https://github.com/quarto-dev/quarto-cli/releases) -- release asset
+#' (https://github.com/quarto-dev/quarto-cli/releases); release asset
 #' naming has changed across Quarto versions historically, so this should
 #' be confirmed against a live release rather than assumed to still match.
 #'
@@ -182,7 +182,7 @@ download_with_timeout <- function(url, dest, min_timeout = 600) {
 #' Quarto's version number alone isn't a safe indicator of this).
 #' `"1.10.18"` is used here specifically because it's confirmed directly
 #' (not assumed) to bundle Typst 0.15.1, the version this package's
-#' templates were actually developed and tested against -- re-verify
+#' templates were actually developed and tested against; re-verify
 #' this default against a live install (`quarto typst --version`) before
 #' bumping it, rather than assuming a newer Quarto version number implies
 #' a newer bundled Typst.
@@ -193,7 +193,7 @@ download_with_timeout <- function(url, dest, min_timeout = 600) {
 #'   downloaded installer path (Windows), invisibly.
 #' @examples
 #' \dontrun{
-#' # Never run automatically -- downloads ~100+ MB and (on Windows) opens
+#' # Never run automatically: downloads ~100+ MB and (on Windows) opens
 #' # an installer. Only ever run this yourself, deliberately.
 #' install_quarto()
 #' }
@@ -214,7 +214,7 @@ install_quarto <- function(version = "1.10.18") {
     download_with_timeout(paste0(base_url, file_name), dest)
     message(
       "Downloaded the Quarto ", version, " installer to ", dest,
-      ". Opening it now -- complete the installer, then restart R."
+      ". Opening it now: complete the installer, then restart R."
     )
     utils::browseURL(dest)
     return(invisible(dest))
@@ -242,7 +242,7 @@ install_quarto <- function(version = "1.10.18") {
 #'
 #' Sets `QUARTO_PATH` for the current R session immediately. With consent,
 #' also persists it to the user-level `~/.Renviron` so future sessions pick
-#' it up automatically -- the whole reason this function exists is so a
+#' it up automatically; the whole reason this function exists is so a
 #' consuming team never has to learn what `.Renviron` is or hand-edit one:
 #' [install_quarto()] calls this automatically on macOS/Linux once it knows
 #' the real installed binary path, and this can also be called directly to
@@ -256,14 +256,14 @@ install_quarto <- function(version = "1.10.18") {
 #' rather than being redeclared per-project.
 #'
 #' Like [install_quarto()], this is only ever invoked directly by the user
-#' or on the user's behalf immediately after a real install -- never called
+#' or on the user's behalf immediately after a real install, never called
 #' automatically by [render_onepager()] or any other rendering function.
 #'
 #' @param path Character. Path to a quarto binary. Must already exist.
 #' @param persist Logical or `NA`. `NA` (default): if the session is
 #'   interactive, asks before writing to `renviron_path`; if not
 #'   interactive, does not persist. `TRUE`/`FALSE`: persist or don't, with
-#'   no prompt -- for scripts and non-interactive use.
+#'   no prompt, for scripts and non-interactive use.
 #' @param renviron_path Character. Path to the `.Renviron` file to update
 #'   when persisting. Default the current user's `~/.Renviron`. Exposed as
 #'   an argument mainly so this is testable without touching a real
@@ -271,9 +271,9 @@ install_quarto <- function(version = "1.10.18") {
 #' @return Invisibly, `path`.
 #' @examples
 #' \dontrun{
-#' # Never run automatically -- points onepagr at a real Quarto binary on
-#' # your system and, with consent, edits ~/.Renviron. Adjust the path to
-#' # a real quarto install before running.
+#' # Never run automatically: points onepagr at a real Quarto binary on
+#' # your system and, with consent, edits ~/.Renviron. Adjust the path
+#' # to a real quarto install before running.
 #' set_quarto_path("/opt/quarto/bin/quarto")
 #' }
 #' @export

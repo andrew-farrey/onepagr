@@ -15,13 +15,13 @@ Logical.
 \description{
 \code{\link[=check_theme]{check_theme()}} depends entirely on \verb{typst eval} (via
 \code{introspect_theme_typ()}), which cannot be assumed present just because
-Typst itself is -- confirmed directly on a real R-devel win-builder
+Typst itself is: confirmed directly on a real R-devel win-builder
 CRAN check, where \verb{typst eval} errored with \verb{unrecognized subcommand 'eval'} even though Quarto/Typst were otherwise available and every
 \verb{typst compile}-based test ran fine there. Probes the real capability
 (\verb{typst eval "1"}, about as minimal a Typst expression as exists)
 rather than checking a specific version-number floor, since the exact
 Typst version \code{eval} was introduced in isn't independently confirmed
-here -- verifying the real behavior directly is more honest than
+here: verifying the real behavior directly is more honest than
 assuming a version cutoff.
 }
 \keyword{internal}

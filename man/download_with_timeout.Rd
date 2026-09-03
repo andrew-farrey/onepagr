@@ -13,7 +13,7 @@ download_with_timeout(url, dest, min_timeout = 600)
 
 \item{min_timeout}{Numeric. Minimum timeout, in seconds, for this
 download if the session's current \code{options("timeout")} is smaller.
-Default \code{600} (10 minutes) -- generous for a large release archive on
+Default \code{600} (10 minutes), generous for a large release archive on
 a slow connection.}
 }
 \value{
@@ -21,7 +21,7 @@ Invisibly, \code{dest}.
 }
 \description{
 Internal. \code{download.file()} alone uses the session's current
-\code{options("timeout")} (60 seconds by default) -- too short for a Quarto
+\code{options("timeout")} (60 seconds by default), too short for a Quarto
 release archive (100+ MB) on anything but a fast connection. Raises it
 for the duration of this one call only, always restored afterward
 (even on error), and converts any download failure (no connection, DNS
