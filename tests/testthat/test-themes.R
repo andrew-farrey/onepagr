@@ -56,6 +56,7 @@ test_that("list_templates returns the built-in template names", {
 })
 
 test_that("check_theme passes both built-in themes against their own schema", {
+  skip_if_no_typst_eval()
   for (built_in in list_themes()) {
     result <- check_theme(built_in)
     expect_true(
@@ -74,6 +75,7 @@ test_that("check_theme passes both built-in themes against their own schema", {
 })
 
 test_that("check_theme reports every missing key for an empty theme", {
+  skip_if_no_typst_eval()
   tmp <- tempfile(fileext = ".typ")
   writeLines(c("#let theme = (:)", "#let theme-grad = (:)"), tmp)
   on.exit(unlink(tmp))
@@ -87,6 +89,7 @@ test_that("check_theme reports every missing key for an empty theme", {
 })
 
 test_that("check_theme reports wrong-type values instead of erroring", {
+  skip_if_no_typst_eval()
   tmp <- tempfile(fileext = ".typ")
   writeLines(c(
     "#let theme = (",
@@ -118,6 +121,7 @@ test_that("check_theme reports wrong-type values instead of erroring", {
 })
 
 test_that("check_theme surfaces the raw Typst error when eval fails", {
+  skip_if_no_typst_eval()
   tmp <- tempfile(fileext = ".typ")
   # No theme-grad export at all -- an unresolved-import error at the
   # `import ...: theme, theme-grad` line itself, not a missing-key result.
@@ -138,7 +142,15 @@ test_that("check_theme errors clearly when Quarto is not found", {
   expect_error(check_theme("default"), "Quarto was not found")
 })
 
+test_that("check_theme errors clearly when typst eval isn't supported", {
+  testthat::local_mocked_bindings(
+    typst_eval_supported = function(quarto_bin) FALSE
+  )
+  expect_error(check_theme("default"), "needs a Typst build that supports")
+})
+
 test_that("check_theme reports theme-grad and radius-card sub-key problems", {
+  skip_if_no_typst_eval()
   tmp <- tempfile(fileext = ".typ")
   # Exercises every remaining branch of the problem-report message: a
   # theme-grad key present with the wrong type (card-bg-grad, a string
@@ -168,6 +180,7 @@ test_that("check_theme reports theme-grad and radius-card sub-key problems", {
 })
 
 test_that("check_theme flags an extra key as unknown without failing ok", {
+  skip_if_no_typst_eval()
   default_path <- resolve_theme("default")
   lines <- readLines(default_path, warn = FALSE)
   lines <- sub(

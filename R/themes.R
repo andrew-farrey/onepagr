@@ -162,6 +162,16 @@ introspect_theme_typ <- function(path) {
       call. = FALSE
     )
   }
+  if (!typst_eval_supported(quarto_bin)) {
+    stop(
+      "check_theme() needs a Typst build that supports `typst eval`, ",
+      "which the one on this system doesn't (confirmed by probing it ",
+      "directly, not assuming a version cutoff). Update Quarto, which ",
+      "bundles Typst -- see onepagr::check_quarto() and ",
+      "onepagr::install_quarto().",
+      call. = FALSE
+    )
+  }
 
   root <- dirname(path)
   fname <- basename(path)

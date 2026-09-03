@@ -14,6 +14,32 @@ typst_version_via_quarto <- function(quarto_bin) {
   if (length(match) == 0) NA else package_version(match[[1]])
 }
 
+#' Check whether the installed Typst supports the `eval` subcommand
+#'
+#' [check_theme()] depends entirely on `typst eval` (via
+#' `introspect_theme_typ()`), which cannot be assumed present just because
+#' Typst itself is -- confirmed directly on a real R-devel win-builder
+#' CRAN check, where `typst eval` errored with `unrecognized subcommand
+#' 'eval'` even though Quarto/Typst were otherwise available and every
+#' `typst compile`-based test ran fine there. Probes the real capability
+#' (`typst eval "1"`, about as minimal a Typst expression as exists)
+#' rather than checking a specific version-number floor, since the exact
+#' Typst version `eval` was introduced in isn't independently confirmed
+#' here -- verifying the real behavior directly is more honest than
+#' assuming a version cutoff.
+#'
+#' @param quarto_bin Character. Path to the quarto binary.
+#' @return Logical.
+#' @keywords internal
+typst_eval_supported <- function(quarto_bin) {
+  out <- suppressWarnings(system2(
+    quarto_bin, c("typst", "eval", shQuote("1")),
+    stdout = TRUE, stderr = TRUE
+  ))
+  status <- attr(out, "status")
+  is.null(status) || status == 0
+}
+
 #' Check whether Quarto is installed and its bundled Typst is new enough
 #'
 #' Wraps the `quarto` package's `quarto_available()` to check Quarto is

@@ -91,6 +91,16 @@
 // tree entirely (correct for pure decoration), rather than tagged as a
 // Figure that would still need a bounding box.
 //
+// kind: "other", not "background" -- "background" compiles fine on this
+// package's own 0.15.1 dev baseline but is NOT accepted by every Typst
+// build: confirmed directly via a real R-devel win-builder CRAN check,
+// which failed with "error: expected 'header', 'footer', 'page', or
+// 'other'" on this exact line, meaning that build's pdf.artifact() kind
+// enum doesn't include "background" at all. "other" is accepted by every
+// Typst build checked so far (0.15.1 locally, win-builder's) and is the
+// correct semantic fit anyway -- this image isn't header/footer/page
+// furniture, just decoration with no PDF/UA structural role.
+//
 // PDF/UA-1 flatly prohibits links inside artifacts, and page furniture
 // wired via `set page(footer:)` is page furniture that Typst
 // automatically tags as an Artifact -- confirmed directly via
@@ -159,7 +169,7 @@
 // image with no dangling divider on either side.
 #let page-footer(theme, theme-grad, logo-a, logo-a-alt, show-partner-a, logo-primary, logo-primary-alt, logo-b, logo-b-alt, show-partner-b, org-full, contact-url, contact-email, texture: "assets/header-texture.png", strip-links: true) = box(width: 100%, fill: theme-grad.brand-blue-grad, clip: true, stroke: (top: theme.stroke-accent + theme.brand-midnight), inset: (x: 20pt, y: 10pt))[
   #place(top + right, dx: 40pt, dy: -30pt)[
-    #pdf.artifact(kind: "background")[#image(texture, width: 200pt)]
+    #pdf.artifact(kind: "other")[#image(texture, width: 200pt)]
   ]
   // Dividers between logos used to be their own grid cell (a bare
   // line()) -- harmless visually, but PAC flagged it ("possibly

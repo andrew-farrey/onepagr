@@ -54,7 +54,7 @@
 
 #block(width: 100%, fill: theme-grad.brand-blue-grad, clip: true, inset: (x: 20pt, y: 10pt), above: 0pt, below: 0pt)[
   #place(top + right, dx: 40pt, dy: -30pt)[
-    #pdf.artifact(kind: "background")[#image("{{{header_texture_path}}}", width: 260pt)]
+    #pdf.artifact(kind: "other")[#image("{{{header_texture_path}}}", width: 260pt)]
   ]
   #grid(columns: (auto, 1fr), column-gutter: 14pt, align: horizon,
     image("{{{logo_primary_path}}}", height: 28pt, alt: "{{{logo_primary_alt}}}"),
