@@ -2,7 +2,7 @@
 
 Copies a template's full self-contained folder (`template.typ` plus the
 resolved `theme.typ`, `components.typ`, and assets it needs to compile
-independently) into `dest`, before any real data exists – for
+independently) into `dest`, before any real data exists, for
 exploration, hand-editing, or handing to an AI coding assistant to
 extend. That last case is a deliberate design goal, not an afterthought:
 [`render_onepager()`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md)

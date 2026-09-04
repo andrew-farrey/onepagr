@@ -111,14 +111,14 @@ next to <code>output</code> (<code>TRUE</code>, default) or use a disposable tem
 
 <dt id="arg-extra-assets">extra_assets<a class="anchor" aria-label="anchor" href="#arg-extra-assets"></a></dt>
 <dd><p>Character vector of file paths to stage into the
-compile work directory alongside the theme/components/package assets
-– for per-run generated images (e.g. charts/maps produced fresh by
+compile work directory alongside the theme/components/package assets,
+for per-run generated images (e.g. charts/maps produced fresh by
 the calling script) that a template's own <code>#image()</code> calls need to
 reference. Typst's compiler sandboxes file access to the directory
 being compiled from and rejects absolute filesystem paths outright
 (confirmed directly: <code>#image("C:/abs/path/map.png")</code> fails to
 compile with "path contains invalid component" even after fixing
-Windows backslashes to forward slashes – this isn't a path-syntax
+Windows backslashes to forward slashes: this isn't a path-syntax
 issue, Typst does not permit escaping its compile root at all). Each
 file is copied in by its basename (overwriting on conflict); pass
 just that basename as the corresponding whisker token's value (e.g.
@@ -130,7 +130,7 @@ package assets).</p></dd>
 
 <dt id="arg-font-dir">font_dir<a class="anchor" aria-label="anchor" href="#arg-font-dir"></a></dt>
 <dd><p>Character or <code>NULL</code>. Passed through to
-<code><a href="compile_typst.html">compile_typst()</a></code>'s <code>font_dir</code> argument – a directory of font files
+<code><a href="compile_typst.html">compile_typst()</a></code>'s <code>font_dir</code> argument, a directory of font files
 to make available for this compile, in addition to system fonts, for
 a theme's <code>text-font</code>/<code>heading-font</code> tokens that name a font not
 installed system-wide (e.g. a Posit Workbench deployment without
@@ -145,7 +145,7 @@ permission to install fonts at the OS level). Default <code>NULL</code>.</p></dd
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>By default (<code>keep_typst = TRUE</code>) the resolved, whisker-substituted
 <code>.typ</code> file is written next to <code>output</code>, along with the theme,
-components, and assets it was compiled with – self-contained and
+components, and assets it was compiled with, self-contained and
 independently recompilable, not hidden in a disposable tempdir. Set
 <code>keep_typst = FALSE</code> to compile in a disposable tempdir instead and
 return only the PDF.</p>
@@ -154,10 +154,10 @@ return only the PDF.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="co"># Needs Quarto (bundling Typst) on the system -- see check_quarto().</span></span></span>
+<span class="r-in"><span><span class="co"># Needs Quarto (bundling Typst) on the system: see check_quarto().</span></span></span>
 <span class="r-in"><span><span class="co"># logo_*_path/header_texture_path below point at onepagr's own bundled</span></span></span>
 <span class="r-in"><span><span class="co"># placeholder assets (staged automatically); swap in your own images</span></span></span>
-<span class="r-in"><span><span class="co"># via extra_assets for real use -- see vignette("theming").</span></span></span>
+<span class="r-in"><span><span class="co"># via extra_assets for real use: see vignette("theming").</span></span></span>
 <span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  doc_title <span class="op">=</span> <span class="st">"OVERDOSE SPIKE ALERT"</span>,</span></span>
 <span class="r-in"><span>  doc_subtitle <span class="op">=</span> <span class="st">"Sample County Surveillance"</span>,</span></span>

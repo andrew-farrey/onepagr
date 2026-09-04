@@ -3,9 +3,9 @@
 Low-level primitive: whisker-renders `path` against `data`, writes the
 result next to `path`, then compiles it to `output` via
 `quarto typst compile --pdf-standard ua-1 --features a11y-extras`. Works
-on any .typ file – a package-shipped template or a user's own
+on any .typ file (a package-shipped template or a user's own
 [`export_template()`](https://andrew-farrey.github.io/onepagr/reference/export_template.md)-edited
-copy – since required-token validation is derived by scanning the file
+copy) since required-token validation is derived by scanning the file
 itself, not a separately-maintained manifest.
 
 ## Usage
@@ -34,7 +34,7 @@ compile_typst(path, data, output, font_dir = NULL)
 
   Character or `NULL`. A directory of font files (`.ttf`/ `.otf`) to
   make available to Typst for this compile, passed through as
-  `--font-path`. Typst does not merge this with the system font list –
+  `--font-path`. Typst does not merge this with the system font list:
   both system fonts and this directory are searched, so a theme's
   `text-font`/`heading-font` tokens can name either a system-installed
   font or one shipped here (confirmed directly:
@@ -50,7 +50,7 @@ Character, the `output` path, invisibly.
 
 ``` r
 if (FALSE) { # \dontrun{
-# Needs Quarto (bundling Typst) on the system -- see check_quarto().
+# Needs Quarto (bundling Typst) on the system: see check_quarto().
 typ <- tempfile(fileext = ".typ")
 writeLines(
   c("#set document(title: [Example])", "#text[{{{greeting}}}]"), typ

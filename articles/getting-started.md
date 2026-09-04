@@ -30,7 +30,7 @@ yourself. (Windows opens the official installer instead, so there’s no
 path to set until you finish that yourself.)
 
 If you already have a Quarto install elsewhere onepagr should use
-instead – an admin-managed one on Posit Workbench, for example –
+instead (an admin-managed one on Posit Workbench, for example),
 `onepagr::set_quarto_path("/path/to/quarto")` points onepagr at it the
 same way, with the same save-for-later prompt.
 
@@ -50,7 +50,7 @@ data <- list(
   org_full = "Sample Health Organization",
   contact_url = "https://example.org/",
   contact_email = "contact@example.org",
-  # Logo tokens are required by every template -- these values point at
+  # Logo tokens are required by every template: these values point at
   # onepagr's own bundled placeholder assets. See vignette("theming") to
   # swap in your own branding instead.
   logo_partner_a_path = "assets/partner-org-a-white.png",

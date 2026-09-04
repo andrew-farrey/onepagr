@@ -4,7 +4,7 @@ Internal. Derived by grep-ing every real `theme.<key>` /
 `theme-grad.<key>` reference across `inst/typst/components.typ` and
 every `inst/typst/templates/*/template.typ` (not assumed), then
 cross-checked directly against both shipped theme files' own key sets
-via a real `typst eval` run – confirmed identical key-for-key between
+via a real `typst eval` run: confirmed identical key-for-key between
 `default.typ` and `uk.typ`. If a future template or component introduces
 a new theme token, add it here too; `test-themes.R` diffs this list
 against both shipped theme files' real key sets and fails loudly if they

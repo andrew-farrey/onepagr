@@ -2,7 +2,7 @@
 
 Sets `QUARTO_PATH` for the current R session immediately. With consent,
 also persists it to the user-level `~/.Renviron` so future sessions pick
-it up automatically – the whole reason this function exists is so a
+it up automatically; the whole reason this function exists is so a
 consuming team never has to learn what `.Renviron` is or hand-edit one:
 [`install_quarto()`](https://andrew-farrey.github.io/onepagr/reference/install_quarto.md)
 calls this automatically on macOS/Linux once it knows the real installed
@@ -25,8 +25,8 @@ set_quarto_path(path, persist = NA, renviron_path = path.expand("~/.Renviron"))
 
   Logical or `NA`. `NA` (default): if the session is interactive, asks
   before writing to `renviron_path`; if not interactive, does not
-  persist. `TRUE`/`FALSE`: persist or don't, with no prompt – for
-  scripts and non-interactive use.
+  persist. `TRUE`/`FALSE`: persist or don't, with no prompt, for scripts
+  and non-interactive use.
 
 - renviron_path:
 
@@ -51,7 +51,7 @@ rather than being redeclared per-project.
 Like
 [`install_quarto()`](https://andrew-farrey.github.io/onepagr/reference/install_quarto.md),
 this is only ever invoked directly by the user or on the user's behalf
-immediately after a real install – never called automatically by
+immediately after a real install, never called automatically by
 [`render_onepager()`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md)
 or any other rendering function.
 
@@ -59,9 +59,9 @@ or any other rendering function.
 
 ``` r
 if (FALSE) { # \dontrun{
-# Never run automatically -- points onepagr at a real Quarto binary on
-# your system and, with consent, edits ~/.Renviron. Adjust the path to
-# a real quarto install before running.
+# Never run automatically: points onepagr at a real Quarto binary on
+# your system and, with consent, edits ~/.Renviron. Adjust the path
+# to a real quarto install before running.
 set_quarto_path("/opt/quarto/bin/quarto")
 } # }
 ```

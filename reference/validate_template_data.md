@@ -29,7 +29,7 @@ Invisibly `TRUE` if validation passes.
 ``` r
 path <- resolve_template("cohort_summary")
 required <- extract_required_tokens(path)
-# Placeholder values -- validate_template_data() only checks presence/
+# Placeholder values: validate_template_data() only checks presence/
 # non-NA, not real content, so this always passes regardless of which
 # tokens a given template actually needs.
 data <- setNames(as.list(rep("placeholder", length(required))), required)

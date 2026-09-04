@@ -63,12 +63,12 @@ most for an overall look:
 | Key | Controls |
 |----|----|
 | `brand-blue`, `brand-midnight` | The header band’s gradient, and the accent stripe on every stat-card/callout box |
-| `brand-accent` | Large decorative text (big stat-card numbers) – needs 3:1 contrast, not 4.5:1 |
-| `brand-accent-text` | The same accent color’s small-text-safe variant (e.g. a `text-box` section heading) – needs 4.5:1 |
+| `brand-accent` | Large decorative text (big stat-card numbers); needs 3:1 contrast, not 4.5:1 |
+| `brand-accent-text` | The same accent color’s small-text-safe variant (e.g. a `text-box` section heading); needs 4.5:1 |
 | `card-bg`, `callout-bg`, `lessons-bg` | Box background tints |
 | `text-secondary`, `text-muted` | Body and caption text colors |
 | `severity-warning`, `severity-critical` (+ their `-bg`/`-text` variants) | Alert-template severity coloring (`overdose_spike_alert`, `syndromic_alert`) |
-| `map-border-color` | Map-box border stroke (`county_choropleth`) – kept separate from `brand-midnight` since a real brand spec for this can diverge from it |
+| `map-border-color` | Map-box border stroke (`county_choropleth`); kept separate from `brand-midnight` since a real brand spec for this can diverge from it |
 
 The full key list (spacing, stroke widths, radius, margin) is the same
 across every theme file; see `default.typ`’s own comments for what each
@@ -133,7 +133,7 @@ pass to
 
 | Token | Meaning |
 |----|----|
-| `logo_primary_path`, `logo_primary_alt` | Your own organization’s logo – always shown |
+| `logo_primary_path`, `logo_primary_alt` | Your own organization’s logo, always shown |
 | `logo_partner_a_path`, `logo_partner_a_alt`, `show_partner_a` | An optional co-branding partner, shown left of the primary logo |
 | `logo_partner_b_path`, `logo_partner_b_alt`, `show_partner_b` | A second optional co-branding partner, shown right of the primary logo |
 | `header_texture_path` | The decorative background texture behind the header band |
@@ -141,14 +141,14 @@ pass to
 Changing a logo means changing these values plus staging the actual
 image file, via
 [`render_onepager()`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md)’s
-`extra_assets` argument – it does **not** require exporting or
+`extra_assets` argument; it does **not** require exporting or
 hand-editing a template’s Typst source. Three separate logo slots exist
 (rather than one flattened composite image) so a screen reader announces
-real per-organization identification instead of one opaque “logo” – but
+real per-organization identification instead of one opaque “logo”, but
 not every jurisdiction has a three-organization design.
 `show_partner_a`/`show_partner_b` are each independent
 `"true"`/`"false"` toggles (the literal lowercase string, not an R
-logical – see
+logical; see
 [`?render_onepager`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md)),
 so a single health department reporting under its own name gets one logo
 with no dangling divider, a two-agency partnership gets two, and a
@@ -175,7 +175,7 @@ from (Typst’s compiler sandboxes file access and rejects absolute paths
 outright), so the token value must be just the basename you pass to
 `extra_assets`, not the file’s original full path. If you’re fine with
 the package’s own three built-in placeholder logos, you don’t need
-`extra_assets` at all – the fixture defaults in
+`extra_assets` at all: the fixture defaults in
 [`vignette("getting-started")`](https://andrew-farrey.github.io/onepagr/articles/getting-started.md)
 already point at those bundled assets by name.
 
@@ -199,7 +199,7 @@ nominal size setting:
 
 Every logo [`image()`](https://rdrr.io/r/graphics/image.html) call takes
 an `alt:` argument. Write real, specific text (“Sample Health Department
-logo”), not something generic like “logo” or “image” – this is what a
+logo”), not something generic like “logo” or “image”: this is what a
 screen reader announces in place of the image, and it’s the same
 accessibility bar the rest of onepagr’s output is held to.
 
@@ -230,7 +230,7 @@ alongside every system font, not instead of them).
 ``` r
 
 # my-theme.typ sets body-font: "Open Sans", and Open Sans isn't
-# installed system-wide -- ship the font file alongside your project
+# installed system-wide: ship the font file alongside your project
 # and point font_dir at its folder.
 render_onepager(
   data, template = "cohort_summary", theme_path = "my-theme.typ",
@@ -240,7 +240,7 @@ render_onepager(
 
 If `body-font` names a family Typst can’t find (system-wide or in
 `font_dir`), Typst silently falls back to a default font rather than
-erroring – so after changing a font, actually open the compiled PDF (or
+erroring, so after changing a font, actually open the compiled PDF (or
 check its embedded font list) to confirm your font took effect, the same
 “verify, don’t assume” discipline Part 1 applies to color contrast.
 
@@ -253,15 +253,15 @@ other onepagr user needs:
 
 1.  **A color palette.** At minimum, a primary/accent color pair; see
     Part 1. Reuse the built-in `default` (Bootstrap-derived,
-    brand-neutral) theme as-is if you don’t have – or don’t yet want to
-    commit to – your own institutional colors. A full custom theme is
+    brand-neutral) theme as-is if you don’t have (or don’t yet want to
+    commit to) your own institutional colors. A full custom theme is
     colors, not code: copy `default.typ`, change the hex values, verify
     contrast, done.
 2.  **Logo file(s).** One, if you’re reporting under your own name
     alone; two or three if you co-brand with partner agencies. See Part
-    2 – there’s no minimum of three, and no template editing required
+    2: there’s no minimum of three, and no template editing required
     either way.
-3.  **A font, if the default doesn’t suit you.** Optional – every
+3.  **A font, if the default doesn’t suit you.** Optional: every
     built-in theme already names a real, commonly-available font. Only
     relevant if your institution has a specific brand font it wants to
     use instead; see Part 3.

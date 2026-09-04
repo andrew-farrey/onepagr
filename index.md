@@ -86,7 +86,7 @@ data <- list(
   # Every template needs a logo lockup and header texture. The paths
   # below point at onepagr's own bundled placeholder assets (staged
   # automatically for every render_onepager() call, no extra_assets
-  # needed) -- swap these for your own project's logo files once you
+  # needed): swap these for your own project's logo files once you
   # have them; see vignette("theming") for how.
   logo_primary_path = "assets/primary-org-white.png",
   logo_primary_alt = "Sample Health Department logo",
@@ -183,7 +183,7 @@ Logos are separate from theming: every template takes a primary logo
 (always shown) plus two optional partner logos, toggled independently
 via `show_partner_a`/`show_partner_b`, so a single organization, a
 two-agency partnership, and a three-organization lockup are all first-
-class cases – no template editing required either way. A `font_dir`
+class cases, no template editing required either way. A `font_dir`
 argument to
 [`render_onepager()`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md)
 makes a directory of font files available to Typst for a compile, for a

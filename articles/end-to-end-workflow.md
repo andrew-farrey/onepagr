@@ -123,7 +123,7 @@ data <- list(
   org_full = "Example Surveillance Program",
   contact_url = "https://example.org/",
   contact_email = "contact@example.org",
-  # Logo tokens are required by every template -- these values point at
+  # Logo tokens are required by every template: these values point at
   # onepagr's own bundled placeholder assets. See vignette("theming") to
   # swap in your own branding instead.
   logo_partner_a_path = "assets/partner-org-a-white.png",

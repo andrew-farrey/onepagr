@@ -143,13 +143,13 @@ stat-card/callout box</td>
 </tr>
 <tr class="even">
 <td><code>brand-accent</code></td>
-<td>Large decorative text (big stat-card numbers) – needs 3:1 contrast,
+<td>Large decorative text (big stat-card numbers); needs 3:1 contrast,
 not 4.5:1</td>
 </tr>
 <tr class="odd">
 <td><code>brand-accent-text</code></td>
 <td>The same accent color’s small-text-safe variant (e.g. a
-<code>text-box</code> section heading) – needs 4.5:1</td>
+<code>text-box</code> section heading); needs 4.5:1</td>
 </tr>
 <tr class="even">
 <td>
@@ -173,7 +173,7 @@ their <code>-bg</code>/<code>-text</code> variants)</td>
 </tr>
 <tr class="odd">
 <td><code>map-border-color</code></td>
-<td>Map-box border stroke (<code>county_choropleth</code>) – kept
+<td>Map-box border stroke (<code>county_choropleth</code>); kept
 separate from <code>brand-midnight</code> since a real brand spec for
 this can diverge from it</td>
 </tr>
@@ -254,7 +254,7 @@ and why.</p>
 <td>
 <code>logo_primary_path</code>, <code>logo_primary_alt</code>
 </td>
-<td>Your own organization’s logo – always shown</td>
+<td>Your own organization’s logo, always shown</td>
 </tr>
 <tr class="even">
 <td>
@@ -279,15 +279,14 @@ logo</td>
 </table>
 <p>Changing a logo means changing these values plus staging the actual
 image file, via <code><a href="../reference/render_onepager.html">render_onepager()</a></code>’s
-<code>extra_assets</code> argument – it does <strong>not</strong>
-require exporting or hand-editing a template’s Typst source. Three
-separate logo slots exist (rather than one flattened composite image) so
-a screen reader announces real per-organization identification instead
-of one opaque “logo” – but not every jurisdiction has a
-three-organization design.
-<code>show_partner_a</code>/<code>show_partner_b</code> are each
+<code>extra_assets</code> argument; it does <strong>not</strong> require
+exporting or hand-editing a template’s Typst source. Three separate logo
+slots exist (rather than one flattened composite image) so a screen
+reader announces real per-organization identification instead of one
+opaque “logo”, but not every jurisdiction has a three-organization
+design. <code>show_partner_a</code>/<code>show_partner_b</code> are each
 independent <code>"true"</code>/<code>"false"</code> toggles (the
-literal lowercase string, not an R logical – see
+literal lowercase string, not an R logical; see
 <code><a href="../reference/render_onepager.html">?render_onepager</a></code>), so a single health department reporting
 under its own name gets one logo with no dangling divider, a two-agency
 partnership gets two, and a KIPRC-style three-organization lockup gets
@@ -309,7 +308,7 @@ Typst compiles from (Typst’s compiler sandboxes file access and rejects
 absolute paths outright), so the token value must be just the basename
 you pass to <code>extra_assets</code>, not the file’s original full
 path. If you’re fine with the package’s own three built-in placeholder
-logos, you don’t need <code>extra_assets</code> at all – the fixture
+logos, you don’t need <code>extra_assets</code> at all: the fixture
 defaults in <code><a href="../articles/getting-started.html">vignette("getting-started")</a></code> already point at
 those bundled assets by name.</p>
 </div>
@@ -333,7 +332,7 @@ size setting:</p>
 </h3>
 <p>Every logo <code><a href="https://rdrr.io/r/graphics/image.html" class="external-link">image()</a></code> call takes an <code>alt:</code>
 argument. Write real, specific text (“Sample Health Department logo”),
-not something generic like “logo” or “image” – this is what a screen
+not something generic like “logo” or “image”: this is what a screen
 reader announces in place of the image, and it’s the same accessibility
 bar the rest of onepagr’s output is held to.</p>
 </div>
@@ -369,7 +368,7 @@ from <code>&lt;dir&gt;</code> alongside every system font, not instead
 of them).</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># my-theme.typ sets body-font: "Open Sans", and Open Sans isn't</span></span>
-<span><span class="co"># installed system-wide -- ship the font file alongside your project</span></span>
+<span><span class="co"># installed system-wide: ship the font file alongside your project</span></span>
 <span><span class="co"># and point font_dir at its folder.</span></span>
 <span><span class="fu"><a href="../reference/render_onepager.html">render_onepager</a></span><span class="op">(</span></span>
 <span>  <span class="va">data</span>, template <span class="op">=</span> <span class="st">"cohort_summary"</span>, theme_path <span class="op">=</span> <span class="st">"my-theme.typ"</span>,</span>
@@ -377,7 +376,7 @@ of them).</p>
 <span><span class="op">)</span></span></code></pre></div>
 <p>If <code>body-font</code> names a family Typst can’t find
 (system-wide or in <code>font_dir</code>), Typst silently falls back to
-a default font rather than erroring – so after changing a font, actually
+a default font rather than erroring, so after changing a font, actually
 open the compiled PDF (or check its embedded font list) to confirm your
 font took effect, the same “verify, don’t assume” discipline Part 1
 applies to color contrast.</p>
@@ -393,17 +392,17 @@ every other onepagr user needs:</p>
 <li>
 <strong>A color palette.</strong> At minimum, a primary/accent color
 pair; see Part 1. Reuse the built-in <code>default</code>
-(Bootstrap-derived, brand-neutral) theme as-is if you don’t have – or
-don’t yet want to commit to – your own institutional colors. A full
+(Bootstrap-derived, brand-neutral) theme as-is if you don’t have (or
+don’t yet want to commit to) your own institutional colors. A full
 custom theme is colors, not code: copy <code>default.typ</code>, change
 the hex values, verify contrast, done.</li>
 <li>
 <strong>Logo file(s).</strong> One, if you’re reporting under your
 own name alone; two or three if you co-brand with partner agencies. See
-Part 2 – there’s no minimum of three, and no template editing required
+Part 2: there’s no minimum of three, and no template editing required
 either way.</li>
 <li>
-<strong>A font, if the default doesn’t suit you.</strong> Optional –
+<strong>A font, if the default doesn’t suit you.</strong> Optional:
 every built-in theme already names a real, commonly-available font. Only
 relevant if your institution has a specific brand font it wants to use
 instead; see Part 3.</li>

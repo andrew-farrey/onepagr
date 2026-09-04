@@ -100,7 +100,7 @@
 <span>  <span class="co"># Every template needs a logo lockup and header texture. The paths</span></span>
 <span>  <span class="co"># below point at onepagr's own bundled placeholder assets (staged</span></span>
 <span>  <span class="co"># automatically for every render_onepager() call, no extra_assets</span></span>
-<span>  <span class="co"># needed) -- swap these for your own project's logo files once you</span></span>
+<span>  <span class="co"># needed): swap these for your own project's logo files once you</span></span>
 <span>  <span class="co"># have them; see vignette("theming") for how.</span></span>
 <span>  logo_primary_path <span class="op">=</span> <span class="st">"assets/primary-org-white.png"</span>,</span>
 <span>  logo_primary_alt <span class="op">=</span> <span class="st">"Sample Health Department logo"</span>,</span>
@@ -186,7 +186,7 @@
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/render_onepager.html">render_onepager</a></span><span class="op">(</span><span class="va">data</span>, template <span class="op">=</span> <span class="st">"trend_snapshot"</span>, theme_path <span class="op">=</span> <span class="st">"my-theme.typ"</span>, output <span class="op">=</span> <span class="st">"report.pdf"</span><span class="op">)</span></span></code></pre></div>
 <p>A theme is a single Typst dictionary of colors, typography, and spacing tokens. See any file in <code>inst/typst/themes/</code> for the full schema, or <code><a href="reference/list_themes.html">list_themes()</a></code> to see what’s built in.</p>
-<p>Logos are separate from theming: every template takes a primary logo (always shown) plus two optional partner logos, toggled independently via <code>show_partner_a</code>/<code>show_partner_b</code>, so a single organization, a two-agency partnership, and a three-organization lockup are all first- class cases – no template editing required either way. A <code>font_dir</code> argument to <code><a href="reference/render_onepager.html">render_onepager()</a></code> makes a directory of font files available to Typst for a compile, for a theme’s font that isn’t installed system-wide. See <code><a href="articles/theming.html">vignette("theming")</a></code> for all of the above.</p>
+<p>Logos are separate from theming: every template takes a primary logo (always shown) plus two optional partner logos, toggled independently via <code>show_partner_a</code>/<code>show_partner_b</code>, so a single organization, a two-agency partnership, and a three-organization lockup are all first- class cases, no template editing required either way. A <code>font_dir</code> argument to <code><a href="reference/render_onepager.html">render_onepager()</a></code> makes a directory of font files available to Typst for a compile, for a theme’s font that isn’t installed system-wide. See <code><a href="articles/theming.html">vignette("theming")</a></code> for all of the above.</p>
 </div>
 <div class="section level2">
 <h2 id="accessibility">Accessibility<a class="anchor" aria-label="anchor" href="#accessibility"></a>

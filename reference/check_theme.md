@@ -2,7 +2,7 @@
 
 Validates a theme `.typ` file's `theme` and `theme-grad` exports by
 actually evaluating them with Typst (`typst eval`, via Quarto's bundled
-binary) rather than a hand-rolled text parser – so a theme flagged here
+binary) rather than a hand-rolled text parser, so a theme flagged here
 is confirmed to fail (or nearly fail) the exact same way it would at
 real render time, not just suspected to. Checks:
 
@@ -34,7 +34,7 @@ at all, in which case every field below is empty/`NA`), `missing` /
 with `key`, `expected`, `actual` columns), `radius_card_missing` /
 `radius_card_type_mismatches` (same shape, for the nested `radius-card`
 dictionary), and `unknown` (character vector of keys present in `theme`
-but outside onepagr's known schema – informational only, not a failure;
+but outside onepagr's known schema, informational only, not a failure;
 could be a typo, or a key your own templates read directly).
 
 ## Details
@@ -48,12 +48,12 @@ could be a typo, or a key your own templates read directly).
 
 3.  Each present key's real Typst-evaluated type matches what onepagr
     expects (e.g. a color key set to a bare string, or a length key set
-    to a color) – exactly the kind of mistake that would otherwise
+    to a color), exactly the kind of mistake that would otherwise
     surface as a much less legible Typst error deep inside
     `components.typ`, pointing at the component's own code rather than
     the theme file that actually caused it.
 
-Does **not** check color contrast or WCAG compliance – a value can be a
+Does **not** check color contrast or WCAG compliance: a value can be a
 perfectly well-formed `color` and still fail WCAG (or vice versa, though
 a malformed value can never pass it). That's a semantic judgment, not a
 structural one, and belongs in a separate contrast-checking function,
@@ -62,14 +62,14 @@ not folded in here.
 Callable standalone while developing a new theme (before ever calling
 [`render_onepager()`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md)),
 or from another onepagr function or your own test suite that wants to
-validate a theme up front – nothing about it is tied to a particular
-call site.
+validate a theme up front; nothing about it is tied to a particular call
+site.
 
 ## Examples
 
 ``` r
 if (FALSE) { # \dontrun{
-# Needs Quarto (bundling Typst) on the system -- see check_quarto().
+# Needs Quarto (bundling Typst) on the system: see check_quarto().
 check_theme("uk")
 check_theme("default")
 } # }
