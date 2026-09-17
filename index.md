@@ -34,8 +34,8 @@ pak::pak("andrew-farrey/onepagr")
 ```
 
 onepagr also needs [Quarto](https://quarto.org), which bundles
-[Typst](https://typst.app), on your system. **Accessible PDF output
-needs Typst 0.14.0 or newer**, the release that [added PDF/UA-1
+[Typst](https://typst.app), installed on your system. **Accessible PDF
+output needs Typst 0.14.0 or newer**, the release that [added PDF/UA-1
 conformance and automatic tagged-PDF
 support](https://typst.app/docs/changelog/0.14.0/) in the first place.
 Older Typst simply cannot produce an accessible PDF, no matter what
