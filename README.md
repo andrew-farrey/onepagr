@@ -217,5 +217,15 @@ unmodified source SVG.
 citation("onepagr")
 ```
 
+## Funding
+
+This project is supported by the Centers for Disease Control and
+Prevention (CDC) of the U.S. Department of Health and Human Services
+(HHS) as part of cooperative agreement 1 NU17CE010186 totaling
+$5,769,396 with 0% financed with nongovernmental sources. The contents
+are those of the author(s) and do not necessarily represent the
+official views of, nor an endorsement by, CDC, HHS, or the U.S.
+government. For more information, please visit CDC.gov.
+
 Machine-readable citation metadata is also available in
 [`CITATION.cff`](https://github.com/andrew-farrey/onepagr/blob/master/CITATION.cff).
