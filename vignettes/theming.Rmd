@@ -19,7 +19,7 @@ and it's worth knowing which is which before you customize either one:
 - **Colors and spacing** are controlled by a **theme**: a single Typst
   dictionary, selectable by name (`theme = "uk"`) or supplied as your own
   file (`theme_path = "my-theme.typ"`).
-- **Logos and the header texture** are **data**, not theme settings --
+- **Logos and the header texture** are **data**, not theme settings:
   every template requires seven logo/image tokens in the `data` list you
   pass to `render_onepager()`, the same way it requires `doc_title` or
   `org_full`. Swapping logos means changing those values and staging your
@@ -41,6 +41,16 @@ onepagr::list_themes()
 ```{r, eval = FALSE}
 render_onepager(data, template = "trend_snapshot", theme = "default", output = "report.pdf")
 render_onepager(data, template = "trend_snapshot", theme = "uk", output = "report.pdf")
+```
+
+Same template, same data, only `theme` changed between the two calls
+above:
+
+```{r, echo = FALSE, fig.show = "hold", out.width = "49%", fig.alt = c("trend_snapshot rendered with the default, brand-neutral theme.", "The same trend_snapshot report rendered with the uk theme instead, showing only colors and typography changed.")}
+knitr::include_graphics(c(
+  "../man/figures/example-trend-snapshot-theme-default.png",
+  "../man/figures/example-trend-snapshot-theme-uk.png"
+))
 ```
 
 ### Writing your own theme
@@ -200,7 +210,7 @@ A theme's `body-font` key names the font family Typst should use for all
 body/heading text (e.g. `default.typ`'s `body-font: "Liberation Sans"`).
 Two different questions hide inside "change the font":
 
-1. **What family name should Typst look for?** That's the theme's job --
+1. **What family name should Typst look for?** That's the theme's job:
    change `body-font` in your own theme file, same as any other token in
    Part 1.
 2. **Is that family actually available to Typst at compile time?** That's

@@ -11,6 +11,7 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 quarto_ready <- requireNamespace("quarto", quietly = TRUE) &&
   quarto::quarto_available()
+pdftools_ready <- quarto_ready && requireNamespace("pdftools", quietly = TRUE)
 ```
 
 onepagr turns a named list of values into a finished, accessible PDF
@@ -128,6 +129,19 @@ output using ordinary R (`sprintf()`, `scales::comma()`,
 `paste()`), the same way you'd assemble any other report's numbers.
 
 ## What you just got
+
+This is the actual PDF `render_onepager()` just produced above (front
+page; `cohort_summary` is a fixed two-page template, so a matching back
+page follows it in the real file):
+
+```{r, eval = pdftools_ready, echo = FALSE}
+front_page <- pdftools::pdf_convert(
+  out, pages = 1, dpi = 100,
+  filenames = file.path(tempdir(), "getting-started-cohort-summary.png"),
+  verbose = FALSE
+)
+knitr::include_graphics(front_page)
+```
 
 By default, `render_onepager()` leaves the resolved `.typ` source
 (and everything it needs to recompile: the theme, shared components,

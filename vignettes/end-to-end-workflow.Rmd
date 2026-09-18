@@ -11,6 +11,7 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 quarto_ready <- requireNamespace("quarto", quietly = TRUE) &&
   quarto::quarto_available()
+pdftools_ready <- quarto_ready && requireNamespace("pdftools", quietly = TRUE)
 ```
 
 The `getting-started` vignette shows `render_onepager()` in isolation: a
@@ -202,6 +203,18 @@ render_onepager(
   data, template = "syndromic_alert", theme = "default", output = out
 )
 file.exists(out)
+```
+
+This is the actual PDF that call just produced, built from the real
+`z = 2.59` finding computed above, not placeholder text:
+
+```{r, eval = pdftools_ready, echo = FALSE}
+front_page <- pdftools::pdf_convert(
+  out, pages = 1, dpi = 100,
+  filenames = file.path(tempdir(), "end-to-end-syndromic-alert.png"),
+  verbose = FALSE
+)
+knitr::include_graphics(front_page)
 ```
 
 That's the whole pipeline: real data, a transparent (if intentionally

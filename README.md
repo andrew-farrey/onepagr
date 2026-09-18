@@ -10,9 +10,9 @@ analysis output, using a small set of fixed Typst templates and a
 swappable design-token theme system.
 
 Every template compiles under Typst's `--pdf-standard ua-1` conformance
-check and is built to pass WCAG 2.2 AA color contrast and PDF/UA-1
-structural tagging, not as a final pass but as a requirement checked at
-every step of development.
+check and is built to pass [WCAG 2.2 AA](https://www.w3.org/TR/WCAG22/)
+color contrast and PDF/UA-1 structural tagging, not as a final pass but
+as a requirement checked at every step of development.
 
 Full documentation, including function reference and vignettes, is
 available at <https://andrew-farrey.github.io/onepagr/>.
@@ -147,6 +147,27 @@ List them programmatically with `list_templates()`. Want to see one
 without any real data yet? `export_template("cohort_summary", "my-report/")`
 copies the template plus everything it needs to compile, into your own
 project, ready to read, hand-edit, or extend.
+
+## Gallery
+
+Every image below is an actual `render_onepager()` output (sample data,
+`default` theme), not a mockup. For the fixed two-page templates, the
+front page is on the left and the back page on the right.
+
+**`cohort_summary`**
+<img src="man/figures/example-cohort-summary.png" width="100%" alt="Cohort Summary template: a two-page one-pager contrasting a linked cohort against all cases across region, demographics, and encounter history, with a lessons-learned callout and implementation timeline." />
+
+**`trend_snapshot`**
+<img src="man/figures/example-trend-snapshot.png" width="100%" alt="Trend Snapshot template: a two-page one-pager tracking a single metric across several time periods with period-over-period comparison bars." />
+
+**`county_choropleth`**
+<img src="man/figures/example-county-choropleth.png" width="100%" alt="County Choropleth template: a two-page one-pager with a bivariate choropleth map on the front and four component-factor maps on the back." />
+
+**`overdose_spike_alert`**
+<img src="man/figures/example-overdose-spike-alert.png" width="60%" alt="Overdose Spike Alert template: a single-page anomaly alert bulletin with headline stat cards, a narrative section, geographic breakdown, and recommended actions." />
+
+**`syndromic_alert`**
+<img src="man/figures/example-syndromic-alert.png" width="60%" alt="Syndromic Alert template: a single-page anomaly alert bulletin generalized to any syndrome, structured like the overdose spike alert." />
 
 ## Themes
 
