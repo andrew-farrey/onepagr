@@ -41,17 +41,28 @@ onepagr::list_themes()
 ```{r, eval = FALSE}
 render_onepager(data, template = "trend_snapshot", theme = "default", output = "report.pdf")
 render_onepager(data, template = "trend_snapshot", theme = "uk", output = "report.pdf")
+render_onepager(data, template = "trend_snapshot", theme = "kdph", output = "report.pdf")
 ```
 
-Same template, same data, only `theme` changed between the two calls
-above:
+Same template, same data, only `theme` changed between the three calls
+above (`default`, `uk`, `kdph`, left to right):
 
-```{r, echo = FALSE, fig.show = "hold", out.width = "49%", fig.alt = c("trend_snapshot rendered with the default, brand-neutral theme.", "The same trend_snapshot report rendered with the uk theme instead, showing only colors and typography changed.")}
+```{r, echo = FALSE, fig.show = "hold", out.width = "32%", fig.alt = c("trend_snapshot rendered with the default, brand-neutral theme.", "The same trend_snapshot report rendered with the uk theme instead, showing only colors and typography changed.", "The same trend_snapshot report rendered with the kdph theme: navy header, indigo bars, and Calibri type.")}
 knitr::include_graphics(c(
   "../man/figures/example-trend-snapshot-theme-default.png",
-  "../man/figures/example-trend-snapshot-theme-uk.png"
+  "../man/figures/example-trend-snapshot-theme-uk.png",
+  "../man/figures/example-trend-snapshot-theme-kdph.png"
 ))
 ```
+
+The `kdph` theme is an unofficial implementation of the Kentucky
+Department for Public Health's 2026 Data Visualization Style Guidelines.
+Read the header comment in `kdph.typ` before using it for anything
+external: the guide's palette is for data visualization and does not
+replace KDPH's branding guidelines, logos are supplied through the
+`logo_*` tokens (the guide puts the KDPH logo first), and its contrast
+numbers were computed and spot-checked with PAC on the sample templates,
+so run PAC on your own content before relying on it.
 
 ### Writing your own theme
 
@@ -208,6 +219,11 @@ onepagr's output is held to.
 
 A theme's `body-font` key names the font family Typst should use for all
 body/heading text (e.g. `default.typ`'s `body-font: "Liberation Sans"`).
+It can also be a list of fallbacks that Typst tries in order, which is how
+`kdph.typ` asks for Calibri, then Carlito (an open font with identical
+metrics), then Liberation Sans: `body-font: ("Calibri", "Carlito",
+"Liberation Sans")`. A family missing from the list produces a warning,
+not an error, as long as a later one is found.
 Two different questions hide inside "change the font":
 
 1. **What family name should Typst look for?** That's the theme's job:

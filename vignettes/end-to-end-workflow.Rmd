@@ -205,7 +205,7 @@ render_onepager(
 file.exists(out)
 ```
 
-This is the actual PDF that call just produced, built from the real
+This is the actual PDF that call produces, built from the real
 `z = 2.59` finding computed above, not placeholder text:
 
 ```{r, eval = pdftools_ready, echo = FALSE}

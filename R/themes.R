@@ -100,7 +100,9 @@ list_templates <- function() {
 #' loudly if they diverge.
 #'
 #' @return A list with `theme` (named character vector, key -> Typst
-#'   `type()` name), `theme_grad` (same shape), and `radius_card` (the
+#'   `type()` name; `|` separates accepted alternatives, so `body-font` is
+#'   `"str|array"` to allow a font fallback list), `theme_grad` (same
+#'   shape), and `radius_card` (the
 #'   nested dictionary `theme$radius-card` must contain).
 #' @keywords internal
 onepagr_theme_schema <- function() {
@@ -117,7 +119,7 @@ onepagr_theme_schema <- function() {
       "severity-warning" = "color", "severity-warning-bg" = "color",
       "severity-warning-text" = "color", "severity-critical" = "color",
       "severity-critical-bg" = "color", "severity-critical-text" = "color",
-      "body-font" = "str", "body-size" = "length",
+      "body-font" = "str|array", "body-size" = "length",
       "space-xs" = "length", "space-sm" = "length", "space-md" = "length",
       "space-lg" = "length", "stroke-hairline" = "length",
       "stroke-border" = "length", "stroke-accent" = "length",
@@ -253,17 +255,18 @@ check_theme_dict <- function(actual_matrix, expected_types) {
   missing <- setdiff(names(expected_types), names(actual_types))
   present <- intersect(names(expected_types), names(actual_types))
 
-  # A "length" token (e.g. a stroke width) is also accepted as Typst's
-  # "relative" type (a length with a "+ N%" component), since that's
-  # still a legitimate value in every length-typed slot this package's
-  # templates use one in, just not the plain form the shipped themes
-  # happen to use.
+  # An expected type may list alternatives separated by "|" (e.g.
+  # "str|array" for a font name or a fallback list). A "length" token
+  # (e.g. a stroke width) is also accepted as Typst's "relative" type (a
+  # length with a "+ N%" component), since that's still a legitimate value
+  # in every length-typed slot this package's templates use one in, just
+  # not the plain form the shipped themes happen to use.
   type_ok <- function(expected, actual) {
-    if (expected == "length") {
-      actual %in% c("length", "relative")
-    } else {
-      actual == expected
+    accepted <- strsplit(expected, "|", fixed = TRUE)[[1]]
+    if ("length" %in% accepted) {
+      accepted <- c(accepted, "relative")
     }
+    actual %in% accepted
   }
   is_mismatch <- vapply(
     present, function(k) !type_ok(expected_types[[k]], actual_types[[k]]),

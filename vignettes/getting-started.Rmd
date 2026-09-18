@@ -128,11 +128,11 @@ demonstration. You'd typically build this list from your analysis
 output using ordinary R (`sprintf()`, `scales::comma()`,
 `paste()`), the same way you'd assemble any other report's numbers.
 
-## What you just got
+## What you get
 
-This is the actual PDF `render_onepager()` just produced above (front
-page; `cohort_summary` is a fixed two-page template, so a matching back
-page follows it in the real file):
+This is the actual PDF the `render_onepager()` call above produces
+(front page; `cohort_summary` is a fixed two-page template, so a
+matching back page follows it in the real file):
 
 ```{r, eval = pdftools_ready, echo = FALSE}
 front_page <- pdftools::pdf_convert(
@@ -152,11 +152,12 @@ PDF and nothing else, pass `keep_typst = FALSE`.
 
 ## Picking a theme
 
-onepagr ships two built-in themes, selectable by name:
+onepagr ships three built-in themes, selectable by name:
 
 ```{r, eval = FALSE}
 render_onepager(data, template = "cohort_summary", theme = "default", output = "report.pdf")
 render_onepager(data, template = "cohort_summary", theme = "uk", output = "report.pdf")
+render_onepager(data, template = "cohort_summary", theme = "kdph", output = "report.pdf")
 ```
 
 List what's available:

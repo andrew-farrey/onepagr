@@ -43,7 +43,15 @@ Five built-in templates, each a genuinely distinct informational shape:
 * `default`: a brand-neutral palette built on Bootstrap 5.3's own color
   variables.
 * `uk`: University of Kentucky / KIPRC branding.
+* `kdph`: Kentucky Department for Public Health colors and fonts,
+  following the department's 2026 Data Visualization Style Guidelines
+  (unofficial; not endorsed by KDPH). A theme's `body-font` may now be a
+  fallback list, which this theme uses (Calibri, then Carlito, then
+  Liberation Sans).
 
-Every built-in template and theme combination is verified against both
-Typst's `--pdf-standard ua-1` compile-time check and a real PAC (PDF
-Accessibility Checker) run covering both the PDF/UA and WCAG tabs.
+Every built-in template combined with the `default` or `uk` theme is
+verified against both Typst's `--pdf-standard ua-1` compile-time check
+and a real PAC (PDF Accessibility Checker) run covering both the PDF/UA
+and WCAG tabs. Combinations with `kdph` compile under `--pdf-standard
+ua-1`, have computed WCAG contrast ratios at both ends of every
+gradient, and were run through PAC on the sample content.

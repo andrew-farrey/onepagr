@@ -32,7 +32,7 @@ test_that("theme_path overrides theme entirely", {
 })
 
 test_that("list_themes returns the built-in theme names", {
-  expect_setequal(list_themes(), c("default", "uk"))
+  expect_setequal(list_themes(), c("default", "kdph", "uk"))
 })
 
 test_that("resolve_template finds a built-in template by name", {
@@ -110,12 +110,12 @@ test_that("check_theme reports wrong-type values instead of erroring", {
   }
   expect_equal(mismatch_for("brand-blue")$expected, "color")
   expect_equal(mismatch_for("brand-blue")$actual, "str")
-  expect_equal(mismatch_for("body-font")$expected, "str")
+  expect_equal(mismatch_for("body-font")$expected, "str|array")
   expect_equal(mismatch_for("body-font")$actual, "length")
   expect_equal(mismatch_for("radius-card")$expected, "dictionary")
   expect_equal(mismatch_for("radius-card")$actual, "length")
   # radius-card wasn't a real dictionary, so its sub-keys are never
-  # separately reported as missing/mismatched -- already covered above.
+  # separately reported as missing/mismatched; already covered above.
   expect_length(result$radius_card_missing, 0)
   expect_equal(nrow(result$radius_card_type_mismatches), 0)
 })
@@ -123,7 +123,7 @@ test_that("check_theme reports wrong-type values instead of erroring", {
 test_that("check_theme surfaces the raw Typst error when eval fails", {
   skip_if_no_typst_eval()
   tmp <- tempfile(fileext = ".typ")
-  # No theme-grad export at all -- an unresolved-import error at the
+  # No theme-grad export at all: an unresolved-import error at the
   # `import ...: theme, theme-grad` line itself, not a missing-key result.
   writeLines("#let theme = (brand-blue: rgb(\"#000000\"))", tmp)
   on.exit(unlink(tmp))
@@ -179,6 +179,24 @@ test_that("check_theme reports theme-grad and radius-card sub-key problems", {
   expect_equal(result$radius_card_type_mismatches$actual, "color")
 })
 
+test_that("check_theme accepts a font fallback list for body-font", {
+  skip_if_no_typst_eval()
+  lines <- readLines(resolve_theme("default"), warn = FALSE)
+  lines <- sub(
+    "body-font: \"Liberation Sans\",",
+    "body-font: (\"Calibri\", \"Carlito\", \"Liberation Sans\"),", lines,
+    fixed = TRUE
+  )
+  expect_true(any(grepl("Carlito", lines, fixed = TRUE)))
+  tmp <- tempfile(fileext = ".typ")
+  writeLines(lines, tmp)
+  on.exit(unlink(tmp))
+
+  result <- suppressMessages(check_theme(theme_path = tmp))
+  expect_true(result$ok)
+  expect_equal(nrow(result$type_mismatches), 0)
+})
+
 test_that("check_theme flags an extra key as unknown without failing ok", {
   skip_if_no_typst_eval()
   default_path <- resolve_theme("default")
@@ -194,4 +212,34 @@ test_that("check_theme flags an extra key as unknown without failing ok", {
   result <- suppressMessages(check_theme(theme_path = tmp))
   expect_true(result$ok)
   expect_true("my-custom-extra-key" %in% result$unknown)
+})
+
+test_that("legible-ramp keeps every SVI label at 4.5:1 or better for each theme", {
+  skip_if_no_typst_eval()
+  quarto_bin <- quarto::quarto_path()
+  expr <- paste0(
+    "{import \"/theme.typ\": theme;",
+    "import \"/components.typ\": legible-ramp, contrast-ratio;",
+    "legible-ramp(theme.brand-blue, theme.brand-midnight)",
+    ".map(r => contrast-ratio(r.fill, r.text))}"
+  )
+  for (built_in in list_themes()) {
+    dir <- tempfile()
+    dir.create(dir)
+    file.copy(resolve_theme(built_in), file.path(dir, "theme.typ"))
+    file.copy(
+      system.file("typst/components.typ", package = "onepagr"),
+      file.path(dir, "components.typ")
+    )
+    out <- system2(
+      quarto_bin,
+      c("typst", "eval", shQuote(expr), "--format", "json",
+        "--root", shQuote(dir)),
+      stdout = TRUE, stderr = TRUE
+    )
+    ratios <- jsonlite::fromJSON(paste(out, collapse = ""))
+    expect_length(ratios, 4)
+    expect_true(all(ratios >= 4.5), info = paste("theme", built_in))
+    unlink(dir, recursive = TRUE)
+  }
 })

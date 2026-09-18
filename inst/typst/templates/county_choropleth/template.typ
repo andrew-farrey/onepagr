@@ -291,28 +291,19 @@
   outset: (y: 0.5pt), inset: (x: 4pt, y: 1pt),
 )[#text(size: 7.5pt, fill: theme.text-secondary)[#label]]
 
-// text-color is an explicit per-row argument, not automatic -- a
-// monochromatic ramp needs a DIFFERENT label-text color once the
-// background gets light enough that white text stops passing WCAG's
-// 4.5:1 (small-text) requirement, exactly the "brand-accent vs
-// brand-accent-text" split this package's own theme files already use
-// for the identical reason. This was originally shipped with white
-// text on all four rows, unverified -- confirmed wrong by a real PAC
-// run against a consuming project (11 contrast errors), not caught in
-// advance. Each pairing below is now verified with the actual WCAG
-// contrast formula (not eyeballed): lighten 0%/20% + white text both
-// clear 6:1; lighten 50%/70% + brand-midnight text clear 5.6:1 and
-// 9:1. The gap between ~28%-38% lighten has NO safe text color (white
-// and brand-midnight both fail there) -- confirmed by scanning the
-// full 0-70% range, not assumed -- so the four stops deliberately skip
-// past it rather than landing inside it. Also confirmed against a real
-// compiled PDF (not just the R-side contrast formula): searched the
-// rendered output for each predicted hex value and found matching
-// pixels for all four, confirming Typst's real color.lighten() matches
-// the linear-RGB-mix model these numbers were computed from.
-#let svi-theme-label(color, label, text-color: white) = rect(
-  fill: color, radius: 3pt, inset: (x: 6pt, y: 3pt), width: 100%,
-)[#text(size: 7pt, weight: "bold", fill: text-color)[#label]]
+// The four row fills are a monochromatic tint ramp of the theme's
+// brand-blue, and each row's label color comes from legible-ramp()
+// (components.typ): white if it clears 4.6:1 against that row's actual
+// fill, otherwise brand-midnight, lightening the row further if neither
+// does. A hand-tuned ramp is not safe across themes: the original
+// stops were verified against one theme's blue and failed WCAG's 4.5:1
+// small-text minimum under others (a real PAC run flagged five rows).
+// Deriving the pairing per theme keeps every built-in and custom theme
+// legible without a per-theme token.
+#let svi-ramp = legible-ramp(theme.brand-blue, theme.brand-midnight)
+#let svi-theme-label(step, label) = rect(
+  fill: step.fill, radius: 3pt, inset: (x: 6pt, y: 3pt), width: 100%,
+)[#text(size: 7pt, weight: "bold", fill: step.text)[#label]]
 
 #let svi-theme-items(items) = items.map(svi-chip).join(h(3pt))
 
@@ -325,19 +316,19 @@
 // more generously-spaced version pushed a consuming project's report
 // onto an unwanted third page; this is the value that held at 2 pages
 // there after two rounds of tightening.
-#box(stroke: 0.5pt + theme.border-color, radius: 3pt, inset: 4pt, width: 100%)[
+#block(stroke: 0.5pt + theme.border-color, radius: 3pt, inset: 4pt, width: 100%)[
   #grid(
     columns: (100pt, 1fr), column-gutter: 8pt, row-gutter: 2pt,
     align: (left + horizon, left + horizon),
     stroke: (_, y) => if y < 3 { (bottom: 0.5pt + theme.border-color) } else { none },
     inset: (bottom: 2pt),
-    svi-theme-label(theme.brand-blue, [SOCIOECONOMIC STATUS]),
+    svi-theme-label(svi-ramp.at(0), [SOCIOECONOMIC STATUS]),
     svi-theme-items(([Below 150% poverty], [Unemployed], [Housing cost burden], [No high school diploma], [No health insurance])),
-    svi-theme-label(theme.brand-blue.lighten(20%), [HOUSEHOLD CHARACTERISTICS]),
+    svi-theme-label(svi-ramp.at(1), [HOUSEHOLD CHARACTERISTICS]),
     svi-theme-items(([Aged 65+], [Aged 17 and younger], [Civilian with a disability], [Single-parent households], [Limited English proficiency])),
-    svi-theme-label(theme.brand-blue.lighten(50%), [RACIAL AND ETHNIC MINORITY STATUS], text-color: theme.brand-midnight),
+    svi-theme-label(svi-ramp.at(2), [RACIAL AND ETHNIC MINORITY STATUS]),
     svi-theme-items(([Hispanic or Latino], [Black], [Asian], [American Indian/Alaska Native], [Native Hawaiian/Pacific Islander], [Two or more races], [Other races])),
-    svi-theme-label(theme.brand-blue.lighten(70%), [HOUSING TYPE AND TRANSPORTATION], text-color: theme.brand-midnight),
+    svi-theme-label(svi-ramp.at(3), [HOUSING TYPE AND TRANSPORTATION]),
     svi-theme-items(([Multi-unit structures], [Mobile homes], [Crowding], [No vehicle access], [Group quarters])),
   )
 ]

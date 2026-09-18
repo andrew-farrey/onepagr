@@ -9,7 +9,9 @@ onepagr_theme_schema()
 }
 \value{
 A list with \code{theme} (named character vector, key -> Typst
-\code{type()} name), \code{theme_grad} (same shape), and \code{radius_card} (the
+\code{type()} name; \code{|} separates accepted alternatives, so \code{body-font} is
+\code{"str|array"} to allow a font fallback list), \code{theme_grad} (same
+shape), and \code{radius_card} (the
 nested dictionary \code{theme$radius-card} must contain).
 }
 \description{

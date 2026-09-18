@@ -284,6 +284,50 @@
   }
 }
 
+// WCAG 2.x relative luminance and contrast ratio, computed from the
+// color's own hex value. Typst's darken()/lighten() are not linear-RGB
+// scaling, so a contrast number can't be predicted by hand; it has to be
+// measured from the color Typst actually produces.
+#let relative-luminance(col) = {
+  let hex = col.to-hex()
+  let channel(i) = {
+    let v = int(hex.slice(1 + 2 * i, 3 + 2 * i), base: 16) / 255
+    if v <= 0.04045 { v / 12.92 } else { calc.pow((v + 0.055) / 1.055, 2.4) }
+  }
+  0.2126 * channel(0) + 0.7152 * channel(1) + 0.0722 * channel(2)
+}
+
+#let contrast-ratio(a, b) = {
+  let la = relative-luminance(a)
+  let lb = relative-luminance(b)
+  (calc.max(la, lb) + 0.05) / (calc.min(la, lb) + 0.05)
+}
+
+// A monochromatic ramp of `brand` tints, each paired with a label color
+// (white, else `ink`) that clears `need`:1 against it. Any step where
+// neither color passes is lightened one percent at a time until `ink`
+// does, so the ramp stays legible whatever brand color a theme supplies.
+// Steps are kept at least 15% apart so lightening one row never
+// collapses it into its neighbor. Returns an array of (fill:, text:).
+#let legible-ramp(brand, ink, steps: (0%, 20%, 50%, 70%), need: 4.6) = {
+  let out = ()
+  let prev = none
+  for step in steps {
+    let amt = if prev == none { step } else { calc.max(step, prev + 15%) }
+    let choice = none
+    while choice == none {
+      if amt > 100% { panic("legible-ramp: ink never reaches the required contrast") }
+      let fill = brand.lighten(amt)
+      if contrast-ratio(fill, white) >= need { choice = white }
+      else if contrast-ratio(fill, ink) >= need { choice = ink }
+      else { amt = amt + 1% }
+    }
+    out.push((fill: brand.lighten(amt), text: choice))
+    prev = amt
+  }
+  out
+}
+
 // Shared document-level setup every template should apply: page metadata,
 // typography defaults, and the accessible-heading show rules. Call this
 // once near the top of a template, wrapping the ENTIRE document body
