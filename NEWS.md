@@ -24,6 +24,18 @@ Initial release.
 * `render_onepager()`'s `font_dir` argument makes a directory of font
   files available to Typst for a compile, for a theme font that isn't
   installed system-wide.
+* A template can declare a token optional with a comment line,
+  `// optional-token: name = default`. When the data list omits that
+  token, `compile_typst()` and `render_onepager()` use the default
+  instead of raising a missing-token error, and
+  `extract_required_tokens()` no longer lists it.
+* The shared footer's logo lockup takes a height and a vertical nudge for
+  each logo (`logo-a-height`, `logo-height`, `logo-b-height` and
+  `logo-a-dy`, `logo-dy`, `logo-b-dy`, defaulting to 32pt and 0pt), for
+  logos whose artwork differs in size or sits off-center in its canvas.
+  Every logo now sits in a cell as tall as the tallest logo, so the
+  dividers between logos span the full lockup height (previously about
+  23pt in the two alert templates).
 
 ## Templates
 
@@ -36,7 +48,10 @@ Five built-in templates, each a genuinely distinct informational shape:
 * `syndromic_alert`: anomaly/threshold alert for any syndrome
   (ESSENCE-style), natural pagination.
 * `county_choropleth`: geographic bivariate comparison across counties,
-  supports per-run generated map images via `extra_assets`.
+  supports per-run generated map images via `extra_assets`. Its footer
+  logos can be sized and nudged per render with the optional tokens
+  `logo_a_height`, `logo_height`, `logo_b_height` (points, default 32) and
+  `logo_a_dy`, `logo_dy`, `logo_b_dy` (points, default 0).
 
 ## Themes
 

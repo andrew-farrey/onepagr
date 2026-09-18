@@ -52,6 +52,18 @@
 // at the default (true) would be a real, PAC-confirmed accessibility
 // bug here (contact-url/contact-email rendering as inert, unlinked text
 // with no actual reason to be inert anymore).
+//
+// Per-logo footer sizing is optional data: heights and vertical nudges, in
+// points (plain numbers, not Typst lengths, so a value can never inject
+// code). A logo whose artwork sits visually off-center in its canvas can
+// be nudged with a negative dy (up) or positive dy (down). Omit any of
+// these to get the defaults below.
+// optional-token: logo_a_height = 32
+// optional-token: logo_height = 32
+// optional-token: logo_b_height = 32
+// optional-token: logo_a_dy = 0
+// optional-token: logo_dy = 0
+// optional-token: logo_b_dy = 0
 #let footer = page-footer(
   theme, theme-grad,
   "{{{logo_partner_a_path}}}", "{{{logo_partner_a_alt}}}", "{{{show_partner_a}}}",
@@ -59,6 +71,12 @@
   "{{{logo_partner_b_path}}}", "{{{logo_partner_b_alt}}}", "{{{show_partner_b}}}",
   "{{{org_full}}}", "{{{contact_url}}}", contact-email,
   strip-links: false,
+  logo-a-height: float("{{{logo_a_height}}}") * 1pt,
+  logo-height: float("{{{logo_height}}}") * 1pt,
+  logo-b-height: float("{{{logo_b_height}}}") * 1pt,
+  logo-a-dy: float("{{{logo_a_dy}}}") * 1pt,
+  logo-dy: float("{{{logo_dy}}}") * 1pt,
+  logo-b-dy: float("{{{logo_b_dy}}}") * 1pt,
 )
 
 // Map-box border: a plain 1pt black stroke read as "so thin it disappears

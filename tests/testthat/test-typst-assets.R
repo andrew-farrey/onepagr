@@ -42,3 +42,81 @@ test_that("text-box is defined in components.typ", {
   )
   expect_match(text, "#let text-box(", fixed = TRUE)
 })
+
+test_that("page-footer takes per-logo heights and dy with 32pt/0pt defaults", {
+  text <- paste(
+    readLines(
+      system.file("typst", "components.typ", package = "onepagr"),
+      warn = FALSE
+    ),
+    collapse = "\n"
+  )
+  for (arg in c("logo-a-height", "logo-height", "logo-b-height")) {
+    expect_match(text, paste0(arg, ": 32pt"), fixed = TRUE)
+  }
+  for (arg in c("logo-a-dy", "logo-dy", "logo-b-dy")) {
+    expect_match(text, paste0(arg, ": 0pt"), fixed = TRUE)
+  }
+})
+
+test_that("page-footer defaults match explicit 32pt/0pt and overrides change output", {
+  skip_if_not(quarto::quarto_available())
+  skip_if_not(requireNamespace("pdftools", quietly = TRUE))
+  dir <- tempfile()
+  on.exit(unlink(dir, recursive = TRUE))
+  export_template("county_choropleth", dir)
+
+  render_footer <- function(extra_args) {
+    typ <- file.path(dir, "footer_probe.typ")
+    writeLines(
+      c(
+        "#import \"theme.typ\": theme, theme-grad",
+        "#import \"components.typ\": *",
+        "#set document(title: [Footer probe])",
+        "#set page(width: 6in, height: 1.2in, margin: 0pt)",
+        paste0(
+          "#page-footer(theme, theme-grad, ",
+          "\"assets/partner-org-a-white.png\", \"Partner A\", \"true\", ",
+          "\"assets/primary-org-white.png\", \"Primary\", ",
+          "\"assets/partner-org-b-white.png\", \"Partner B\", \"true\", ",
+          "\"Org\", \"https://example.org/\", \"c@example.org\"",
+          extra_args, ")"
+        )
+      ),
+      typ
+    )
+    out <- tempfile(fileext = ".pdf")
+    compile_typst(typ, list(), out)
+    pdftools::pdf_render_page(out, 1, dpi = 100, numeric = TRUE)
+  }
+
+  default <- render_footer("")
+  explicit <- render_footer(paste0(
+    ", logo-a-height: 32pt, logo-height: 32pt, logo-b-height: 32pt",
+    ", logo-a-dy: 0pt, logo-dy: 0pt, logo-b-dy: 0pt"
+  ))
+  resized <- render_footer(", logo-height: 20pt, logo-b-height: 40pt")
+  nudged <- render_footer(", logo-b-dy: -5pt")
+
+  expect_identical(default, explicit)
+  expect_false(identical(default, resized))
+  expect_false(identical(default, nudged))
+})
+
+test_that("county_choropleth declares footer sizing tokens with neutral defaults", {
+  text <- paste(
+    readLines(resolve_template("county_choropleth"), warn = FALSE),
+    collapse = "\n"
+  )
+  for (tok in c(
+    "logo_a_height", "logo_height", "logo_b_height",
+    "logo_a_dy", "logo_dy", "logo_b_dy"
+  )) {
+    expect_match(
+      text, paste0("// optional-token: ", tok, " = "), fixed = TRUE
+    )
+  }
+  defaults <- extract_token_defaults(resolve_template("county_choropleth"))
+  expect_equal(unname(unlist(defaults[c("logo_a_height", "logo_height", "logo_b_height")])), rep("32", 3))
+  expect_equal(unname(unlist(defaults[c("logo_a_dy", "logo_dy", "logo_b_dy")])), rep("0", 3))
+})

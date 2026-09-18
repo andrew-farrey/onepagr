@@ -7,7 +7,9 @@
 extract_required_tokens(path)
 }
 \arguments{
-\item{path}{Character. Path to a .typ file.}
+\item{path}{Character. Path to a .typ file.
+A token with a declared default (see the optional-token marker in
+\code{\link[=compile_typst]{compile_typst()}}) is not required, so it is left out of the result.}
 }
 \value{
 Character vector of unique token names, in first-appearance order.

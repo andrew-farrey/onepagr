@@ -18,6 +18,9 @@
 #' via tokens), which onepagr's built-in templates never do.
 #'
 #' @param path Character. Path to a .typ file.
+#' A token with a declared default (see the optional-token marker in
+#' [compile_typst()]) is not required, so it is left out of the result.
+#'
 #' @return Character vector of unique token names, in first-appearance order.
 #' @examples
 #' path <- resolve_template("cohort_summary")
@@ -31,7 +34,30 @@ extract_required_tokens <- function(path) {
     text, gregexpr("\\{\\{\\{\\s*([a-zA-Z0-9_.]+)\\s*\\}\\}\\}", text)
   )[[1]]
   tokens <- gsub("^\\{\\{\\{\\s*|\\s*\\}\\}\\}$", "", matches)
-  unique(tokens)
+  setdiff(unique(tokens), names(extract_token_defaults(path)))
+}
+
+#' Read a template's optional-token defaults
+#'
+#' Internal. A template declares a token as optional with a `//` comment
+#' line of the form `// optional-token: name = default`. Callers who don't
+#' supply `name` get `default` (as a string) instead of a missing-token
+#' error.
+#'
+#' @param path Character. Path to a .typ file.
+#' @return Named list of default values (empty if none are declared).
+#' @keywords internal
+extract_token_defaults <- function(path) {
+  lines <- readLines(path, warn = FALSE)
+  found <- regmatches(lines, regexec(
+    "^\\s*//\\s*optional-token:\\s*([a-zA-Z0-9_.]+)\\s*=\\s*(\\S.*?)\\s*$",
+    lines
+  ))
+  found <- found[lengths(found) == 3]
+  stats::setNames(
+    lapply(found, function(f) f[[3]]),
+    vapply(found, function(f) f[[2]], character(1))
+  )
 }
 
 #' Validate whisker data against a template's required tokens
@@ -78,6 +104,11 @@ validate_template_data <- function(path, data) {
 #' derived by scanning the file itself, not a separately-maintained
 #' manifest.
 #'
+#' A template can declare a token optional with a `//` comment line,
+#' `// optional-token: name = default`. When `data` lacks that token (or
+#' it is `NULL`, empty, or `NA`), the declared default is used instead of
+#' raising a missing-token error.
+#'
 #' @param path Character. Path to a .typ file. Its
 #'   `theme.typ`/`components.typ`/assets must already be alongside it, so
 #'   Typst's relative `#import` paths resolve correctly.
@@ -104,6 +135,13 @@ validate_template_data <- function(path, data) {
 #' }
 #' @export
 compile_typst <- function(path, data, output, font_dir = NULL) {
+  defaults <- extract_token_defaults(path)
+  for (tok in names(defaults)) {
+    value <- data[[tok]]
+    if (length(value) == 0 || is.na(value)[1]) {
+      data[[tok]] <- defaults[[tok]]
+    }
+  }
   validate_template_data(path, data)
 
   quarto_bin <- quarto::quarto_path()

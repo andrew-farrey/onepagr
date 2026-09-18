@@ -167,7 +167,15 @@
 // dividers and grid column count are computed from however many logos
 // are actually visible, so a one-logo jurisdiction gets a plain single
 // image with no dangling divider on either side.
-#let page-footer(theme, theme-grad, logo-a, logo-a-alt, show-partner-a, logo-primary, logo-primary-alt, logo-b, logo-b-alt, show-partner-b, org-full, contact-url, contact-email, texture: "assets/header-texture.png", strip-links: true) = box(width: 100%, fill: theme-grad.brand-blue-grad, clip: true, stroke: (top: theme.stroke-accent + theme.brand-midnight), inset: (x: 20pt, y: 10pt))[
+//
+// Each logo has its own height (logo-a-height, logo-height, logo-b-height)
+// and vertical nudge (logo-a-dy, logo-dy, logo-b-dy), for lockups whose
+// artwork differs in size or sits visually off-center in its canvas (a
+// shield-and-caption logo often reads low). Every cell gets the same box
+// height, the tallest of the three, and the logo is centered inside it,
+// so dy moves a logo relative to a stable row. Defaults (32pt, 0pt)
+// reproduce the original fixed-height lockup exactly.
+#let page-footer(theme, theme-grad, logo-a, logo-a-alt, show-partner-a, logo-primary, logo-primary-alt, logo-b, logo-b-alt, show-partner-b, org-full, contact-url, contact-email, texture: "assets/header-texture.png", strip-links: true, logo-a-height: 32pt, logo-height: 32pt, logo-b-height: 32pt, logo-a-dy: 0pt, logo-dy: 0pt, logo-b-dy: 0pt) = box(width: 100%, fill: theme-grad.brand-blue-grad, clip: true, stroke: (top: theme.stroke-accent + theme.brand-midnight), inset: (x: 20pt, y: 10pt))[
   #place(top + right, dx: 40pt, dy: -30pt)[
     #pdf.artifact(kind: "other")[#image(texture, width: 200pt)]
   ]
@@ -186,12 +194,13 @@
   // a separate line-cell produced no empty /Div at all).
   #let logo-lockup = {
     let logos = ()
-    if bool-token("show_partner_a", show-partner-a) { logos.push((logo-a, logo-a-alt)) }
-    logos.push((logo-primary, logo-primary-alt))
-    if bool-token("show_partner_b", show-partner-b) { logos.push((logo-b, logo-b-alt)) }
+    if bool-token("show_partner_a", show-partner-a) { logos.push((logo-a, logo-a-alt, logo-a-height, logo-a-dy)) }
+    logos.push((logo-primary, logo-primary-alt, logo-height, logo-dy))
+    if bool-token("show_partner_b", show-partner-b) { logos.push((logo-b, logo-b-alt, logo-b-height, logo-b-dy)) }
+    let row-height = calc.max(logo-a-height, logo-height, logo-b-height)
     let cells = ()
     for (i, l) in logos.enumerate() {
-      let logo-img = image(l.at(0), height: 32pt, alt: l.at(1))
+      let logo-img = align(center + horizon)[#move(dy: l.at(3))[#image(l.at(0), height: l.at(2), alt: l.at(1))]]
       cells.push(
         if i > 0 {
           // right: 8pt, not 0 -- the divider stroke sits at this box's
@@ -205,9 +214,9 @@
           // same box/inset/gutter structure, ported back here. 8pt (15pt
           // inset minus the 7pt gutter it's compensating for) equalizes
           // the two gaps at 15pt each.
-          box(inset: (left: 15pt, right: 8pt), stroke: (left: 0.6pt + white.transparentize(45%)))[#logo-img]
+          box(height: row-height, inset: (left: 15pt, right: 8pt), stroke: (left: 0.6pt + white.transparentize(45%)))[#logo-img]
         } else {
-          logo-img
+          box(height: row-height)[#logo-img]
         }
       )
     }

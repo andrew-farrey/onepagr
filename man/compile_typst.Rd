@@ -36,6 +36,12 @@ file (a package-shipped template or a user's own
 derived by scanning the file itself, not a separately-maintained
 manifest.
 }
+\details{
+A template can declare a token optional with a \verb{//} comment line,
+\verb{// optional-token: name = default}. When \code{data} lacks that token (or
+it is \code{NULL}, empty, or \code{NA}), the declared default is used instead of
+raising a missing-token error.
+}
 \examples{
 \dontrun{
 # Needs Quarto (bundling Typst) on the system: see check_quarto().

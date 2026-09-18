@@ -84,3 +84,48 @@ test_that("county_choropleth errors clearly on a missing extra_assets file", {
     "extra_assets file"
   )
 })
+
+test_that("county_choropleth footer sizing defaults, explicit values, and overrides", {
+  skip_if_not(quarto::quarto_available())
+  skip_if_not(requireNamespace("pdftools", quietly = TRUE))
+  source("fixtures/sample_data_county_choropleth.R", local = TRUE)
+  maps <- file.path("fixtures", "maps", sprintf("map%d.png", 0:4))
+  out_dir <- tempfile()
+  dir.create(out_dir)
+  on.exit(unlink(out_dir, recursive = TRUE))
+
+  render_with <- function(name, extra = list()) {
+    out <- file.path(out_dir, paste0(name, ".pdf"))
+    render_onepager(
+      c(sample_data_county_choropleth, extra),
+      template = "county_choropleth", theme = "default",
+      output = out, keep_typst = TRUE, extra_assets = maps
+    )
+    rendered <- file.path(out_dir, paste0(name, "_typst"), "template_rendered.typ")
+    list(
+      pdf = out,
+      typ = paste(readLines(rendered, warn = FALSE), collapse = "\n"),
+      page1 = pdftools::pdf_render_page(out, 1, dpi = 100, numeric = TRUE)
+    )
+  }
+
+  omitted <- render_with("omitted")
+  expect_equal(pdftools::pdf_info(omitted$pdf)$pages, 2)
+  expect_match(omitted$typ, "logo-a-height: float(\"32\") * 1pt", fixed = TRUE)
+  expect_match(omitted$typ, "logo-b-dy: float(\"0\") * 1pt", fixed = TRUE)
+
+  explicit <- render_with("explicit", list(
+    logo_a_height = 32, logo_height = 32, logo_b_height = 32,
+    logo_a_dy = 0, logo_dy = 0, logo_b_dy = 0
+  ))
+  expect_identical(omitted$page1, explicit$page1)
+
+  overridden <- render_with("overridden", list(
+    logo_a_height = 28, logo_height = 20, logo_b_height = 36,
+    logo_b_dy = -3
+  ))
+  expect_equal(pdftools::pdf_info(overridden$pdf)$pages, 2)
+  expect_match(overridden$typ, "logo-height: float(\"20\") * 1pt", fixed = TRUE)
+  expect_match(overridden$typ, "logo-b-dy: float(\"-3\") * 1pt", fixed = TRUE)
+  expect_false(identical(omitted$page1, overridden$page1))
+})

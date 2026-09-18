@@ -150,3 +150,69 @@ test_that("compile_typst compiles successfully with a font_dir supplied", {
   expect_true(file.exists(out_pdf))
   expect_equal(result, out_pdf)
 })
+
+test_that("extract_token_defaults reads optional-token markers only", {
+  tmp <- tempfile(fileext = ".typ")
+  writeLines(
+    c(
+      "// optional-token: logo_height = 32",
+      "  // optional-token: logo_dy =   -4  ",
+      "// an ordinary comment that mentions optional-token: nothing = here",
+      "{{{logo_height}}} {{{logo_dy}}} {{{doc_title}}}"
+    ),
+    tmp
+  )
+  on.exit(unlink(tmp))
+  expect_equal(
+    extract_token_defaults(tmp),
+    list(logo_height = "32", logo_dy = "-4")
+  )
+})
+
+test_that("extract_token_defaults returns an empty list when none are declared", {
+  tmp <- tempfile(fileext = ".typ")
+  writeLines("{{{doc_title}}}", tmp)
+  on.exit(unlink(tmp))
+  expect_length(extract_token_defaults(tmp), 0)
+})
+
+test_that("extract_required_tokens leaves out tokens with a declared default", {
+  tmp <- tempfile(fileext = ".typ")
+  writeLines(
+    c("// optional-token: logo_height = 32", "{{{logo_height}}} {{{doc_title}}}"),
+    tmp
+  )
+  on.exit(unlink(tmp))
+  expect_equal(extract_required_tokens(tmp), "doc_title")
+  expect_true(validate_template_data(tmp, list(doc_title = "x")))
+})
+
+test_that("compile_typst fills an omitted optional token from its default", {
+  skip_if_not(quarto::quarto_available())
+  dir <- tempfile()
+  dir.create(dir)
+  on.exit(unlink(dir, recursive = TRUE))
+  typ <- file.path(dir, "probe.typ")
+  writeLines(
+    c(
+      "// optional-token: size = 12",
+      "#set document(title: [Probe])",
+      "#text[size {{{size}}}]"
+    ),
+    typ
+  )
+  rendered <- file.path(dir, "probe_rendered.typ")
+  out <- file.path(dir, "probe.pdf")
+
+  compile_typst(typ, list(), out)
+  expect_match(paste(readLines(rendered), collapse = "\n"), "size 12")
+
+  compile_typst(typ, list(size = "20"), out)
+  expect_match(paste(readLines(rendered), collapse = "\n"), "size 20")
+
+  # NULL, empty, and NA all count as "not passed".
+  for (unset in list(NULL, character(0), NA)) {
+    compile_typst(typ, list(size = unset), out)
+    expect_match(paste(readLines(rendered), collapse = "\n"), "size 12")
+  }
+})
