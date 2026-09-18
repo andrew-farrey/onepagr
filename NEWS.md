@@ -33,9 +33,10 @@ Initial release.
   each logo (`logo-a-height`, `logo-height`, `logo-b-height` and
   `logo-a-dy`, `logo-dy`, `logo-b-dy`, defaulting to 32pt and 0pt), for
   logos whose artwork differs in size or sits off-center in its canvas.
-  Every logo now sits in a cell as tall as the tallest logo, so the
-  dividers between logos span the full lockup height (previously about
-  23pt in the two alert templates).
+  Every logo now sits in a cell as tall as the tallest logo shown (a
+  hidden partner's height is ignored), so the dividers between logos
+  span the full lockup height (previously about 23pt in the two alert
+  templates).
 
 ## Templates
 

@@ -172,8 +172,9 @@
 // and vertical nudge (logo-a-dy, logo-dy, logo-b-dy), for lockups whose
 // artwork differs in size or sits visually off-center in its canvas (a
 // shield-and-caption logo often reads low). Every cell gets the same box
-// height, the tallest of the three, and the logo is centered inside it,
-// so dy moves a logo relative to a stable row. Defaults (32pt, 0pt)
+// height, the tallest of the logos actually shown (a hidden partner's
+// height is ignored), and the logo is centered inside it, so dy moves a
+// logo relative to a stable row. Defaults (32pt, 0pt)
 // reproduce the original fixed-height lockup exactly.
 #let page-footer(theme, theme-grad, logo-a, logo-a-alt, show-partner-a, logo-primary, logo-primary-alt, logo-b, logo-b-alt, show-partner-b, org-full, contact-url, contact-email, texture: "assets/header-texture.png", strip-links: true, logo-a-height: 32pt, logo-height: 32pt, logo-b-height: 32pt, logo-a-dy: 0pt, logo-dy: 0pt, logo-b-dy: 0pt) = box(width: 100%, fill: theme-grad.brand-blue-grad, clip: true, stroke: (top: theme.stroke-accent + theme.brand-midnight), inset: (x: 20pt, y: 10pt))[
   #place(top + right, dx: 40pt, dy: -30pt)[
@@ -197,7 +198,7 @@
     if bool-token("show_partner_a", show-partner-a) { logos.push((logo-a, logo-a-alt, logo-a-height, logo-a-dy)) }
     logos.push((logo-primary, logo-primary-alt, logo-height, logo-dy))
     if bool-token("show_partner_b", show-partner-b) { logos.push((logo-b, logo-b-alt, logo-b-height, logo-b-dy)) }
-    let row-height = calc.max(logo-a-height, logo-height, logo-b-height)
+    let row-height = calc.max(..logos.map(l => l.at(2)))
     let cells = ()
     for (i, l) in logos.enumerate() {
       let logo-img = align(center + horizon)[#move(dy: l.at(3))[#image(l.at(0), height: l.at(2), alt: l.at(1))]]

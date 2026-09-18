@@ -66,7 +66,7 @@ test_that("page-footer defaults match explicit 32pt/0pt and overrides change out
   on.exit(unlink(dir, recursive = TRUE))
   export_template("county_choropleth", dir)
 
-  render_footer <- function(extra_args) {
+  render_footer <- function(extra_args, show_a = "true", show_b = "true") {
     typ <- file.path(dir, "footer_probe.typ")
     writeLines(
       c(
@@ -76,9 +76,9 @@ test_that("page-footer defaults match explicit 32pt/0pt and overrides change out
         "#set page(width: 6in, height: 1.2in, margin: 0pt)",
         paste0(
           "#page-footer(theme, theme-grad, ",
-          "\"assets/partner-org-a-white.png\", \"Partner A\", \"true\", ",
+          paste0("\"assets/partner-org-a-white.png\", \"Partner A\", \"", show_a, "\", "),
           "\"assets/primary-org-white.png\", \"Primary\", ",
-          "\"assets/partner-org-b-white.png\", \"Partner B\", \"true\", ",
+          paste0("\"assets/partner-org-b-white.png\", \"Partner B\", \"", show_b, "\", "),
           "\"Org\", \"https://example.org/\", \"c@example.org\"",
           extra_args, ")"
         )
@@ -101,6 +101,15 @@ test_that("page-footer defaults match explicit 32pt/0pt and overrides change out
   expect_identical(default, explicit)
   expect_false(identical(default, resized))
   expect_false(identical(default, nudged))
+
+  # A hidden partner's height must not affect the row: only the primary
+  # logo is drawn here, so a huge partner height changes nothing.
+  primary_only <- render_footer("", "false", "false")
+  primary_only_tall_partners <- render_footer(
+    ", logo-a-height: 60pt, logo-b-height: 60pt", "false", "false"
+  )
+  expect_identical(primary_only, primary_only_tall_partners)
+  expect_false(identical(primary_only, default))
 })
 
 test_that("county_choropleth declares footer sizing tokens with neutral defaults", {
