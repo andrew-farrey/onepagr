@@ -146,15 +146,15 @@ render_onepager(data, template = "trend_snapshot", theme_path = "my-theme.typ", 
 
 ### Logos are data, not template edits
 
-Every built-in template requires these tokens in the `data` list you
-pass to `render_onepager()`:
+Every built-in template reads these tokens from the `data` list you pass
+to `render_onepager()`. Only the primary logo is required:
 
 | Token | Meaning |
 |---|---|
-| `logo_primary_path`, `logo_primary_alt` | Your own organization's logo, always shown |
-| `logo_partner_a_path`, `logo_partner_a_alt`, `show_partner_a` | An optional co-branding partner, shown left of the primary logo |
-| `logo_partner_b_path`, `logo_partner_b_alt`, `show_partner_b` | A second optional co-branding partner, shown right of the primary logo |
-| `header_texture_path` | The decorative background texture behind the header band |
+| `logo_primary_path`, `logo_primary_alt` | Required. Your own organization's logo, always shown |
+| `logo_partner_a_path`, `logo_partner_a_alt`, `show_partner_a` | Optional, off by default. A co-branding partner, shown left of the primary logo |
+| `logo_partner_b_path`, `logo_partner_b_alt`, `show_partner_b` | Optional, off by default. A second co-branding partner, shown right of the primary logo |
+| `header_texture_path` | Optional, defaults to onepagr's bundled texture. The decorative background behind the header band |
 
 Changing a logo means changing these values plus staging the actual
 image file, via `render_onepager()`'s `extra_assets` argument; it does
@@ -164,22 +164,38 @@ image) so a screen reader announces real per-organization identification
 instead of one opaque "logo", but not every jurisdiction has a
 three-organization design. `show_partner_a`/`show_partner_b` are each
 independent `"true"`/`"false"` toggles (the literal lowercase string, not
-an R logical; see `?render_onepager`), so a single health department
-reporting under its own name gets one logo with no dangling divider, a
-two-agency partnership gets two, and a KIPRC-style three-organization
-lockup gets three. The primary logo is never optional.
+an R logical; see `?render_onepager`) that default to `"false"`, so a
+single health department reporting under its own name passes only the
+primary logo and gets one logo with no dangling divider. A two-agency
+partnership switches on one partner, and a KIPRC-style three-organization
+lockup switches on both. The primary logo is never optional. If you
+switch a partner on, you must also supply its path and alt text:
+onepagr stops with an error rather than render a blank or unlabeled logo.
 
 ```{r, eval = FALSE}
-# A single health department: one logo, no partners.
+# A single health department: one logo, nothing to switch off.
 data$logo_primary_path <- "county-health-dept-logo.png"
 data$logo_primary_alt <- "Example County Health Department logo"
-data$show_partner_a <- "false"
-data$show_partner_b <- "false"
-data$header_texture_path <- "header-texture.png"
 
 render_onepager(
   data, template = "syndromic_alert", theme = "default", output = "report.pdf",
-  extra_assets = c("county-health-dept-logo.png", "header-texture.png")
+  extra_assets = "county-health-dept-logo.png"
+)
+
+# A three-organization lockup: switch on both partners and supply each
+# one's path and alt text.
+data$logo_partner_a_path <- "partner-a-logo.png"
+data$logo_partner_a_alt <- "Partner A logo"
+data$show_partner_a <- "true"
+data$logo_partner_b_path <- "partner-b-logo.png"
+data$logo_partner_b_alt <- "Partner B logo"
+data$show_partner_b <- "true"
+
+render_onepager(
+  data, template = "syndromic_alert", theme = "default", output = "report.pdf",
+  extra_assets = c(
+    "county-health-dept-logo.png", "partner-a-logo.png", "partner-b-logo.png"
+  )
 )
 ```
 

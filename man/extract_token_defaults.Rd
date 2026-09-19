@@ -16,6 +16,7 @@ Named list of default values (empty if none are declared).
 Internal. A template declares a token as optional with a \verb{//} comment
 line of the form \verb{// optional-token: name = default}. Callers who don't
 supply \code{name} get \code{default} (as a string) instead of a missing-token
-error.
+error. The default may be empty (\verb{// optional-token: name =}), for a
+token that should be present but blank unless the caller sets it.
 }
 \keyword{internal}

@@ -157,6 +157,7 @@ test_that("extract_token_defaults reads optional-token markers only", {
     c(
       "// optional-token: logo_height = 32",
       "  // optional-token: logo_dy =   -4  ",
+      "// optional-token: blank =",
       "// an ordinary comment that mentions optional-token: nothing = here",
       "{{{logo_height}}} {{{logo_dy}}} {{{doc_title}}}"
     ),
@@ -165,7 +166,7 @@ test_that("extract_token_defaults reads optional-token markers only", {
   on.exit(unlink(tmp))
   expect_equal(
     extract_token_defaults(tmp),
-    list(logo_height = "32", logo_dy = "-4")
+    list(logo_height = "32", logo_dy = "-4", blank = "")
   )
 })
 

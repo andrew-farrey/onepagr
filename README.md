@@ -81,20 +81,12 @@ data <- list(
   org_full = "Sample Health Department",
   contact_url = "https://example.org/",
   contact_email = "contact@example.org",
-  # Every template needs a logo lockup and header texture. The paths
-  # below point at onepagr's own bundled placeholder assets (staged
-  # automatically for every render_onepager() call, no extra_assets
-  # needed): swap these for your own project's logo files once you
-  # have them; see vignette("theming") for how.
+  # One logo is all a template needs. This path points at onepagr's own
+  # bundled placeholder (staged automatically, no extra_assets needed):
+  # swap in your own logo file once you have one. Co-branding partner
+  # logos are optional; see vignette("theming").
   logo_primary_path = "assets/primary-org-white.png",
   logo_primary_alt = "Sample Health Department logo",
-  logo_partner_a_path = "assets/partner-org-a-white.png",
-  logo_partner_a_alt = "Partner Organization A logo",
-  show_partner_a = "false",
-  logo_partner_b_path = "assets/partner-org-b-white.png",
-  logo_partner_b_alt = "Partner Organization B logo",
-  show_partner_b = "false",
-  header_texture_path = "assets/header-texture.png",
   severity_level = "critical",
   alert_area = "Sample County",
   alert_issued_at = "August 26, 2026, 9:00 AM",
@@ -193,10 +185,11 @@ tokens. See any file in `inst/typst/themes/` for the full schema, or
 `list_themes()` to see what's built in.
 
 Logos are separate from theming: every template takes a primary logo
-(always shown) plus two optional partner logos, toggled independently
-via `show_partner_a`/`show_partner_b`, so a single organization, a
-two-agency partnership, and a three-organization lockup are all first-
-class cases, no template editing required either way. A `font_dir`
+(always shown) plus two optional partner logos, off by default and
+switched on independently via `show_partner_a`/`show_partner_b`. A
+single organization needs only the primary logo; a two-agency
+partnership and a three-organization lockup are first-class cases too,
+with no template editing required. A `font_dir`
 argument to `render_onepager()` makes a directory of font files
 available to Typst for a compile, for a theme's font that isn't
 installed system-wide. See `vignette("theming")` for all of the above.

@@ -17,10 +17,13 @@ Initial release.
 * `fmt_n()` / `fmt_pct()`: number-formatting helpers matching the
   convention every built-in template's tokens expect.
 * Logos are data, not template edits: every template takes a primary
-  logo (always shown) plus two independently toggleable partner logos
-  (`show_partner_a`/`show_partner_b`), so a single organization, a
-  two-agency partnership, and a three-organization lockup are all
-  first-class cases.
+  logo (always shown) plus two optional partner logos, off by default and
+  switched on independently with `show_partner_a`/`show_partner_b`. A
+  single organization passes only `logo_primary_path` and
+  `logo_primary_alt` (the header texture defaults to the bundled one); a
+  two-agency partnership and a three-organization lockup are first-class
+  cases too. Switching a partner on without its path and alt text is an
+  error, not a placeholder.
 * `render_onepager()`'s `font_dir` argument makes a directory of font
   files available to Typst for a compile, for a theme font that isn't
   installed system-wide.

@@ -77,6 +77,17 @@
 // county_choropleth/template.typ (same rationale: this template
 // self-places the footer as real body content, not page(footer:)
 // furniture, so the default link-stripping no longer applies).
+// Optional data: a single-logo report needs only the primary logo. Both
+// partner logos are off by default. Their path and alt text default to
+// empty on purpose: a partner switched on without a path or alt text
+// fails loudly in page-footer() instead of rendering a placeholder.
+// optional-token: show_partner_a = false
+// optional-token: logo_partner_a_path =
+// optional-token: logo_partner_a_alt =
+// optional-token: show_partner_b = false
+// optional-token: logo_partner_b_path =
+// optional-token: logo_partner_b_alt =
+// optional-token: header_texture_path = assets/header-texture.png
 #let footer = page-footer(
   theme, theme-grad,
   "{{{logo_partner_a_path}}}", "{{{logo_partner_a_alt}}}", "{{{show_partner_a}}}",

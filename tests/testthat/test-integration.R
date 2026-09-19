@@ -217,3 +217,83 @@ test_that("an invalid show_partner_a value fails loudly, not silently", {
     "show_partner_a"
   )
 })
+
+partner_and_texture_tokens <- c(
+  "show_partner_a", "logo_partner_a_path", "logo_partner_a_alt",
+  "show_partner_b", "logo_partner_b_path", "logo_partner_b_alt",
+  "header_texture_path"
+)
+
+single_logo_fixtures <- function() {
+  source("fixtures/sample_data.R", local = TRUE)
+  source("fixtures/sample_data_overdose_spike_alert.R", local = TRUE)
+  source("fixtures/sample_data_syndromic_alert.R", local = TRUE)
+  source("fixtures/sample_data_county_choropleth.R", local = TRUE)
+  fixtures <- list(
+    cohort_summary = sample_data,
+    trend_snapshot = sample_data,
+    overdose_spike_alert = sample_data_overdose_spike_alert,
+    syndromic_alert = sample_data_syndromic_alert,
+    county_choropleth = sample_data_county_choropleth
+  )
+  lapply(fixtures, function(d) d[setdiff(names(d), partner_and_texture_tokens)])
+}
+
+test_that("a single-logo data list needs only the primary logo tokens", {
+  fixtures <- single_logo_fixtures()
+  expect_setequal(names(fixtures), list_templates())
+  for (t in names(fixtures)) {
+    expect_false(
+      any(partner_and_texture_tokens %in% extract_required_tokens(resolve_template(t))),
+      info = t
+    )
+    expect_true(
+      validate_template_data(resolve_template(t), fixtures[[t]]),
+      info = t
+    )
+  }
+})
+
+test_that("every template renders from a single-logo data list", {
+  skip_if_not(quarto::quarto_available())
+  fixtures <- single_logo_fixtures()
+  maps <- file.path("fixtures", "maps", sprintf("map%d.png", 0:4))
+  out_dir <- tempfile()
+  dir.create(out_dir)
+  on.exit(unlink(out_dir, recursive = TRUE))
+  for (t in names(fixtures)) {
+    out_pdf <- file.path(out_dir, paste0(t, ".pdf"))
+    render_onepager(
+      fixtures[[t]],
+      template = t, theme = "default", output = out_pdf, keep_typst = FALSE,
+      extra_assets = if (t == "county_choropleth") maps else character(0)
+    )
+    expect_gt(file.info(out_pdf)$size, 5000)
+  }
+})
+
+test_that("a shown partner without a path or alt text fails loudly", {
+  skip_if_not(quarto::quarto_available())
+  data <- single_logo_fixtures()$cohort_summary
+  out_pdf <- tempfile(fileext = ".pdf")
+
+  data$show_partner_a <- "true"
+  expect_error(
+    render_onepager(
+      data, template = "cohort_summary", theme = "default",
+      output = out_pdf, keep_typst = FALSE
+    ),
+    "logo_partner_a_path or logo_partner_a_alt is empty"
+  )
+
+  data$show_partner_a <- "false"
+  data$show_partner_b <- "true"
+  data$logo_partner_b_path <- "assets/partner-org-b-white.png"
+  expect_error(
+    render_onepager(
+      data, template = "cohort_summary", theme = "default",
+      output = out_pdf, keep_typst = FALSE
+    ),
+    "logo_partner_b_path or logo_partner_b_alt is empty"
+  )
+})

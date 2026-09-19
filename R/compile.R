@@ -42,7 +42,8 @@ extract_required_tokens <- function(path) {
 #' Internal. A template declares a token as optional with a `//` comment
 #' line of the form `// optional-token: name = default`. Callers who don't
 #' supply `name` get `default` (as a string) instead of a missing-token
-#' error.
+#' error. The default may be empty (`// optional-token: name =`), for a
+#' token that should be present but blank unless the caller sets it.
 #'
 #' @param path Character. Path to a .typ file.
 #' @return Named list of default values (empty if none are declared).
@@ -50,7 +51,7 @@ extract_required_tokens <- function(path) {
 extract_token_defaults <- function(path) {
   lines <- readLines(path, warn = FALSE)
   found <- regmatches(lines, regexec(
-    "^\\s*//\\s*optional-token:\\s*([a-zA-Z0-9_.]+)\\s*=\\s*(\\S.*?)\\s*$",
+    "^\\s*//\\s*optional-token:\\s*([a-zA-Z0-9_.]+)\\s*=\\s*(.*?)\\s*$",
     lines
   ))
   found <- found[lengths(found) == 3]

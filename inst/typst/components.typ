@@ -194,10 +194,21 @@
   // confirmed directly (a minimal repro with a bordered box in place of
   // a separate line-cell produced no empty /Div at all).
   #let logo-lockup = {
+    // A partner path/alt text may legitimately be empty while the partner
+    // is hidden (single-logo reports omit them). Once a partner IS shown,
+    // an empty path or alt text is a mistake, and it must not degrade into
+    // a broken image or an untitled logo in an accessible PDF.
+    let partner-shown(slot, flag, path, alt) = {
+      let shown = bool-token("show_" + slot, flag)
+      if shown and (path == "" or alt == "") {
+        panic("show_" + slot + " is true, but logo_" + slot + "_path or logo_" + slot + "_alt is empty; supply both")
+      }
+      shown
+    }
     let logos = ()
-    if bool-token("show_partner_a", show-partner-a) { logos.push((logo-a, logo-a-alt, logo-a-height, logo-a-dy)) }
+    if partner-shown("partner_a", show-partner-a, logo-a, logo-a-alt) { logos.push((logo-a, logo-a-alt, logo-a-height, logo-a-dy)) }
     logos.push((logo-primary, logo-primary-alt, logo-height, logo-dy))
-    if bool-token("show_partner_b", show-partner-b) { logos.push((logo-b, logo-b-alt, logo-b-height, logo-b-dy)) }
+    if partner-shown("partner_b", show-partner-b, logo-b, logo-b-alt) { logos.push((logo-b, logo-b-alt, logo-b-height, logo-b-dy)) }
     let row-height = calc.max(..logos.map(l => l.at(2)))
     let cells = ()
     for (i, l) in logos.enumerate() {
