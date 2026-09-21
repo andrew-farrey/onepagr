@@ -218,6 +218,27 @@
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"onepagr"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="acknowledgements">Acknowledgements<a class="anchor" aria-label="anchor" href="#acknowledgements"></a>
+</h2>
+<p>onepagr is a thin layer over other people’s work, and it would not exist without it.</p>
+<ul>
+<li>
+<a href="https://typst.app" class="external-link">Typst</a> is the typesetting system every template is written in. Its support for tagged, PDF/UA-1 accessible output (Typst 0.14 onward) is what makes an accessible one-page report possible in the first place.</li>
+<li>
+<a href="https://quarto.org" class="external-link">Quarto</a> bundles the Typst compiler and gives onepagr a dependable way to find and run it, and the <a href="https://CRAN.R-project.org/package=quarto" class="external-link">quarto</a> R package is how onepagr locates a Quarto installation from R.</li>
+<li>
+<a href="https://CRAN.R-project.org/package=whisker" class="external-link">whisker</a> implements Mustache templating in R and fills every template’s <code>{{{token}}}</code> placeholders with your data.</li>
+<li>
+<a href="https://CRAN.R-project.org/package=jsonlite" class="external-link">jsonlite</a> reads Typst’s own view of a theme when <code><a href="reference/check_theme.html">check_theme()</a></code> validates one, <a href="https://CRAN.R-project.org/package=scales" class="external-link">scales</a> formats the numbers and percentages, and <a href="https://CRAN.R-project.org/package=pdftools" class="external-link">pdftools</a> reads page counts and text geometry from the finished PDFs.</li>
+<li>
+<a href="https://CRAN.R-project.org/package=testthat" class="external-link">testthat</a>, <a href="https://CRAN.R-project.org/package=knitr" class="external-link">knitr</a>, and <a href="https://CRAN.R-project.org/package=rmarkdown" class="external-link">rmarkdown</a> run the tests and build the vignettes.</li>
+<li>
+<a href="https://pac.pdf-accessibility.org/en" class="external-link">PAC</a>, the PDF Accessibility Checker from the Access for All foundation, is what the accessibility claims above were checked against.</li>
+<li>The <code>default</code> theme’s palette is built on the color variables from <a href="https://getbootstrap.com" class="external-link">Bootstrap</a> 5.3.</li>
+</ul>
+<p>Thank you to everyone who builds and maintains these.</p>
+</div>
+<div class="section level2">
 <h2 id="funding">Funding<a class="anchor" aria-label="anchor" href="#funding"></a>
 </h2>
 <p>This project is supported by the Centers for Disease Control and Prevention (CDC) of the U.S. Department of Health and Human Services (HHS) as part of cooperative agreement 1 NU17CE010186 totaling $5,769,396 with 0% financed with nongovernmental sources. The contents are those of the author(s) and do not necessarily represent the official views of, nor an endorsement by, CDC, HHS, or the U.S. government. For more information, please visit CDC.gov.</p>
