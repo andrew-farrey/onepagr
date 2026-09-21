@@ -147,18 +147,23 @@ Every image below is an actual `render_onepager()` output (sample data,
 front page is on the left and the back page on the right.
 
 **`cohort_summary`**
+
 <img src="man/figures/example-cohort-summary.png" width="100%" alt="Cohort Summary template: a two-page one-pager contrasting a linked cohort against all cases across region, demographics, and encounter history, with a lessons-learned callout and implementation timeline." />
 
 **`trend_snapshot`**
+
 <img src="man/figures/example-trend-snapshot.png" width="100%" alt="Trend Snapshot template: a two-page one-pager tracking a single metric across several time periods with period-over-period comparison bars." />
 
 **`county_choropleth`**
+
 <img src="man/figures/example-county-choropleth.png" width="100%" alt="County Choropleth template: a two-page one-pager with a bivariate choropleth map on the front and four component-factor maps on the back." />
 
 **`overdose_spike_alert`**
+
 <img src="man/figures/example-overdose-spike-alert.png" width="60%" alt="Overdose Spike Alert template: a single-page anomaly alert bulletin with headline stat cards, a narrative section, geographic breakdown, and recommended actions." />
 
 **`syndromic_alert`**
+
 <img src="man/figures/example-syndromic-alert.png" width="60%" alt="Syndromic Alert template: a single-page anomaly alert bulletin generalized to any syndrome, structured like the overdose spike alert." />
 
 ## Themes
