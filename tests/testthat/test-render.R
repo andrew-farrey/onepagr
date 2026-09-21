@@ -116,6 +116,14 @@ test_that("note_page_count messages only when the page count differs", {
   )
 
   testthat::local_mocked_bindings(
+    pdf_info = function(...) list(pages = 1L), .package = "pdftools"
+  )
+  expect_message(
+    note_page_count(typ, "unused.pdf", "cohort_summary"),
+    "cohort_summary is designed for 2 pages; this render produced 1"
+  )
+
+  testthat::local_mocked_bindings(
     pdf_info = function(...) list(pages = 2L), .package = "pdftools"
   )
   expect_no_message(note_page_count(typ, "unused.pdf", "cohort_summary"))

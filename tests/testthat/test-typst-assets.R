@@ -298,3 +298,64 @@ test_that("no size, tracking, inset, gutter, or #v literal bypasses fs, fd, sp",
     )
   }
 })
+
+test_that("fd and the adjusted theme keys follow the scales", {
+  skip_if_not(quarto::quarto_available())
+  skip_if_not(requireNamespace("pdftools", quietly = TRUE))
+  dir <- tempfile()
+  on.exit(unlink(dir, recursive = TRUE))
+  export_template("county_choropleth", dir)
+  typ <- file.path(dir, "fd_probe.typ")
+  writeLines(
+    c(
+      "// optional-token: min_font_size =",
+      "// optional-token: font_scale =",
+      "// optional-token: space_scale =",
+      "#import \"theme.typ\": theme, theme-grad",
+      "#import \"components.typ\": *",
+      paste0(
+        "#let theme = apply-scales(theme, \"{{{min_font_size}}}\", ",
+        "\"{{{font_scale}}}\", \"{{{space_scale}}}\")"
+      ),
+      "#set document(title: [fd probe])",
+      "#set page(width: 12in, height: 12in, margin: 0.5in)",
+      "#set text(font: theme.body-font)",
+      "#box(width: fd(theme, 100pt))[first]#box[second]",
+      "",
+      "#text(size: theme.body-size)[body]",
+      "",
+      "#box(inset: (left: theme.space-md))[spaced]"
+    ),
+    typ
+  )
+  measure <- function(data) {
+    out <- tempfile(fileext = ".pdf")
+    compile_typst(typ, data, out)
+    d <- pdftools::pdf_data(out)[[1]]
+    c(
+      second_x = d$x[d$text == "second"],
+      body_h = d$height[d$text == "body"],
+      spaced_x = d$x[d$text == "spaced"]
+    )
+  }
+
+  base <- measure(list())
+  # 36pt page margin plus the 100pt box; space-md is 4pt, so 36 + 4.
+  expect_equal(base[["second_x"]], 136)
+  expect_equal(base[["spaced_x"]], 40)
+
+  # font_scale 3: fd grows the box by the scale (100 -> 300pt).
+  scaled <- measure(list(font_scale = "3"))
+  expect_equal(scaled[["second_x"]], 36 + 300)
+  # body-size is scaled too: 10pt -> 30pt, so the text is about 3x taller.
+  expect_equal(scaled[["body_h"]] / base[["body_h"]], 3, tolerance = 0.1)
+
+  # A 14pt floor implies ratio 14 / 7 = 2 for text-adjacent dimensions, and
+  # lifts body-size from 10pt to 14pt.
+  floored <- measure(list(min_font_size = "14"))
+  expect_equal(floored[["second_x"]], 36 + 200)
+  expect_equal(floored[["body_h"]] / base[["body_h"]], 1.4, tolerance = 0.1)
+
+  # space-md is pre-multiplied by space_scale: 4pt -> 8pt.
+  expect_equal(measure(list(space_scale = "2"))[["spaced_x"]], 44)
+})

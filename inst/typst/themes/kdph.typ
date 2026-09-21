@@ -106,7 +106,7 @@
   body-size: 10pt,
 
   // -- Type and spacing controls ----------------------------------------
-  // min-font-size: no text renders smaller than this (0pt means no floor).
+  // The floor: no text renders smaller than this (0pt means no floor).
   // font-scale multiplies text sizes and text-adjacent dimensions;
   // space-scale multiplies insets, gutters, gaps, and vertical spacing.
   // All three are no-ops here. A render can override each one with the
