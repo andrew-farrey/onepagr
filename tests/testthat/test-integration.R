@@ -297,3 +297,99 @@ test_that("a shown partner without a path or alt text fails loudly", {
     "logo_partner_b_path or logo_partner_b_alt is empty"
   )
 })
+
+scaled_render <- function(template, extra = list(), theme = "default") {
+  source("fixtures/sample_data.R", local = TRUE)
+  source("fixtures/sample_data_overdose_spike_alert.R", local = TRUE)
+  source("fixtures/sample_data_syndromic_alert.R", local = TRUE)
+  source("fixtures/sample_data_county_choropleth.R", local = TRUE)
+  data <- switch(
+    template,
+    cohort_summary = sample_data, trend_snapshot = sample_data,
+    overdose_spike_alert = sample_data_overdose_spike_alert,
+    syndromic_alert = sample_data_syndromic_alert,
+    county_choropleth = sample_data_county_choropleth
+  )
+  maps <- file.path("fixtures", "maps", sprintf("map%d.png", 0:4))
+  out <- tempfile(fileext = ".pdf")
+  render_onepager(
+    c(data, extra), template = template, theme = theme, output = out,
+    keep_typst = FALSE,
+    extra_assets = if (template == "county_choropleth") maps else character(0)
+  )
+  out
+}
+
+# pdf_data() heights are font-metric based, about 0.9 x the nominal size and
+# font-dependent, so compare against 75% of the floor. Unfloored built-in text
+# reports 6 to 8, which is below every threshold used here.
+smallest_text_height <- function(pdf) {
+  heights <- unlist(lapply(pdftools::pdf_data(pdf), function(page) page$height))
+  min(heights, na.rm = TRUE)
+}
+
+test_that("the fixed-page templates render at exactly 2 pages under every theme", {
+  skip_if_not(quarto::quarto_available())
+  skip_if_not(requireNamespace("pdftools", quietly = TRUE))
+  for (theme in list_themes()) {
+    for (template in c("cohort_summary", "trend_snapshot", "county_choropleth")) {
+      pdf <- scaled_render(template, theme = theme)
+      expect_equal(
+        pdftools::pdf_info(pdf)$pages, 2,
+        info = paste(theme, template)
+      )
+    }
+  }
+})
+
+test_that("min_font_size 12 leaves no text smaller than the floor, in every template", {
+  skip_if_not(quarto::quarto_available())
+  skip_if_not(requireNamespace("pdftools", quietly = TRUE))
+  for (template in list_templates()) {
+    pdf <- scaled_render(template, list(min_font_size = "12"))
+    expect_gte(smallest_text_height(pdf), 12 * 0.75, label = template)
+  }
+  # The same render without the floor does contain smaller text, so the
+  # assertion above can fail.
+  expect_lt(smallest_text_height(scaled_render("trend_snapshot")), 12 * 0.75)
+})
+
+test_that("min_font_size 10 leaves no text smaller than 10pt", {
+  skip_if_not(quarto::quarto_available())
+  skip_if_not(requireNamespace("pdftools", quietly = TRUE))
+  pdf <- scaled_render("trend_snapshot", list(min_font_size = "10"))
+  expect_gte(smallest_text_height(pdf), 10 * 0.75)
+})
+
+test_that("scaling down keeps the fixed templates at 2 pages", {
+  skip_if_not(quarto::quarto_available())
+  skip_if_not(requireNamespace("pdftools", quietly = TRUE))
+  for (template in c("cohort_summary", "trend_snapshot", "county_choropleth")) {
+    pdf <- scaled_render(template, list(font_scale = "0.9", space_scale = "0.9"))
+    expect_equal(pdftools::pdf_info(pdf)$pages, 2, info = template)
+  }
+})
+
+test_that("scaling up past the design overflows and says so", {
+  skip_if_not(quarto::quarto_available())
+  skip_if_not(requireNamespace("pdftools", quietly = TRUE))
+  expect_message(
+    pdf <- scaled_render("cohort_summary", list(font_scale = "1.3")),
+    "cohort_summary is designed for 2 pages; this render produced"
+  )
+  expect_gt(pdftools::pdf_info(pdf)$pages, 2)
+})
+
+test_that("a default render of a fixed template is silent about page count", {
+  skip_if_not(quarto::quarto_available())
+  skip_if_not(requireNamespace("pdftools", quietly = TRUE))
+  expect_no_message(scaled_render("trend_snapshot"))
+})
+
+test_that("an invalid scale stops the render with a clear error", {
+  skip_if_not(quarto::quarto_available())
+  expect_error(
+    scaled_render("trend_snapshot", list(font_scale = "0")),
+    "font_scale must be a positive number"
+  )
+})
