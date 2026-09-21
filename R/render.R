@@ -135,5 +135,36 @@ render_onepager <- function(data, template, theme = "default",
   }
 
   staged_template <- file.path(work_dir, basename(template_path))
-  compile_typst(staged_template, data, output, font_dir = font_dir)
+  result <- compile_typst(staged_template, data, output, font_dir = font_dir)
+  note_page_count(staged_template, output, template)
+  invisible(result)
+}
+
+pdftools_available <- function() {
+  requireNamespace("pdftools", quietly = TRUE)
+}
+
+#' Message when a render's page count differs from the template's design
+#'
+#' Internal. Silent for templates that declare no `designed-pages` marker
+#' (natural pagination) and when pdftools is not installed.
+#'
+#' @param template_path Character. The staged template `.typ`.
+#' @param output Character. The compiled PDF.
+#' @param template Character. The template name, for the message.
+#' @return `invisible(NULL)`.
+#' @keywords internal
+note_page_count <- function(template_path, output, template) {
+  designed <- extract_designed_pages(template_path)
+  if (is.na(designed) || !pdftools_available()) {
+    return(invisible(NULL))
+  }
+  actual <- pdftools::pdf_info(output)$pages
+  if (actual != designed) {
+    message(
+      template, " is designed for ", designed, " pages; this render produced ",
+      actual, "."
+    )
+  }
+  invisible(NULL)
 }

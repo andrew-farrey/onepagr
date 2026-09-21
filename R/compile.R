@@ -61,6 +61,26 @@ extract_token_defaults <- function(path) {
   )
 }
 
+#' Read a template's designed page count
+#'
+#' Internal. A template declares the page count it is designed to fill with a
+#' `//` comment line, `// designed-pages: 2`.
+#'
+#' @param path Character. Path to a .typ file.
+#' @return Integer page count, or `NA_integer_` if the template declares none.
+#' @keywords internal
+extract_designed_pages <- function(path) {
+  lines <- readLines(path, warn = FALSE)
+  found <- regmatches(lines, regexec(
+    "^\\s*//\\s*designed-pages:\\s*([0-9]+)\\s*$", lines
+  ))
+  found <- found[lengths(found) == 2]
+  if (length(found) == 0) {
+    return(NA_integer_)
+  }
+  as.integer(found[[1]][[2]])
+}
+
 #' Validate whisker data against a template's required tokens
 #'
 #' Raises a clear error listing every missing or NA token before whisker
