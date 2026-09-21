@@ -272,6 +272,14 @@ test_that("bare_scaled_literals finds bare literals and ignores wrapped ones", {
   expect_length(bare_scaled_literals("#text(size: 0.8em)[x]"), 1)
   expect_length(bare_scaled_literals("#text(size: 1.15em)[x]"), 0)
   expect_length(bare_scaled_literals("grid(column-gutter: 14pt)"), 1)
+  expect_length(bare_scaled_literals("#let items = x.join(h(3pt))"), 1)
+  expect_length(bare_scaled_literals("#let items = x.join(h(sp(theme, 3pt)))"), 0)
+  expect_length(bare_scaled_literals("#let items = x.join(h(0.5em))"), 0)
+  expect_length(bare_scaled_literals("grid(columns: (100pt, 1fr))"), 1)
+  expect_length(bare_scaled_literals("grid(columns: (fd(theme, 100pt), 1fr))"), 0)
+  expect_length(bare_scaled_literals("grid(columns: (auto, 1fr))"), 0)
+  expect_length(bare_scaled_literals("#let component-map-row-gutter = 20pt"), 1)
+  expect_length(bare_scaled_literals("#let component-map-row-gutter = sp(theme, 20pt)"), 0)
 })
 
 test_that("no size, tracking, inset, gutter, or #v literal bypasses fs, fd, sp", {

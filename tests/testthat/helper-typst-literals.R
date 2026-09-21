@@ -4,7 +4,7 @@
 bare_scaled_literals <- function(lines) {
   keys <- c(
     "size", "tracking", "inset", "column-gutter", "row-gutter", "gutter",
-    "narrative-callout-gap"
+    "narrative-callout-gap", "columns"
   )
   value_after <- function(line, start) {
     chars <- strsplit(substring(line, start), "")[[1]]
@@ -28,7 +28,9 @@ bare_scaled_literals <- function(lines) {
     code <- sub("(?<=\\s)//.*$", "", line, perl = TRUE)
     code <- gsub("(fs|fd|sp)\\(theme, -?[0-9.]+pt\\)", "", code)
     bad <- grepl("#v\\(\\s*-?[0-9.]+pt", code) ||
-      grepl("(?<![\\w-])size:\\s*0?\\.[0-9]+em", code, perl = TRUE)
+      grepl("(?<![\\w-])size:\\s*0?\\.[0-9]+em", code, perl = TRUE) ||
+      grepl("(?<![\\w-])h\\(\\s*-?[0-9.]*[0-9]pt", code, perl = TRUE) ||
+      grepl("let\\s+[a-z-]*-gutter\\s*=\\s*-?[0-9.]*[0-9]pt", code, perl = TRUE)
     for (key in keys) {
       starts <- gregexpr(paste0("(?<![\\w-])", key, ":\\s*"), code, perl = TRUE)[[1]]
       if (starts[[1]] == -1) next

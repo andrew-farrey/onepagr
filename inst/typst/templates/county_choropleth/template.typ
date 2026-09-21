@@ -341,7 +341,7 @@
   fill: step.fill, radius: 3pt, inset: (x: sp(theme, 6pt), y: sp(theme, 3pt)), width: 100%,
 )[#text(size: fs(theme, 7pt), weight: "bold", fill: step.text)[#label]]
 
-#let svi-theme-items(items) = items.map(svi-chip).join(h(3pt))
+#let svi-theme-items(items) = items.map(svi-chip).join(h(sp(theme, 3pt)))
 
 // One outer bordered box (the whole visualization framed as a table),
 // with a rule between each row -- rather than 4 separately-stacked
@@ -354,7 +354,7 @@
 // there after two rounds of tightening.
 #block(stroke: 0.5pt + theme.border-color, radius: 3pt, inset: sp(theme, 4pt), width: 100%)[
   #grid(
-    columns: (100pt, 1fr), column-gutter: sp(theme, 8pt), row-gutter: sp(theme, 2pt),
+    columns: (fd(theme, 100pt), 1fr), column-gutter: sp(theme, 8pt), row-gutter: sp(theme, 2pt),
     align: (left + horizon, left + horizon),
     stroke: (_, y) => if y < 3 { (bottom: 0.5pt + theme.border-color) } else { none },
     inset: (bottom: sp(theme, 2pt)),
@@ -410,7 +410,7 @@
 // which left the second row's map boxes visually cramped directly under
 // the first row's captions.
 #let component-map-height = 220pt
-#let component-map-row-gutter = 20pt
+#let component-map-row-gutter = sp(theme, 20pt)
 #grid(columns: (1fr, 1fr), column-gutter: sp(theme, 10pt), row-gutter: component-map-row-gutter,
   [
     #figure(
