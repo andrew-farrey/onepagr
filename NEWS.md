@@ -67,6 +67,12 @@ Five built-in templates, each a genuinely distinct informational shape:
   (unofficial; not endorsed by KDPH). A theme's `body-font` may now be a
   fallback list, which this theme uses (Calibri, then Carlito, then
   Liberation Sans).
+* Every theme has three type and spacing keys: `min-font-size` (a floor for
+  text size), `font-scale`, and `space-scale`. All default to no change. Each
+  can be overridden for a single render with the optional data tokens
+  `min_font_size` (points), `font_scale`, and `space_scale`. A custom theme
+  needs the three keys added. When a fixed-page template's output no longer
+  matches its designed page count, `render_onepager()` says so.
 
 Every built-in template combined with the `default` or `uk` theme is
 verified against both Typst's `--pdf-standard ua-1` compile-time check
