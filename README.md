@@ -238,6 +238,39 @@ unmodified source SVG.
 citation("onepagr")
 ```
 
+## Acknowledgements
+
+onepagr is a thin layer over other people's work, and it would not exist
+without it.
+
+- [Typst](https://typst.app) is the typesetting system every template is
+  written in. Its support for tagged, PDF/UA-1 accessible output (Typst
+  0.14 onward) is what makes an accessible one-page report possible in the
+  first place.
+- [Quarto](https://quarto.org) bundles the Typst compiler and gives
+  onepagr a dependable way to find and run it, and the
+  [quarto](https://CRAN.R-project.org/package=quarto) R package is how
+  onepagr locates a Quarto installation from R.
+- [whisker](https://CRAN.R-project.org/package=whisker) implements
+  Mustache templating in R and fills every template's `{{{token}}}`
+  placeholders with your data.
+- [jsonlite](https://CRAN.R-project.org/package=jsonlite) reads Typst's own
+  view of a theme when `check_theme()` validates one,
+  [scales](https://CRAN.R-project.org/package=scales) formats the numbers
+  and percentages, and [pdftools](https://CRAN.R-project.org/package=pdftools)
+  reads page counts and text geometry from the finished PDFs.
+- [testthat](https://CRAN.R-project.org/package=testthat),
+  [knitr](https://CRAN.R-project.org/package=knitr), and
+  [rmarkdown](https://CRAN.R-project.org/package=rmarkdown) run the tests
+  and build the vignettes.
+- [PAC](https://pac.pdf-accessibility.org/en), the PDF Accessibility
+  Checker from the Access for All foundation, is what the accessibility
+  claims above were checked against.
+- The `default` theme's palette is built on the color variables from
+  [Bootstrap](https://getbootstrap.com) 5.3.
+
+Thank you to everyone who builds and maintains these.
+
 ## Funding
 
 This project is supported by the Centers for Disease Control and
