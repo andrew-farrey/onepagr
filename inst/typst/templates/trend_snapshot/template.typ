@@ -23,6 +23,13 @@
 // changing this file's structure.
 #import "theme.typ": theme, theme-grad
 #import "components.typ": *
+// designed-pages: 2
+// Optional data: type and spacing controls (see the theming vignette).
+// Empty means "use the theme's value".
+// optional-token: min_font_size =
+// optional-token: font_scale =
+// optional-token: space_scale =
+#let theme = apply-scales(theme, "{{{min_font_size}}}", "{{{font_scale}}}", "{{{space_scale}}}")
 
 // Template-specific tuning values -- unlike theme.typ's systemic tokens,
 // these are specific to how THIS template's content happens to lay out,
@@ -36,7 +43,7 @@
   // leftover space -- measured directly against the real two-paragraph
   // prose via #context position probes; adjust if that paragraph's
   // length changes.
-  narrative-callout-gap: 7pt,
+  narrative-callout-gap: sp(theme, 7pt),
 )
 
 // Route contact_email through a variable rather than splicing
@@ -114,20 +121,20 @@
 // HEADER (identical pattern to onepager_template.typ -- page furniture
 // is exactly where sharing a look across templates matters most)
 // ============================================================
-#block(width: 100%, fill: theme-grad.brand-blue-grad, clip: true, inset: (x: 20pt, y: 10pt), above: 0pt, below: 0pt)[
+#block(width: 100%, fill: theme-grad.brand-blue-grad, clip: true, inset: (x: sp(theme, 20pt), y: sp(theme, 10pt)), above: 0pt, below: 0pt)[
   #place(top + right, dx: 40pt, dy: -30pt)[
     #pdf.artifact(kind: "other")[#image("{{{header_texture_path}}}", width: 260pt)]
   ]
-  #grid(columns: (auto, 1fr), column-gutter: 14pt, align: horizon,
+  #grid(columns: (auto, 1fr), column-gutter: sp(theme, 14pt), align: horizon,
     image("{{{logo_primary_path}}}", height: 28pt, alt: "{{{logo_primary_alt}}}"),
     [
-      #text(fill: white, size: 12pt, weight: "bold")[{{{doc_title}}}] \
-      #text(fill: white.transparentize(15%), size: 9pt)[{{{doc_subtitle}}}]
+      #text(fill: white, size: fs(theme, 12pt), weight: "bold")[{{{doc_title}}}] \
+      #text(fill: white.transparentize(15%), size: fs(theme, 9pt))[{{{doc_subtitle}}}]
     ]
   )
 ]
-#block(fill: theme.brand-midnight, inset: (x: 20pt, y: 6pt), width: 100%, above: 0pt)[
-  #text(fill: white, size: 8pt)[
+#block(fill: theme.brand-midnight, inset: (x: sp(theme, 20pt), y: sp(theme, 6pt)), width: 100%, above: 0pt)[
+  #text(fill: white, size: fs(theme, 8pt))[
     *DATA* {{{strip_data}}}  #h(1.5em)
     *METRIC* {{{strip_design}}}  #h(1.5em)
     *COVERAGE* {{{strip_geography}}}
@@ -142,15 +149,15 @@
 // side-by-side stat cards. Different visual center of gravity from
 // onepager_template.typ's opening row.
 // ============================================================
-#block(breakable: false, fill: theme-grad.card-bg-grad, stroke: (top: theme.stroke-accent + theme.brand-blue, rest: theme.stroke-border + theme.box-border), inset: 10pt, width: 100%)[
-  #grid(columns: (auto, 1fr), column-gutter: 18pt, align: horizon,
+#block(breakable: false, fill: theme-grad.card-bg-grad, stroke: (top: theme.stroke-accent + theme.brand-blue, rest: theme.stroke-border + theme.box-border), inset: sp(theme, 10pt), width: 100%)[
+  #grid(columns: (auto, 1fr), column-gutter: sp(theme, 18pt), align: horizon,
     [
-      #text(size: 40pt, weight: "bold", fill: theme.brand-blue)[{{{pct_linked}}}]
+      #text(size: fs(theme, 40pt), weight: "bold", fill: theme.brand-blue)[{{{pct_linked}}}]
     ],
     [
-      #text(size: 10pt, weight: "bold")[{{{n_decedents}}} sample metric value, {{{strip_period}}}]
+      #text(size: fs(theme, 10pt), weight: "bold")[{{{n_decedents}}} sample metric value, {{{strip_period}}}]
       #v(theme.space-xs)
-      #text(size: 8pt, fill: theme.text-secondary)[Tracking {{{n_ems_total}}} total observations across the period below. Trend shown against {{{n_eligible_decedents}}} eligible units in the sample region.]
+      #text(size: fs(theme, 8pt), fill: theme.text-secondary)[Tracking {{{n_ems_total}}} total observations across the period below. Trend shown against {{{n_eligible_decedents}}} eligible units in the sample region.]
     ]
   )
 ]
@@ -165,8 +172,8 @@
 // is the kind of intentional component reuse the shared components.typ
 // file is meant to enable: same visual grammar, different meaning.
 #block(breakable: false)[
-  #grid(columns: (1fr, 1fr, 1fr, 1fr), column-gutter: 6pt, align: horizon,
-    fill: theme-grad.card-bg-grad, inset: 8pt,
+  #grid(columns: (1fr, 1fr, 1fr, 1fr), column-gutter: sp(theme, 6pt), align: horizon,
+    fill: theme-grad.card-bg-grad, inset: sp(theme, 8pt),
     stroke: (x, ..) => (top: theme.stroke-accent + theme.brand-blue, rest: theme.stroke-border + theme.box-border),
     stat-card(theme, [{{{pct_linked_male_width}}}%], [Period 1]),
     stat-card(theme, [{{{pct_linked_female_width}}}%], [Period 2]),
@@ -176,7 +183,7 @@
 ]
 
 #v(theme.space-sm)
-#text(size: 7.5pt, fill: theme.text-muted)[Values shown are the sample metric's share of {{{n_eligible_decedents}}} eligible units per period, {{{strip_period}}}. Not cumulative -- each period is measured independently.]
+#text(size: fs(theme, 7.5pt), fill: theme.text-muted)[Values shown are the sample metric's share of {{{n_eligible_decedents}}} eligible units per period, {{{strip_period}}}. Not cumulative -- each period is measured independently.]
 
 // ============================================================
 // WHAT CHANGED / WHY IT MATTERS -- two-column narrative idiom reused
@@ -185,7 +192,7 @@
 // framing.
 // ============================================================
 #v(theme.space-md)
-#grid(columns: (55fr, 45fr), column-gutter: 16pt,
+#grid(columns: (55fr, 45fr), column-gutter: sp(theme, 16pt),
   [
     = WHAT CHANGED
   ],
@@ -195,21 +202,21 @@
 )
 #v(theme.space-sm)
 
-#grid(columns: (55fr, 45fr), column-gutter: 16pt,
+#grid(columns: (55fr, 45fr), column-gutter: sp(theme, 16pt),
   [
-    #text(size: 8.5pt)[The sample metric moved from {{{pct_linked_male_width}}}% in Period 1 to {{{pct_linked_nonappalachian_width}}}% by Period 4, the most recent period tracked. That shift coincides with a documented process change partway through the tracked window -- see Key Dates below for the specific timing.]
-    #v(6pt)
-    #text(size: 8.5pt)[A change of this size, sustained across more than one period rather than appearing in a single period alone, is unlikely to reflect measurement noise on its own. Confirming that requires the same kind of denominator and comparison-group discipline used throughout this template family -- see the disclaimer for this snapshot's specific caveats.]
+    #text(size: fs(theme, 8.5pt))[The sample metric moved from {{{pct_linked_male_width}}}% in Period 1 to {{{pct_linked_nonappalachian_width}}}% by Period 4, the most recent period tracked. That shift coincides with a documented process change partway through the tracked window -- see Key Dates below for the specific timing.]
+    #v(sp(theme, 6pt))
+    #text(size: fs(theme, 8.5pt))[A change of this size, sustained across more than one period rather than appearing in a single period alone, is unlikely to reflect measurement noise on its own. Confirming that requires the same kind of denominator and comparison-group discipline used throughout this template family -- see the disclaimer for this snapshot's specific caveats.]
   ],
   [
-    #text(size: 8.5pt)[
+    #text(size: fs(theme, 8.5pt))[
       - Top sample driver category: Category 1
       - Second driver: Category 2
       - Third driver: Category 3
     ]
     #v(layout.narrative-callout-gap)
-    #rect(fill: theme-grad.callout-bg-grad, stroke: 1pt + theme.box-border, inset: (x: 8pt, y: 5pt), width: 100%)[
-      #text(size: 7.5pt, fill: theme.lessons-text)[Ranked by contribution to the overall shift; see the ranked breakdown below for the full per-category comparison.]
+    #rect(fill: theme-grad.callout-bg-grad, stroke: 1pt + theme.box-border, inset: (x: sp(theme, 8pt), y: sp(theme, 5pt)), width: 100%)[
+      #text(size: fs(theme, 7.5pt), fill: theme.lessons-text)[Ranked by contribution to the overall shift; see the ranked breakdown below for the full per-category comparison.]
     ]
   ]
 )
@@ -220,8 +227,8 @@
 // rather than a demographic composition.
 // ============================================================
 #v(theme.space-sm)
-#rect(fill: theme-grad.card-bg-grad, stroke: (top: theme.stroke-accent + theme.brand-midnight, rest: theme.stroke-border + theme.box-border), inset: 7pt, width: 100%)[
-  #text(size: 8pt, weight: "bold", tracking: 0.5pt)[TOP DRIVERS OF THE PERIOD-OVER-PERIOD CHANGE]
+#rect(fill: theme-grad.card-bg-grad, stroke: (top: theme.stroke-accent + theme.brand-midnight, rest: theme.stroke-border + theme.box-border), inset: sp(theme, 7pt), width: 100%)[
+  #text(size: fs(theme, 8pt), weight: "bold", tracking: fd(theme, 0.5pt))[TOP DRIVERS OF THE PERIOD-OVER-PERIOD CHANGE]
   #v(theme.space-xs)
   #bar-row(theme, [Category 1], {{{pct_linked_white_width}}}, "{{{n_white}}}", label-width: 80pt)
   #bar-row(theme, [Category 2], {{{pct_linked_black_width}}}, "{{{n_black}}}", label-width: 80pt)
@@ -241,15 +248,15 @@
   = KEY DATES IN THE TRACKED WINDOW
   #v(theme.space-sm)
 
-  #grid(columns: (1fr, auto, 1fr, auto, 1fr), column-gutter: 6pt, align: horizon,
-    inset: (x, y) => if calc.rem(x, 2) == 0 { 10pt } else { 0pt },
+  #grid(columns: (1fr, auto, 1fr, auto, 1fr), column-gutter: sp(theme, 6pt), align: horizon,
+    inset: (x, y) => if calc.rem(x, 2) == 0 { sp(theme, 10pt) } else { sp(theme, 0pt) },
     fill: (x, ..) => if x == 2 { theme-grad.brand-blue-grad } else if calc.rem(x, 2) == 0 { theme-grad.callout-bg-grad } else { none },
     stroke: (x, ..) => if x == 2 { 1pt + theme.brand-midnight } else if calc.rem(x, 2) == 0 { 1pt + theme.box-border } else { none },
-    [#align(center)[#text(size: 1.15em)[*{{tl1_yr}}*] \ #v(theme.space-xs) #text(size: 8.5pt)[Window opens; baseline period begins]]],
-    text(size: 20pt, weight: "bold", fill: theme.brand-blue)[#sym.arrow.r],
-    [#align(center)[#text(fill: white)[#text(size: 1.15em)[*{{tl2_yr}}*] \ #v(theme.space-xs) #text(size: 8.5pt)[{{tl2_label}}]]]],
-    text(size: 20pt, weight: "bold", fill: theme.brand-blue)[#sym.arrow.r],
-    [#align(center)[#text(size: 1.15em)[*{{tl3_yr}}*] \ #v(theme.space-xs) #text(size: 8.5pt)[Current period; most recent value shown above]]],
+    [#align(center)[#text(size: 1.15em)[*{{tl1_yr}}*] \ #v(theme.space-xs) #text(size: fs(theme, 8.5pt))[Window opens; baseline period begins]]],
+    text(size: fs(theme, 20pt), weight: "bold", fill: theme.brand-blue)[#sym.arrow.r],
+    [#align(center)[#text(fill: white)[#text(size: 1.15em)[*{{tl2_yr}}*] \ #v(theme.space-xs) #text(size: fs(theme, 8.5pt))[{{tl2_label}}]]]],
+    text(size: fs(theme, 20pt), weight: "bold", fill: theme.brand-blue)[#sym.arrow.r],
+    [#align(center)[#text(size: 1.15em)[*{{tl3_yr}}*] \ #v(theme.space-xs) #text(size: fs(theme, 8.5pt))[Current period; most recent value shown above]]],
   )
 ]
 
@@ -265,44 +272,44 @@
 = DETAILED BREAKDOWN
 
 #block(breakable: false)[
-  #grid(columns: (1fr, 1fr), column-gutter: 6pt,
-    fill: theme-grad.card-bg-grad, inset: 7pt, stroke: (top: theme.stroke-accent + theme.brand-midnight, rest: theme.stroke-border + theme.box-border),
+  #grid(columns: (1fr, 1fr), column-gutter: sp(theme, 6pt),
+    fill: theme-grad.card-bg-grad, inset: sp(theme, 7pt), stroke: (top: theme.stroke-accent + theme.brand-midnight, rest: theme.stroke-border + theme.box-border),
     [
       == SUB-METRIC A ACROSS THE TRACKED PERIOD
       #v(theme.space-md)
       #grid(columns: (1fr, 1fr),
-        [#text(size: 24pt, weight: "bold", fill: theme.brand-blue)[{{{pct_any_prior_enc}}}] \ #text(size: 8pt, fill: theme.text-secondary)[Current period value]],
-        align(right)[#text(size: 24pt, weight: "bold", fill: theme.brand-accent)[{{{pct_od_prior_enc}}}] \ #text(size: 8pt, fill: theme.text-secondary)[_Prior_ period value]],
+        [#text(size: fs(theme, 24pt), weight: "bold", fill: theme.brand-blue)[{{{pct_any_prior_enc}}}] \ #text(size: fs(theme, 8pt), fill: theme.text-secondary)[Current period value]],
+        align(right)[#text(size: fs(theme, 24pt), weight: "bold", fill: theme.brand-accent)[{{{pct_od_prior_enc}}}] \ #text(size: fs(theme, 8pt), fill: theme.text-secondary)[_Prior_ period value]],
       )
-      #v(12pt)
-      #rect(fill: theme-grad.callout-bg-grad, stroke: 1pt + theme.box-border, inset: 6pt, width: 100%)[
-        #text(size: 8.5pt)[Mean per-period value: *{{{mean_prior_enc}}}* #sym.dot.c Median: *{{{median_prior_enc}}}*]
+      #v(sp(theme, 12pt))
+      #rect(fill: theme-grad.callout-bg-grad, stroke: 1pt + theme.box-border, inset: sp(theme, 6pt), width: 100%)[
+        #text(size: fs(theme, 8.5pt))[Mean per-period value: *{{{mean_prior_enc}}}* #sym.dot.c Median: *{{{median_prior_enc}}}*]
       ]
     ],
     [
       == SUB-METRIC B DOCUMENTATION (N = {{{n_od_ems_denom}}})
       #v(theme.space-md)
       #grid(columns: ({{{pct_naloxone_width}}}%, {{{pct_no_naloxone_width}}}%),
-        box(fill: theme-grad.brand-blue-grad, stroke: 0.75pt + black, inset: 6pt, height: 38pt, width: 100%)[#align(horizon)[
-          #text(fill: white, size: 8pt, weight: "bold")[{{{pct_naloxone}}} documented] \
-          #text(fill: white, size: 7pt)[{{{n_naloxone_enc}}} observations]
+        box(fill: theme-grad.brand-blue-grad, stroke: 0.75pt + black, inset: sp(theme, 6pt), height: fd(theme, 38pt), width: 100%)[#align(horizon)[
+          #text(fill: white, size: fs(theme, 8pt), weight: "bold")[{{{pct_naloxone}}} documented] \
+          #text(fill: white, size: fs(theme, 7pt))[{{{n_naloxone_enc}}} observations]
         ]],
-        box(fill: theme-grad.brand-sky-grad, stroke: 0.75pt + black, inset: 6pt, height: 38pt, width: 100%)[#align(horizon)[
-          #text(fill: theme.brand-midnight, size: 8pt, weight: "bold")[{{{pct_no_naloxone}}} none] \
-          #text(fill: theme.brand-midnight, size: 7pt)[{{{n_no_naloxone_enc}}} without]
+        box(fill: theme-grad.brand-sky-grad, stroke: 0.75pt + black, inset: sp(theme, 6pt), height: fd(theme, 38pt), width: 100%)[#align(horizon)[
+          #text(fill: theme.brand-midnight, size: fs(theme, 8pt), weight: "bold")[{{{pct_no_naloxone}}} none] \
+          #text(fill: theme.brand-midnight, size: fs(theme, 7pt))[{{{n_no_naloxone_enc}}} without]
         ]],
       )
-      #v(12pt)
-      #text(size: 8.5pt)[Overall: *{{{pct_decedent_nax}}}* of tracked units had #sym.gt.eq 1 documented observation]
+      #v(sp(theme, 12pt))
+      #text(size: fs(theme, 8.5pt))[Overall: *{{{pct_decedent_nax}}}* of tracked units had #sym.gt.eq 1 documented observation]
     ],
   )
 ]
 
 #v(theme.space-xs)
-#rect(fill: theme-grad.card-bg-grad, stroke: (top: theme.stroke-accent + theme.brand-midnight, rest: theme.stroke-border + theme.box-border), inset: 7pt, width: 100%)[
+#rect(fill: theme-grad.card-bg-grad, stroke: (top: theme.stroke-accent + theme.brand-midnight, rest: theme.stroke-border + theme.box-border), inset: sp(theme, 7pt), width: 100%)[
   == PER-CATEGORY CHANGE, CURRENT VS. PRIOR PERIOD
   #v(theme.space-xs)
-  #text(size: 7.5pt, fill: theme.text-secondary)[Bars show the per-category change between the current and prior tracked period, per 100 sample units.]
+  #text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[Bars show the per-category change between the current and prior tracked period, per 100 sample units.]
   #v(theme.space-sm)
   #figure(
     box(stroke: 1pt + black, width: 100%)[#image("assets/structured_field_diff_onepager.png", width: 100%)],
@@ -311,10 +318,10 @@
 ]
 
 #v(theme.space-xs)
-#rect(fill: theme-grad.card-bg-grad, stroke: (top: theme.stroke-accent + theme.brand-midnight, rest: theme.stroke-border + theme.box-border), inset: 7pt, width: 100%)[
+#rect(fill: theme-grad.card-bg-grad, stroke: (top: theme.stroke-accent + theme.brand-midnight, rest: theme.stroke-border + theme.box-border), inset: sp(theme, 7pt), width: 100%)[
   == MAGNITUDE OF CHANGE BY DOMAIN
   #v(theme.space-xs)
-  #text(size: 7.5pt, fill: theme.text-secondary)[Additional domain-specific terms per record, current vs. prior period, {{{strip_period}}}.]
+  #text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[Additional domain-specific terms per record, current vs. prior period, {{{strip_period}}}.]
   #v(theme.space-sm)
   #domain-bar(theme, [Context], {{{domain_diff_scene}}})
   #domain-bar(theme, [History], {{{domain_diff_history}}})
@@ -322,7 +329,7 @@
 ]
 
 #v(theme.space-xs)
-#rect(fill: theme-grad.lessons-bg-grad, stroke: (left: theme.stroke-accent-left + theme.brand-blue, rest: theme.stroke-border + theme.box-border), radius: theme.radius-card, inset: 5pt, width: 100%)[
+#rect(fill: theme-grad.lessons-bg-grad, stroke: (left: theme.stroke-accent-left + theme.brand-blue, rest: theme.stroke-border + theme.box-border), radius: theme.radius-card, inset: sp(theme, 5pt), width: 100%)[
   // Was a plain styled #text() call -- visually reads as a section label
   // but tagged as an ordinary /P in the structure tree, not a heading. A
   // PAC AI-assisted check on the source project (score 0.84) flagged
@@ -330,24 +337,24 @@
   // block, rather than editing the document-wide level-2 rule, preserves
   // this box's specific color/tracking without affecting any other ==
   // heading elsewhere.
-  #show heading: set text(size: 8pt, weight: "bold", fill: theme.lessons-text, tracking: 0.5pt)
+  #show heading: set text(size: fs(theme, 8pt), weight: "bold", fill: theme.lessons-text, tracking: fd(theme, 0.5pt))
   == IMPLICATIONS
   #v(theme.space-xs)
-  #text(size: 8.5pt, fill: theme.lessons-text)[{{{lessons_learned_text}}}]
+  #text(size: fs(theme, 8.5pt), fill: theme.lessons-text)[{{{lessons_learned_text}}}]
 ]
 
 #v(theme.space-xs)
-#rect(fill: theme-grad.disclaimer-bg-grad, stroke: (left: theme.stroke-accent-left + theme.disclaimer-border, rest: theme.stroke-border + theme.box-border), radius: theme.radius-card, inset: 5pt, width: 100%)[
+#rect(fill: theme-grad.disclaimer-bg-grad, stroke: (left: theme.stroke-accent-left + theme.disclaimer-border, rest: theme.stroke-border + theme.box-border), radius: theme.radius-card, inset: sp(theme, 5pt), width: 100%)[
   // Same fix as IMPLICATIONS above -- identical plain-#text()-as-
   // section-label pattern.
-  #show heading: set text(size: 8pt, weight: "bold", fill: theme.disclaimer-text, tracking: 0.5pt)
+  #show heading: set text(size: fs(theme, 8pt), weight: "bold", fill: theme.disclaimer-text, tracking: fd(theme, 0.5pt))
   == DISCLAIMER
   #v(theme.space-xs)
-  #text(size: 8pt, fill: theme.disclaimer-text)[{{{disclaimer_text}}}]
+  #text(size: fs(theme, 8pt), fill: theme.disclaimer-text)[{{{disclaimer_text}}}]
 ]
 
 #v(theme.space-xs)
-#text(size: 7pt, fill: theme.text-muted)[*Data sources:* {{{footnote_sources}}} #h(0.5em)|#h(0.5em) *Period:* {{{strip_period}}} #h(0.5em)|#h(0.5em) *Contact:* {{{org_full}}} at #link("mailto:" + contact-email)[#contact-email]]
+#text(size: fs(theme, 7pt), fill: theme.text-muted)[*Data sources:* {{{footnote_sources}}} #h(0.5em)|#h(0.5em) *Period:* {{{strip_period}}} #h(0.5em)|#h(0.5em) *Contact:* {{{org_full}}} at #link("mailto:" + contact-email)[#contact-email]]
 ] // close body #pad(x: theme.content-pad-x)
 #place(bottom + center, float: true)[#footer]
 

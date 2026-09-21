@@ -25,7 +25,12 @@ string \code{"true"} or \code{"false"}. These are substituted directly into
 Typst string comparisons, so an R logical (which whisker coerces to
 \code{"TRUE"}/\code{"FALSE"}, uppercase) or any other value fails the compile
 loudly with a Typst \code{panic()} rather than silently rendering with
-the wrong severity styling or a mis-toggled section.}
+the wrong severity styling or a mis-toggled section.
+
+Every template also reads three optional data values: \code{min_font_size}
+(in points; no text is set smaller than this), and \code{font_scale} and
+\code{space_scale} (multipliers for text size and for spacing). Each one
+overrides the theme's own setting for this render when supplied.}
 
 \item{template}{Character. A built-in template name (see \code{\link[=list_templates]{list_templates()}}).}
 
@@ -82,6 +87,10 @@ components, and assets it was compiled with, self-contained and
 independently recompilable, not hidden in a disposable tempdir. Set
 \code{keep_typst = FALSE} to compile in a disposable tempdir instead and
 return only the PDF.
+
+When a fixed-page template's output has a different page count than it
+was designed for (for example after raising the type size), a message
+reports it. It is only a message: the PDF is still written.
 }
 \examples{
 \dontrun{

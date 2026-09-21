@@ -18,7 +18,8 @@ test_that("every built-in theme defines the full systemic token set", {
     "radius-card", "content-pad-x",
     "severity-warning", "severity-warning-bg", "severity-warning-text",
     "severity-critical", "severity-critical-bg", "severity-critical-text",
-    "brand-accent-text"
+    "brand-accent-text",
+    "min-font-size", "font-scale", "space-scale"
   )
   theme_files <- list.files(
     system.file("typst", "themes", package = "onepagr"),
@@ -149,4 +150,253 @@ test_that("Typst sources avoid constructs win-builder's Typst rejects", {
       )
     }
   }
+})
+
+test_that("apply-scales, fs, and sp adjust text size and spacing", {
+  skip_if_not(quarto::quarto_available())
+  skip_if_not(requireNamespace("pdftools", quietly = TRUE))
+  dir <- tempfile()
+  on.exit(unlink(dir, recursive = TRUE))
+  export_template("county_choropleth", dir)
+  typ <- file.path(dir, "scales_probe.typ")
+  writeLines(
+    c(
+      "// optional-token: min_font_size =",
+      "// optional-token: font_scale =",
+      "// optional-token: space_scale =",
+      "#import \"theme.typ\": theme, theme-grad",
+      "#import \"components.typ\": *",
+      paste0(
+        "#let theme = apply-scales(theme, \"{{{min_font_size}}}\", ",
+        "\"{{{font_scale}}}\", \"{{{space_scale}}}\")"
+      ),
+      "#set document(title: [Scales probe])",
+      "#set page(width: 12in, height: 12in, margin: 0.5in)",
+      "#set text(font: theme.body-font)",
+      "#text(size: fs(theme, 40pt))[small] #text(size: fs(theme, 80pt))[large]",
+      "",
+      "#box(inset: (left: sp(theme, 10pt)))[indented]"
+    ),
+    typ
+  )
+  measure <- function(data) {
+    out <- tempfile(fileext = ".pdf")
+    compile_typst(typ, data, out)
+    d <- pdftools::pdf_data(out)[[1]]
+    c(
+      small = d$height[d$text == "small"],
+      large = d$height[d$text == "large"],
+      x = d$x[d$text == "indented"]
+    )
+  }
+
+  base <- measure(list())
+  # 40pt vs 80pt text: the small word is half the height of the large one.
+  expect_equal(base[["small"]] / base[["large"]], 0.5, tolerance = 0.06)
+  expect_equal(base[["x"]], 46)
+
+  # A 60pt floor lifts the 40pt word to 60pt and leaves the 80pt word alone.
+  lifted <- measure(list(min_font_size = "60"))
+  expect_equal(lifted[["small"]] / lifted[["large"]], 60 / 80, tolerance = 0.06)
+  expect_equal(lifted[["large"]], base[["large"]])
+
+  # font_scale 2 doubles both.
+  doubled <- measure(list(font_scale = "2"))
+  expect_equal(doubled[["large"]] / base[["large"]], 2, tolerance = 0.06)
+  expect_equal(doubled[["small"]] / base[["small"]], 2, tolerance = 0.06)
+
+  # The floor applies after the scale: scaled 40pt is 80pt, above a 60pt floor.
+  both <- measure(list(min_font_size = "60", font_scale = "2"))
+  expect_equal(both[["small"]], doubled[["small"]])
+
+  # space_scale moves the inset by exactly the extra 10pt.
+  expect_equal(measure(list(space_scale = "2"))[["x"]], 56)
+
+  expect_error(measure(list(font_scale = "0")), "font_scale must be a positive number")
+  expect_error(measure(list(space_scale = "-1")), "space_scale must be a positive number")
+  expect_error(measure(list(min_font_size = "-2")), "min_font_size must not be negative")
+})
+
+test_that("a per-render data token overrides the theme's own scale", {
+  skip_if_not(quarto::quarto_available())
+  skip_if_not(requireNamespace("pdftools", quietly = TRUE))
+  dir <- tempfile()
+  on.exit(unlink(dir, recursive = TRUE))
+  export_template("county_choropleth", dir)
+  theme_file <- file.path(dir, "theme.typ")
+  lines <- readLines(theme_file, warn = FALSE)
+  lines <- sub("font-scale: 1.0,", "font-scale: 2.0,", lines, fixed = TRUE)
+  expect_true(any(grepl("font-scale: 2.0,", lines, fixed = TRUE)))
+  writeLines(lines, theme_file)
+  typ <- file.path(dir, "precedence_probe.typ")
+  writeLines(
+    c(
+      "// optional-token: min_font_size =",
+      "// optional-token: font_scale =",
+      "// optional-token: space_scale =",
+      "#import \"theme.typ\": theme, theme-grad",
+      "#import \"components.typ\": *",
+      paste0(
+        "#let theme = apply-scales(theme, \"{{{min_font_size}}}\", ",
+        "\"{{{font_scale}}}\", \"{{{space_scale}}}\")"
+      ),
+      "#set document(title: [Precedence probe])",
+      "#set page(width: 12in, height: 12in, margin: 0.5in)",
+      "#set text(font: theme.body-font)",
+      "#text(size: fs(theme, 40pt))[large]"
+    ),
+    typ
+  )
+  height_of_large <- function(data) {
+    out <- tempfile(fileext = ".pdf")
+    compile_typst(typ, data, out)
+    pdftools::pdf_data(out)[[1]]$height[1]
+  }
+  from_theme <- height_of_large(list())
+  overridden <- height_of_large(list(font_scale = "1"))
+  # The theme says 2.0, the data token says 1: the token wins.
+  expect_equal(from_theme / overridden, 2, tolerance = 0.06)
+})
+
+test_that("bare_scaled_literals finds bare literals and ignores wrapped ones", {
+  expect_length(bare_scaled_literals("box(inset: 7pt, radius: 3pt)"), 1)
+  expect_length(bare_scaled_literals("box(inset: (x: sp(theme, 20pt), y: 10pt))"), 1)
+  expect_length(bare_scaled_literals(
+    "box(inset: (x: sp(theme, 20pt), y: sp(theme, 10pt)), stroke: 0.5pt + red)"
+  ), 0)
+  expect_length(bare_scaled_literals("#text(size: 8pt)[x]"), 1)
+  expect_length(bare_scaled_literals("#text(size: fs(theme, 8pt))[x]"), 0)
+  expect_length(bare_scaled_literals("#v(6pt)"), 1)
+  expect_length(bare_scaled_literals("#v(sp(theme, 6pt))"), 0)
+  expect_length(bare_scaled_literals("// inset: 7pt in a comment"), 0)
+  expect_length(bare_scaled_literals("#text(size: 0.8em)[x]"), 1)
+  expect_length(bare_scaled_literals("#text(size: 1.15em)[x]"), 0)
+  expect_length(bare_scaled_literals("grid(column-gutter: 14pt)"), 1)
+  expect_length(bare_scaled_literals("#let items = x.join(h(3pt))"), 1)
+  expect_length(bare_scaled_literals("#let items = x.join(h(sp(theme, 3pt)))"), 0)
+  expect_length(bare_scaled_literals("#let items = x.join(h(0.5em))"), 0)
+  expect_length(bare_scaled_literals("grid(columns: (100pt, 1fr))"), 1)
+  expect_length(bare_scaled_literals("grid(columns: (fd(theme, 100pt), 1fr))"), 0)
+  expect_length(bare_scaled_literals("grid(columns: (auto, 1fr))"), 0)
+  expect_length(bare_scaled_literals("#let component-map-row-gutter = 20pt"), 1)
+  expect_length(bare_scaled_literals("#let component-map-row-gutter = sp(theme, 20pt)"), 0)
+})
+
+test_that("no size, tracking, inset, gutter, or #v literal bypasses fs, fd, sp", {
+  files <- c(
+    system.file("typst", "components.typ", package = "onepagr"),
+    list.files(
+      system.file("typst", "templates", package = "onepagr"),
+      pattern = "^template\\.typ$", recursive = TRUE, full.names = TRUE
+    )
+  )
+  expect_length(files, 6)
+  for (f in files) {
+    expect_equal(
+      bare_scaled_literals(readLines(f, warn = FALSE)), character(0),
+      info = paste(basename(dirname(f)), basename(f))
+    )
+  }
+})
+
+test_that("fd and the adjusted theme keys follow the scales", {
+  skip_if_not(quarto::quarto_available())
+  skip_if_not(requireNamespace("pdftools", quietly = TRUE))
+  dir <- tempfile()
+  on.exit(unlink(dir, recursive = TRUE))
+  export_template("county_choropleth", dir)
+  typ <- file.path(dir, "fd_probe.typ")
+  writeLines(
+    c(
+      "// optional-token: min_font_size =",
+      "// optional-token: font_scale =",
+      "// optional-token: space_scale =",
+      "#import \"theme.typ\": theme, theme-grad",
+      "#import \"components.typ\": *",
+      paste0(
+        "#let theme = apply-scales(theme, \"{{{min_font_size}}}\", ",
+        "\"{{{font_scale}}}\", \"{{{space_scale}}}\")"
+      ),
+      "#set document(title: [fd probe])",
+      "#set page(width: 12in, height: 12in, margin: 0.5in)",
+      "#set text(font: theme.body-font)",
+      "#box(width: fd(theme, 100pt))[first]#box[second]",
+      "",
+      "#text(size: theme.body-size)[body]",
+      "",
+      "#box(inset: (left: theme.space-md))[spaced]"
+    ),
+    typ
+  )
+  measure <- function(data) {
+    out <- tempfile(fileext = ".pdf")
+    compile_typst(typ, data, out)
+    d <- pdftools::pdf_data(out)[[1]]
+    c(
+      second_x = d$x[d$text == "second"],
+      body_h = d$height[d$text == "body"],
+      spaced_x = d$x[d$text == "spaced"]
+    )
+  }
+
+  base <- measure(list())
+  # 36pt page margin plus the 100pt box; space-md is 4pt, so 36 + 4.
+  expect_equal(base[["second_x"]], 136)
+  expect_equal(base[["spaced_x"]], 40)
+
+  # font_scale 3: fd grows the box by the scale (100 -> 300pt).
+  scaled <- measure(list(font_scale = "3"))
+  expect_equal(scaled[["second_x"]], 36 + 300)
+  # body-size is scaled too: 10pt -> 30pt, so the text is about 3x taller.
+  expect_equal(scaled[["body_h"]] / base[["body_h"]], 3, tolerance = 0.1)
+
+  # A 14pt floor implies ratio 14 / 7 = 2 for text-adjacent dimensions, and
+  # lifts body-size from 10pt to 14pt.
+  floored <- measure(list(min_font_size = "14"))
+  expect_equal(floored[["second_x"]], 36 + 200)
+  expect_equal(floored[["body_h"]] / base[["body_h"]], 1.4, tolerance = 0.1)
+
+  # space-md is pre-multiplied by space_scale: 4pt -> 8pt.
+  expect_equal(measure(list(space_scale = "2"))[["spaced_x"]], 44)
+})
+
+test_that("scale values are validated after resolution, including the theme's own", {
+  skip_if_not(quarto::quarto_available())
+  dir <- tempfile()
+  on.exit(unlink(dir, recursive = TRUE))
+  export_template("county_choropleth", dir)
+  theme_file <- file.path(dir, "theme.typ")
+  original <- readLines(theme_file, warn = FALSE)
+  typ <- file.path(dir, "validate_probe.typ")
+  writeLines(
+    c(
+      "// optional-token: min_font_size =",
+      "// optional-token: font_scale =",
+      "// optional-token: space_scale =",
+      "#import \"theme.typ\": theme, theme-grad",
+      "#import \"components.typ\": *",
+      paste0(
+        "#let theme = apply-scales(theme, \"{{{min_font_size}}}\", ",
+        "\"{{{font_scale}}}\", \"{{{space_scale}}}\")"
+      ),
+      "#set document(title: [Validate probe])",
+      "#set page(width: 12in, height: 12in, margin: 0.5in)",
+      "#set text(font: theme.body-font)",
+      "#text(size: fs(theme, 10pt))[probe]"
+    ),
+    typ
+  )
+  compile_probe <- function(data) {
+    compile_typst(typ, data, tempfile(fileext = ".pdf"))
+  }
+
+  # A theme that itself sets a non-positive scale is rejected, not silently used.
+  zeroed <- sub("font-scale: 1.0,", "font-scale: 0.0,", original, fixed = TRUE)
+  expect_true(any(grepl("font-scale: 0.0,", zeroed, fixed = TRUE)))
+  writeLines(zeroed, theme_file)
+  expect_error(compile_probe(list()), "font_scale must be a positive number")
+
+  writeLines(original, theme_file)
+  expect_error(compile_probe(list(font_scale = "nan")), "font_scale must be a positive number")
+  expect_error(compile_probe(list(font_scale = "-2")), "font_scale must be a positive number")
 })

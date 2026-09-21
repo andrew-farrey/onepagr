@@ -13,6 +13,10 @@
 #' `keep_typst = FALSE` to compile in a disposable tempdir instead and
 #' return only the PDF.
 #'
+#' When a fixed-page template's output has a different page count than it
+#' was designed for (for example after raising the type size), a message
+#' reports it. It is only a message: the PDF is still written.
+#'
 #' @param data Named list of whisker substitution values. For alert-style
 #'   templates (`overdose_spike_alert`, `syndromic_alert`), the
 #'   `severity_level` token must be the literal lowercase string
@@ -23,6 +27,11 @@
 #'   `"TRUE"`/`"FALSE"`, uppercase) or any other value fails the compile
 #'   loudly with a Typst `panic()` rather than silently rendering with
 #'   the wrong severity styling or a mis-toggled section.
+#'
+#'   Every template also reads three optional data values: `min_font_size`
+#'   (in points; no text is set smaller than this), and `font_scale` and
+#'   `space_scale` (multipliers for text size and for spacing). Each one
+#'   overrides the theme's own setting for this render when supplied.
 #' @param template Character. A built-in template name (see [list_templates()]).
 #' @param theme Character. A built-in theme name, or a path to a custom
 #'   theme .typ file (see [resolve_theme()]). Default `"default"`.
@@ -135,5 +144,42 @@ render_onepager <- function(data, template, theme = "default",
   }
 
   staged_template <- file.path(work_dir, basename(template_path))
-  compile_typst(staged_template, data, output, font_dir = font_dir)
+  result <- compile_typst(staged_template, data, output, font_dir = font_dir)
+  note_page_count(staged_template, output, template)
+  invisible(result)
+}
+
+pdftools_available <- function() {
+  requireNamespace("pdftools", quietly = TRUE)
+}
+
+#' Message when a render's page count differs from the template's design
+#'
+#' Internal. Silent for templates that declare no `designed-pages` marker
+#' (natural pagination) and when pdftools is not installed.
+#'
+#' @param template_path Character. The staged template `.typ`.
+#' @param output Character. The compiled PDF.
+#' @param template Character. The template name, for the message.
+#' @return `invisible(NULL)`.
+#' @keywords internal
+note_page_count <- function(template_path, output, template) {
+  designed <- extract_designed_pages(template_path)
+  if (is.na(designed) || !pdftools_available()) {
+    return(invisible(NULL))
+  }
+  actual <- tryCatch(
+    pdftools::pdf_info(output)$pages,
+    error = function(e) NA_integer_
+  )
+  if (is.na(actual)) {
+    return(invisible(NULL))
+  }
+  if (actual != designed) {
+    message(
+      template, " is designed for ", designed, " pages; this render produced ",
+      actual, "."
+    )
+  }
+  invisible(NULL)
 }

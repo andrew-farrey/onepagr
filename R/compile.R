@@ -61,6 +61,26 @@ extract_token_defaults <- function(path) {
   )
 }
 
+#' Read a template's designed page count
+#'
+#' Internal. A template declares the page count it is designed to fill with a
+#' `//` comment line, `// designed-pages: 2`.
+#'
+#' @param path Character. Path to a .typ file.
+#' @return Integer page count, or `NA_integer_` if the template declares none.
+#' @keywords internal
+extract_designed_pages <- function(path) {
+  lines <- readLines(path, warn = FALSE)
+  found <- regmatches(lines, regexec(
+    "^\\s*//\\s*designed-pages:\\s*([0-9]+)\\s*$", lines
+  ))
+  found <- found[lengths(found) == 2]
+  if (length(found) == 0) {
+    return(NA_integer_)
+  }
+  as.integer(found[[1]][[2]])
+}
+
 #' Validate whisker data against a template's required tokens
 #'
 #' Raises a clear error listing every missing or NA token before whisker
@@ -167,6 +187,16 @@ compile_typst <- function(path, data, output, font_dir = NULL) {
   writeLines(rendered, typ_out)
 
   font_args <- if (!is.null(font_dir)) c("--font-path", shQuote(font_dir))
+  # A failed compile must not be masked by an older PDF at the same path:
+  # success is judged by the file existing, so clear it first.
+  unlink(output)
+  if (file.exists(output)) {
+    stop(
+      "Cannot replace the existing output file (is it open in another ",
+      "program?): ", output,
+      call. = FALSE
+    )
+  }
   # suppressWarnings() only silences system2()'s own "had status N" warning,
   # which fires unconditionally on a non-zero exit whenever stdout is
   # captured as text: redundant here since a non-zero exit is already

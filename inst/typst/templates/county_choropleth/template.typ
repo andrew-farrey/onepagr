@@ -20,6 +20,13 @@
 // comment for the full rationale (lexical-scoping bug this avoids).
 #import "theme.typ": theme, theme-grad
 #import "components.typ": *
+// designed-pages: 2
+// Optional data: type and spacing controls (see the theming vignette).
+// Empty means "use the theme's value".
+// optional-token: min_font_size =
+// optional-token: font_scale =
+// optional-token: space_scale =
+#let theme = apply-scales(theme, "{{{min_font_size}}}", "{{{font_scale}}}", "{{{space_scale}}}")
 
 // Route contact_email through a variable rather than splicing
 // {{{contact_email}}} directly into markup body wherever it's displayed.
@@ -119,20 +126,20 @@
 // ============================================================
 // HEADER
 // ============================================================
-#block(width: 100%, fill: theme-grad.brand-blue-grad, clip: true, inset: (x: 20pt, y: 10pt), above: 0pt, below: 0pt)[
+#block(width: 100%, fill: theme-grad.brand-blue-grad, clip: true, inset: (x: sp(theme, 20pt), y: sp(theme, 10pt)), above: 0pt, below: 0pt)[
   #place(top + right, dx: 40pt, dy: -30pt)[
     #pdf.artifact(kind: "other")[#image("{{{header_texture_path}}}", width: 260pt)]
   ]
-  #grid(columns: (auto, 1fr), column-gutter: 14pt, align: horizon,
+  #grid(columns: (auto, 1fr), column-gutter: sp(theme, 14pt), align: horizon,
     image("{{{logo_primary_path}}}", height: 28pt, alt: "{{{logo_primary_alt}}}"),
     [
-      #text(fill: white, size: 12pt, weight: "bold")[{{{doc_title}}}] \
-      #text(fill: white.transparentize(15%), size: 9pt)[{{{doc_subtitle}}}]
+      #text(fill: white, size: fs(theme, 12pt), weight: "bold")[{{{doc_title}}}] \
+      #text(fill: white.transparentize(15%), size: fs(theme, 9pt))[{{{doc_subtitle}}}]
     ]
   )
 ]
-#block(fill: theme.brand-midnight, inset: (x: 20pt, y: 6pt), width: 100%, above: 0pt)[
-  #text(fill: white, size: 8pt)[
+#block(fill: theme.brand-midnight, inset: (x: sp(theme, 20pt), y: sp(theme, 6pt)), width: 100%, above: 0pt)[
+  #text(fill: white, size: fs(theme, 8pt))[
     *DATA* {{{strip_data}}}  #h(1.5em)
     *PERIOD* {{{strip_period}}}  #h(1.5em)
     *DESIGN* {{{strip_design}}}  #h(1.5em)
@@ -151,8 +158,8 @@
 
 #block(breakable: false)[
   #grid(
-    columns: (1fr, 1fr, 1fr), column-gutter: 6pt,
-    fill: theme-grad.card-bg-grad, inset: 6pt,
+    columns: (1fr, 1fr, 1fr), column-gutter: sp(theme, 6pt),
+    fill: theme-grad.card-bg-grad, inset: sp(theme, 6pt),
     stroke: (x, ..) => (top: theme.stroke-accent + (theme.brand-blue, theme.brand-accent, theme.brand-midnight).at(x), rest: theme.stroke-border + theme.box-border),
     stat-card(theme, [{{{n_statewide_od_deaths}}}], [Count of resident drug overdose deaths, {{{strip_period}}}]),
     stat-card(theme, [{{{statewide_od_rate}}}], [Statewide crude death rate, per 100,000 residents], color: theme.brand-accent),
@@ -253,7 +260,7 @@
 // trust any number in this comment, including this one, without
 // re-verifying it first.
 #let headline-map-height = 250pt
-#grid(columns: (80fr, 20fr), column-gutter: 12pt,
+#grid(columns: (80fr, 20fr), column-gutter: sp(theme, 12pt),
   [
     #figure(
       box(stroke: map-border-weight + theme.map-border-color, width: 100%, height: headline-map-height)[
@@ -263,7 +270,9 @@
     )
   ],
   [
-    #text-box(theme, theme-grad, [HOW TO READ THIS MAP], height: headline-map-height)[
+    // This box holds text, so its height uses fd and grows with the type;
+    // the map box beside it stays a fixed size.
+    #text-box(theme, theme-grad, [HOW TO READ THIS MAP], height: fd(theme, headline-map-height))[
       Each county is shaded by two ranks at once: Social Vulnerability Index (SVI, left #sym.arrow.r right) and overdose death rate (bottom #sym.arrow.r top), each split into thirds across all 120 counties.
       #v(theme.space-xs)
       // Verified directly against biscale::bi_pal("BlueOr", dim=3), not
@@ -285,23 +294,23 @@
 // true of this dataset, not a generic fact about what SVI is -- that
 // generic explanation lives in the UNDERSTANDING THIS ANALYSIS narrative
 // just below instead, so this caption isn't redundant with it.
-#text(size: 8.5pt, fill: theme.text-secondary)[*Social Vulnerability Index (SVI).* {{{map0_caption}}}]
+#text(size: fs(theme, 8.5pt), fill: theme.text-secondary)[*Social Vulnerability Index (SVI).* {{{map0_caption}}}]
 
 #v(theme.space-md)
 = UNDERSTANDING THIS ANALYSIS
 #v(theme.space-sm)
-#text(size: 8.5pt)[Elevated drug overdose fatality rates do not occur in isolation; they are concentrated in communities where social and economic conditions create compounded risk. The SVI, developed by the Centers for Disease Control and Prevention, draws on census data to quantify four dimensions of community vulnerability: socioeconomic status, household characteristics, racial and ethnic minority status, and housing type and transportation. Higher SVI scores indicate communities with greater vulnerability.]
+#text(size: fs(theme, 8.5pt))[Elevated drug overdose fatality rates do not occur in isolation; they are concentrated in communities where social and economic conditions create compounded risk. The SVI, developed by the Centers for Disease Control and Prevention, draws on census data to quantify four dimensions of community vulnerability: socioeconomic status, household characteristics, racial and ethnic minority status, and housing type and transportation. Higher SVI scores indicate communities with greater vulnerability.]
 
 #v(theme.space-sm)
-#text(size: 8.5pt)[The maps in this series use a bivariate choropleth design to display two variables at once: drug overdose death rate and social vulnerability. Dark green indicates counties high on both measures; orange or blue indicates counties high on one measure but low on the other; gray indicates counties low on both. This approach reveals not just where overdose burden is concentrated, but whether and how that concentration aligns with social vulnerability.]
+#text(size: fs(theme, 8.5pt))[The maps in this series use a bivariate choropleth design to display two variables at once: drug overdose death rate and social vulnerability. Dark green indicates counties high on both measures; orange or blue indicates counties high on one measure but low on the other; gray indicates counties low on both. This approach reveals not just where overdose burden is concentrated, but whether and how that concentration aligns with social vulnerability.]
 
 #v(theme.space-sm)
-#text(size: 8.5pt)[Each of the individual maps, on this page and on the reverse, examines a different vulnerability indicator -- the composite SVI and four individual component measures -- to show how the geographic relationship between overdose burden and social disadvantage shifts across measures.]
+#text(size: fs(theme, 8.5pt))[Each of the individual maps, on this page and on the reverse, examines a different vulnerability indicator -- the composite SVI and four individual component measures -- to show how the geographic relationship between overdose burden and social disadvantage shifts across measures.]
 
 #v(theme.space-md)
 = WHAT SVI MEASURES
 #v(theme.space-xs)
-#text(size: 7.5pt, fill: theme.text-secondary)[The SVI composite score combines county rankings across four CDC-defined themes, each based on multiple Census variables.]
+#text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[The SVI composite score combines county rankings across four CDC-defined themes, each based on multiple Census variables.]
 #v(theme.space-xs)
 
 // A compact row layout, not CDC's own tall-left-bar diagram (see
@@ -317,8 +326,8 @@
 // this template, not specific to one state's analysis.
 #let svi-chip(label) = box(
   fill: white, stroke: 0.5pt + theme.border-color, radius: 2pt,
-  outset: (y: 0.5pt), inset: (x: 4pt, y: 1pt),
-)[#text(size: 7.5pt, fill: theme.text-secondary)[#label]]
+  outset: (y: 0.5pt), inset: (x: sp(theme, 4pt), y: sp(theme, 1pt)),
+)[#text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[#label]]
 
 // The four row fills are a monochromatic tint ramp of the theme's
 // brand-blue, and each row's label color comes from legible-ramp()
@@ -331,10 +340,10 @@
 // legible without a per-theme token.
 #let svi-ramp = legible-ramp(theme.brand-blue, theme.brand-midnight)
 #let svi-theme-label(step, label) = rect(
-  fill: step.fill, radius: 3pt, inset: (x: 6pt, y: 3pt), width: 100%,
-)[#text(size: 7pt, weight: "bold", fill: step.text)[#label]]
+  fill: step.fill, radius: 3pt, inset: (x: sp(theme, 6pt), y: sp(theme, 3pt)), width: 100%,
+)[#text(size: fs(theme, 7pt), weight: "bold", fill: step.text)[#label]]
 
-#let svi-theme-items(items) = items.map(svi-chip).join(h(3pt))
+#let svi-theme-items(items) = items.map(svi-chip).join(h(sp(theme, 3pt)))
 
 // One outer bordered box (the whole visualization framed as a table),
 // with a rule between each row -- rather than 4 separately-stacked
@@ -345,12 +354,12 @@
 // more generously-spaced version pushed a consuming project's report
 // onto an unwanted third page; this is the value that held at 2 pages
 // there after two rounds of tightening.
-#block(stroke: 0.5pt + theme.border-color, radius: 3pt, inset: 4pt, width: 100%)[
+#block(stroke: 0.5pt + theme.border-color, radius: 3pt, inset: sp(theme, 4pt), width: 100%)[
   #grid(
-    columns: (100pt, 1fr), column-gutter: 8pt, row-gutter: 2pt,
+    columns: (fd(theme, 100pt), 1fr), column-gutter: sp(theme, 8pt), row-gutter: sp(theme, 2pt),
     align: (left + horizon, left + horizon),
     stroke: (_, y) => if y < 3 { (bottom: 0.5pt + theme.border-color) } else { none },
-    inset: (bottom: 2pt),
+    inset: (bottom: sp(theme, 2pt)),
     svi-theme-label(svi-ramp.at(0), [SOCIOECONOMIC STATUS]),
     svi-theme-items(([Below 150% poverty], [Unemployed], [Housing cost burden], [No high school diploma], [No health insurance])),
     svi-theme-label(svi-ramp.at(1), [HOUSEHOLD CHARACTERISTICS]),
@@ -369,7 +378,7 @@
 // disclaimer_text's "\$" -- needs the literal "\*" escape. Any future
 // literal asterisk (a footnote marker, multiplication, etc.) anywhere in
 // this package's templates needs the same treatment.
-#text(size: 7pt, fill: theme.text-muted)[\*SVI is the Centers for Disease Control and Prevention and Agency for Toxic Substances and Disease Registry's (CDC/ATSDR's) composite Social Vulnerability Index (sum of all four theme rankings), {{{data_vintage}}}. Overdose deaths are Kentucky resident deaths with an underlying cause of death consistent with the standard CDC/National Center for Health Statistics (NCHS) drug-poisoning definition (ICD-10 codes X40#sym.dash.en 44, X60#sym.dash.en 64, X85, Y10#sym.dash.en 14), {{{strip_period}}}, crude rate per 100,000 residents (not age-adjusted).]
+#text(size: fs(theme, 7pt), fill: theme.text-muted)[\*SVI is the Centers for Disease Control and Prevention and Agency for Toxic Substances and Disease Registry's (CDC/ATSDR's) composite Social Vulnerability Index (sum of all four theme rankings), {{{data_vintage}}}. Overdose deaths are Kentucky resident deaths with an underlying cause of death consistent with the standard CDC/National Center for Health Statistics (NCHS) drug-poisoning definition (ICD-10 codes X40#sym.dash.en 44, X60#sym.dash.en 64, X85, Y10#sym.dash.en 14), {{{strip_period}}}, crude rate per 100,000 residents (not age-adjusted).]
 
 ] // close page-1 body
 #place(bottom + center, float: true)[#footer]
@@ -382,7 +391,7 @@
 // ============================================================
 = COMPONENT FACTORS BEHIND THE SVI SCORE
 #v(theme.space-xs)
-#text(size: 7.5pt, fill: theme.text-secondary)[The composite SVI score above is built from many measures. The four maps below isolate individual components most directly tied to health-care access and economic strain, each paired with the same overdose death rate as the map above -- to help visualize which specific factors are driving a county's overall vulnerability.]
+#text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[The composite SVI score above is built from many measures. The four maps below isolate individual components most directly tied to health-care access and economic strain, each paired with the same overdose death rate as the map above -- to help visualize which specific factors are driving a county's overall vulnerability.]
 #v(theme.space-sm)
 
 // map1_caption..map4_caption are tokens, NOT hardcoded template prose
@@ -403,8 +412,8 @@
 // which left the second row's map boxes visually cramped directly under
 // the first row's captions.
 #let component-map-height = 220pt
-#let component-map-row-gutter = 20pt
-#grid(columns: (1fr, 1fr), column-gutter: 10pt, row-gutter: component-map-row-gutter,
+#let component-map-row-gutter = sp(theme, 20pt)
+#grid(columns: (1fr, 1fr), column-gutter: sp(theme, 10pt), row-gutter: component-map-row-gutter,
   [
     #figure(
       box(stroke: map-border-weight + theme.map-border-color, width: 100%, height: component-map-height)[
@@ -412,7 +421,7 @@
       ],
       alt: "Kentucky county map, bivariate choropleth of unemployment rate against overdose death rate, using the same 3-by-3 color grid as the headline map.",
     )
-    #text(size: 7.5pt, fill: theme.text-secondary)[#text(size: 8.5pt, weight: "medium")[*{{{map_title1}}}.*] {{{map1_caption}}}]
+    #text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[#text(size: fs(theme, 8.5pt), weight: "medium")[*{{{map_title1}}}.*] {{{map1_caption}}}]
   ],
   [
     #figure(
@@ -421,7 +430,7 @@
       ],
       alt: "Kentucky county map, bivariate choropleth of the percentage of the population without health insurance against overdose death rate, using the same 3-by-3 color grid as the headline map.",
     )
-    #text(size: 7.5pt, fill: theme.text-secondary)[#text(size: 8.5pt, weight: "medium")[*{{{map_title2}}}.*] {{{map2_caption}}}]
+    #text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[#text(size: fs(theme, 8.5pt), weight: "medium")[*{{{map_title2}}}.*] {{{map2_caption}}}]
   ],
   [
     #figure(
@@ -430,7 +439,7 @@
       ],
       alt: "Kentucky county map, bivariate choropleth of the percentage of persons below 150 percent of the poverty line against overdose death rate, using the same 3-by-3 color grid as the headline map.",
     )
-    #text(size: 7.5pt, fill: theme.text-secondary)[#text(size: 8.5pt, weight: "medium")[*{{{map_title3}}}.*] {{{map3_caption}}}]
+    #text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[#text(size: fs(theme, 8.5pt), weight: "medium")[*{{{map_title3}}}.*] {{{map3_caption}}}]
   ],
   [
     #figure(
@@ -439,26 +448,26 @@
       ],
       alt: "Kentucky county map, bivariate choropleth of the percentage of housing units that are cost-burdened against overdose death rate, using the same 3-by-3 color grid as the headline map.",
     )
-    #text(size: 7.5pt, fill: theme.text-secondary)[#text(size: 8.5pt, weight: "medium")[*{{{map_title4}}}.*] {{{map4_caption}}}]
+    #text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[#text(size: fs(theme, 8.5pt), weight: "medium")[*{{{map_title4}}}.*] {{{map4_caption}}}]
   ],
 )
 
 #v(theme.space-sm)
-#rect(fill: theme-grad.disclaimer-bg-grad, stroke: (left: theme.stroke-accent-left + theme.disclaimer-border, rest: theme.stroke-border + theme.box-border), radius: theme.radius-card, inset: 5pt, width: 100%)[
+#rect(fill: theme-grad.disclaimer-bg-grad, stroke: (left: theme.stroke-accent-left + theme.disclaimer-border, rest: theme.stroke-border + theme.box-border), radius: theme.radius-card, inset: sp(theme, 5pt), width: 100%)[
   // Same pattern used by every other onepagr template's DISCLAIMER box --
   // a locally-scoped `show heading: set text(...)` styling rule (not a
   // content-replacing rule) keeps `== DISCLAIMER` tagged as a real
   // heading in the PDF's structure tree rather than an ordinary paragraph
   // that merely looks bold. See components.typ's apply-base-styles
   // comment for why this distinction matters for PDF/UA conformance.
-  #show heading: set text(size: 8pt, weight: "bold", fill: theme.disclaimer-text, tracking: 0.5pt)
+  #show heading: set text(size: fs(theme, 8pt), weight: "bold", fill: theme.disclaimer-text, tracking: fd(theme, 0.5pt))
   == DISCLAIMER
   #v(theme.space-xs)
-  #text(size: 8pt, fill: theme.disclaimer-text)[{{{disclaimer_text}}}]
+  #text(size: fs(theme, 8pt), fill: theme.disclaimer-text)[{{{disclaimer_text}}}]
 ]
 
 #v(theme.space-xs)
-#text(size: 7pt, fill: theme.text-muted)[*Data sources:* {{{footnote_sources}}} #h(0.5em)|#h(0.5em) *Period:* {{{strip_period}}} #h(0.5em)|#h(0.5em) *Contact:* {{{org_full}}} at #link("mailto:" + contact-email)[#contact-email]]
+#text(size: fs(theme, 7pt), fill: theme.text-muted)[*Data sources:* {{{footnote_sources}}} #h(0.5em)|#h(0.5em) *Period:* {{{strip_period}}} #h(0.5em)|#h(0.5em) *Contact:* {{{org_full}}} at #link("mailto:" + contact-email)[#contact-email]]
 ] // close body #pad(x: theme.content-pad-x)
 #place(bottom + center, float: true)[#footer]
 

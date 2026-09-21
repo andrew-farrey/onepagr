@@ -120,6 +120,8 @@ onepagr_theme_schema <- function() {
       "severity-warning-text" = "color", "severity-critical" = "color",
       "severity-critical-bg" = "color", "severity-critical-text" = "color",
       "body-font" = "str|array", "body-size" = "length",
+      "min-font-size" = "length", "font-scale" = "float|int",
+      "space-scale" = "float|int",
       "space-xs" = "length", "space-sm" = "length", "space-md" = "length",
       "space-lg" = "length", "stroke-hairline" = "length",
       "stroke-border" = "length", "stroke-accent" = "length",

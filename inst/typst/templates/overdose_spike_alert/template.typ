@@ -21,6 +21,12 @@
 // widgets. apply-base-styles MUST wrap the entire document body.
 #import "theme.typ": theme, theme-grad
 #import "components.typ": *
+// Optional data: type and spacing controls (see the theming vignette).
+// Empty means "use the theme's value".
+// optional-token: min_font_size =
+// optional-token: font_scale =
+// optional-token: space_scale =
+#let theme = apply-scales(theme, "{{{min_font_size}}}", "{{{font_scale}}}", "{{{space_scale}}}")
 
 // Route contact_email through a variable rather than splicing
 // {{{contact_email}}} directly into markup body wherever it's displayed.
@@ -82,15 +88,15 @@
 // ============================================================
 // HEADER (same idiom as cohort_summary/trend_snapshot)
 // ============================================================
-#block(width: 100%, fill: theme-grad.brand-blue-grad, clip: true, inset: (x: 20pt, y: 10pt), above: 0pt, below: 0pt)[
+#block(width: 100%, fill: theme-grad.brand-blue-grad, clip: true, inset: (x: sp(theme, 20pt), y: sp(theme, 10pt)), above: 0pt, below: 0pt)[
   #place(top + right, dx: 40pt, dy: -30pt)[
     #pdf.artifact(kind: "other")[#image("{{{header_texture_path}}}", width: 260pt)]
   ]
-  #grid(columns: (auto, 1fr), column-gutter: 14pt, align: horizon,
+  #grid(columns: (auto, 1fr), column-gutter: sp(theme, 14pt), align: horizon,
     image("{{{logo_primary_path}}}", height: 28pt, alt: "{{{logo_primary_alt}}}"),
     [
-      #text(fill: white, size: 12pt, weight: "bold")[{{{doc_title}}}] \
-      #text(fill: white.transparentize(15%), size: 9pt)[{{{doc_subtitle}}}]
+      #text(fill: white, size: fs(theme, 12pt), weight: "bold")[{{{doc_title}}}] \
+      #text(fill: white.transparentize(15%), size: fs(theme, 9pt))[{{{doc_subtitle}}}]
     ]
   )
 ]
@@ -104,9 +110,9 @@
 // carries the equivalent what/where/when framing for this template
 // shape, so a separate strip band would be redundant.
 // ============================================================
-#block(breakable: false, fill: severity.bg, stroke: (left: theme.stroke-accent-left + severity.color, rest: theme.stroke-border + theme.box-border), radius: theme.radius-card, inset: (x: 10pt, y: 8pt), width: 100%)[
-  #text(size: 11pt, weight: "bold", fill: severity.text)[⚠ SPIKE ALERT] #h(1em)
-  #text(size: 9pt, fill: severity.text)[{{{alert_area}}} #sym.dot.c issued {{{alert_issued_at}}}]
+#block(breakable: false, fill: severity.bg, stroke: (left: theme.stroke-accent-left + severity.color, rest: theme.stroke-border + theme.box-border), radius: theme.radius-card, inset: (x: sp(theme, 10pt), y: sp(theme, 8pt)), width: 100%)[
+  #text(size: fs(theme, 11pt), weight: "bold", fill: severity.text)[⚠ SPIKE ALERT] #h(1em)
+  #text(size: fs(theme, 9pt), fill: severity.text)[{{{alert_area}}} #sym.dot.c issued {{{alert_issued_at}}}]
 ]
 
 #v(theme.space-md)
@@ -120,22 +126,22 @@
 // header comments on the severity-*-text tokens.
 // ============================================================
 #block(breakable: false)[
-  #grid(columns: (1fr, 1fr), column-gutter: 8pt,
-    fill: theme-grad.card-bg-grad, inset: 10pt,
+  #grid(columns: (1fr, 1fr), column-gutter: sp(theme, 8pt),
+    fill: theme-grad.card-bg-grad, inset: sp(theme, 10pt),
     stroke: (x, ..) => (top: theme.stroke-accent + severity.color, rest: theme.stroke-border + theme.box-border),
     [
-      #text(size: 28pt, weight: "bold", fill: severity.text)[{{{n_events}}}] \
-      #text(size: 8.5pt, fill: theme.text-secondary)[overdoses in the last {{{window_days}}} days]
+      #text(size: fs(theme, 28pt), weight: "bold", fill: severity.text)[{{{n_events}}}] \
+      #text(size: fs(theme, 8.5pt), fill: theme.text-secondary)[overdoses in the last {{{window_days}}} days]
     ],
     [
-      #text(size: 28pt, weight: "bold", fill: severity.text)[{{{n_spikes}}}] \
-      #text(size: 8.5pt, fill: theme.text-secondary)[spikes in the last {{{spike_window_days}}} days]
+      #text(size: fs(theme, 28pt), weight: "bold", fill: severity.text)[{{{n_spikes}}}] \
+      #text(size: fs(theme, 8.5pt), fill: theme.text-secondary)[spikes in the last {{{spike_window_days}}} days]
     ],
   )
 ]
 
 #v(theme.space-xs)
-#text(size: 7.5pt, fill: theme.text-muted)[Spike threshold: #sym.gt.eq {{{threshold}}} overdoses. {{{alert_area}}} met or exceeded this threshold, triggering this alert.]
+#text(size: fs(theme, 7.5pt), fill: theme.text-muted)[Spike threshold: #sym.gt.eq {{{threshold}}} overdoses. {{{alert_area}}} met or exceeded this threshold, triggering this alert.]
 
 #v(theme.space-md)
 
@@ -187,7 +193,7 @@
 ]
 
 #v(theme.space-sm)
-#text(size: 7pt, fill: theme.text-muted)[*Data sources:* {{{footnote_sources}}} #h(0.5em)|#h(0.5em) *Contact:* {{{org_full}}} at #link("mailto:" + contact-email)[#contact-email]]
+#text(size: fs(theme, 7pt), fill: theme.text-muted)[*Data sources:* {{{footnote_sources}}} #h(0.5em)|#h(0.5em) *Contact:* {{{org_full}}} at #link("mailto:" + contact-email)[#contact-email]]
 ] // close body #pad(x: theme.content-pad-x)
 
 ] // close #apply-base-styles body
