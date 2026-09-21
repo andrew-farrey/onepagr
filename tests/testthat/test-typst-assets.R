@@ -129,3 +129,24 @@ test_that("county_choropleth declares footer sizing tokens with neutral defaults
   expect_equal(unname(unlist(defaults[c("logo_a_height", "logo_height", "logo_b_height")])), rep("32", 3))
   expect_equal(unname(unlist(defaults[c("logo_a_dy", "logo_dy", "logo_b_dy")])), rep("0", 3))
 })
+
+test_that("Typst sources avoid constructs win-builder's Typst rejects", {
+  # Each pattern here failed on a real win-builder run: int(str, base:) is
+  # unsupported ("unexpected argument: base"), and pdf.artifact's kind enum
+  # lacks "background".
+  banned <- c("base: 16", "base: 2", "base: 8", "kind: \"background\"")
+  typ_files <- list.files(
+    system.file("typst", package = "onepagr"),
+    pattern = "\\.typ$", recursive = TRUE, full.names = TRUE
+  )
+  expect_gt(length(typ_files), 5)
+  for (f in typ_files) {
+    text <- paste(readLines(f, warn = FALSE), collapse = "\n")
+    for (pattern in banned) {
+      expect_false(
+        grepl(pattern, text, fixed = TRUE),
+        info = paste(basename(dirname(f)), basename(f), pattern)
+      )
+    }
+  }
+})

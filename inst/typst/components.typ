@@ -310,9 +310,13 @@
 // scaling, so a contrast number can't be predicted by hand; it has to be
 // measured from the color Typst actually produces.
 #let relative-luminance(col) = {
-  let hex = col.to-hex()
+  let hex = lower(col.to-hex())
+  // No int() with a radix argument: older Typst builds (confirmed on
+  // win-builder) reject it, so hex pairs are decoded by digit position.
+  let digits = "0123456789abcdef"
+  let byte(i) = digits.position(hex.at(1 + 2 * i)) * 16 + digits.position(hex.at(2 + 2 * i))
   let channel(i) = {
-    let v = int(hex.slice(1 + 2 * i, 3 + 2 * i), base: 16) / 255
+    let v = byte(i) / 255
     if v <= 0.04045 { v / 12.92 } else { calc.pow((v + 0.055) / 1.055, 2.4) }
   }
   0.2126 * channel(0) + 0.7152 * channel(1) + 0.0722 * channel(2)
