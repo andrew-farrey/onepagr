@@ -46,6 +46,13 @@ compile_typst(path, data, output, font_dir = NULL)
 
 Character, the `output` path, invisibly.
 
+## Details
+
+A template can declare a token optional with a `//` comment line,
+`// optional-token: name = default`. When `data` lacks that token (or it
+is `NULL`, empty, or `NA`), the declared default is used instead of
+raising a missing-token error.
+
 ## Examples
 
 ``` r

@@ -262,6 +262,12 @@ monitoring interval uses, rather than assuming days specifically.</p>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<p>This is the actual PDF that call produces, built from the real
+<code>z = 2.59</code> finding computed above, not placeholder text:</p>
+<pre><code><span><span class="co">#&gt; Warning in sprintf(filenames, pages, format): 2 arguments not used by format</span></span>
+<span><span class="co">#&gt; '/home/runner/work/onepagr/onepagr/docs/articles/end-to-end-workflow_files/figure-html/unnamed-chunk-7-1.png'</span></span>
+<span><span class="co">#&gt; [1] "/home/runner/work/onepagr/onepagr/docs/articles/end-to-end-workflow_files/figure-html/unnamed-chunk-7-1.png"</span></span></code></pre>
+<p><img src="end-to-end-workflow_files/figure-html/unnamed-chunk-7-1.png"><!-- --></p>
 <p>That’s the whole pipeline: real data, a transparent (if intentionally
 simple) analysis step, a token list built from real computed values, and
 a finished PDF. The only onepagr-specific parts are Step 2’s list

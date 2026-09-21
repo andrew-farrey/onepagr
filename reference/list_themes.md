@@ -16,5 +16,5 @@ Character vector of built-in theme names (without file extension).
 
 ``` r
 list_themes()
-#> [1] "default" "uk"     
+#> [1] "default" "kdph"    "uk"     
 ```

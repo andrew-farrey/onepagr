@@ -209,6 +209,15 @@ file.exists(out)
 #> [1] TRUE
 ```
 
+This is the actual PDF that call produces, built from the real
+`z = 2.59` finding computed above, not placeholder text:
+
+    #> Warning in sprintf(filenames, pages, format): 2 arguments not used by format
+    #> '/home/runner/work/onepagr/onepagr/docs/articles/end-to-end-workflow_files/figure-html/unnamed-chunk-7-1.png'
+    #> [1] "/home/runner/work/onepagr/onepagr/docs/articles/end-to-end-workflow_files/figure-html/unnamed-chunk-7-1.png"
+
+![](end-to-end-workflow_files/figure-html/unnamed-chunk-7-1.png)
+
 That’s the whole pipeline: real data, a transparent (if intentionally
 simple) analysis step, a token list built from real computed values, and
 a finished PDF. The only onepagr-specific parts are Step 2’s list

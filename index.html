@@ -63,7 +63,7 @@
 <!-- badges: start -->
 
 <p>Generate polished, accessible one-page (front-and-back) PDF reports from analysis output, using a small set of fixed Typst templates and a swappable design-token theme system.</p>
-<p>Every template compiles under Typst’s <code>--pdf-standard ua-1</code> conformance check and is built to pass WCAG 2.2 AA color contrast and PDF/UA-1 structural tagging, not as a final pass but as a requirement checked at every step of development.</p>
+<p>Every template compiles under Typst’s <code>--pdf-standard ua-1</code> conformance check and is built to pass <a href="https://www.w3.org/TR/WCAG22/" class="external-link">WCAG 2.2 AA</a> color contrast and PDF/UA-1 structural tagging, not as a final pass but as a requirement checked at every step of development.</p>
 <p>Full documentation, including function reference and vignettes, is available at <a href="https://andrew-farrey.github.io/onepagr/" class="uri">https://andrew-farrey.github.io/onepagr/</a>.</p>
 <div class="section level2">
 <h2 id="why">Why<a class="anchor" aria-label="anchor" href="#why"></a>
@@ -97,20 +97,12 @@
 <span>  org_full <span class="op">=</span> <span class="st">"Sample Health Department"</span>,</span>
 <span>  contact_url <span class="op">=</span> <span class="st">"https://example.org/"</span>,</span>
 <span>  contact_email <span class="op">=</span> <span class="st">"contact@example.org"</span>,</span>
-<span>  <span class="co"># Every template needs a logo lockup and header texture. The paths</span></span>
-<span>  <span class="co"># below point at onepagr's own bundled placeholder assets (staged</span></span>
-<span>  <span class="co"># automatically for every render_onepager() call, no extra_assets</span></span>
-<span>  <span class="co"># needed): swap these for your own project's logo files once you</span></span>
-<span>  <span class="co"># have them; see vignette("theming") for how.</span></span>
+<span>  <span class="co"># One logo is all a template needs. This path points at onepagr's own</span></span>
+<span>  <span class="co"># bundled placeholder (staged automatically, no extra_assets needed):</span></span>
+<span>  <span class="co"># swap in your own logo file once you have one. Co-branding partner</span></span>
+<span>  <span class="co"># logos are optional; see vignette("theming").</span></span>
 <span>  logo_primary_path <span class="op">=</span> <span class="st">"assets/primary-org-white.png"</span>,</span>
 <span>  logo_primary_alt <span class="op">=</span> <span class="st">"Sample Health Department logo"</span>,</span>
-<span>  logo_partner_a_path <span class="op">=</span> <span class="st">"assets/partner-org-a-white.png"</span>,</span>
-<span>  logo_partner_a_alt <span class="op">=</span> <span class="st">"Partner Organization A logo"</span>,</span>
-<span>  show_partner_a <span class="op">=</span> <span class="st">"false"</span>,</span>
-<span>  logo_partner_b_path <span class="op">=</span> <span class="st">"assets/partner-org-b-white.png"</span>,</span>
-<span>  logo_partner_b_alt <span class="op">=</span> <span class="st">"Partner Organization B logo"</span>,</span>
-<span>  show_partner_b <span class="op">=</span> <span class="st">"false"</span>,</span>
-<span>  header_texture_path <span class="op">=</span> <span class="st">"assets/header-texture.png"</span>,</span>
 <span>  severity_level <span class="op">=</span> <span class="st">"critical"</span>,</span>
 <span>  alert_area <span class="op">=</span> <span class="st">"Sample County"</span>,</span>
 <span>  alert_issued_at <span class="op">=</span> <span class="st">"August 26, 2026, 9:00 AM"</span>,</span>
@@ -177,16 +169,26 @@
 <p>List them programmatically with <code><a href="reference/list_templates.html">list_templates()</a></code>. Want to see one without any real data yet? <code>export_template("cohort_summary", "my-report/")</code> copies the template plus everything it needs to compile, into your own project, ready to read, hand-edit, or extend.</p>
 </div>
 <div class="section level2">
+<h2 id="gallery">Gallery<a class="anchor" aria-label="anchor" href="#gallery"></a>
+</h2>
+<p>Every image below is an actual <code><a href="reference/render_onepager.html">render_onepager()</a></code> output (sample data, <code>default</code> theme), not a mock-up. For the fixed two-page templates, the front page is on the left and the back page on the right.</p>
+<p><strong><code>cohort_summary</code></strong> <img src="reference/figures/example-cohort-summary.png" width="100%" alt="Cohort Summary template: a two-page one-pager contrasting a linked cohort against all cases across region, demographics, and encounter history, with a lessons-learned callout and implementation timeline."></p>
+<p><strong><code>trend_snapshot</code></strong> <img src="reference/figures/example-trend-snapshot.png" width="100%" alt="Trend Snapshot template: a two-page one-pager tracking a single metric across several time periods with period-over-period comparison bars."></p>
+<p><strong><code>county_choropleth</code></strong> <img src="reference/figures/example-county-choropleth.png" width="100%" alt="County Choropleth template: a two-page one-pager with a bivariate choropleth map on the front and four component-factor maps on the back."></p>
+<p><strong><code>overdose_spike_alert</code></strong> <img src="reference/figures/example-overdose-spike-alert.png" width="60%" alt="Overdose Spike Alert template: a single-page anomaly alert bulletin with headline stat cards, a narrative section, geographic breakdown, and recommended actions."></p>
+<p><strong><code>syndromic_alert</code></strong> <img src="reference/figures/example-syndromic-alert.png" width="60%" alt="Syndromic Alert template: a single-page anomaly alert bulletin generalized to any syndrome, structured like the overdose spike alert."></p>
+</div>
+<div class="section level2">
 <h2 id="themes">Themes<a class="anchor" aria-label="anchor" href="#themes"></a>
 </h2>
-<p>onepagr ships two built-in themes, selectable by name: <code>default</code> (a brand-neutral palette built on Bootstrap’s own color variables) and <code>uk</code> (University of Kentucky / KIPRC branding).</p>
+<p>onepagr ships three built-in themes, which can be selected by name: <code>default</code> (a brand-neutral palette built on Bootstrap’s own color variables), <code>uk</code> (University of Kentucky / KIPRC branding), and <code>kdph</code> (Kentucky Department for Public Health colors and fonts, following the department’s 2026 Data Visualization Style Guidelines; unofficial and not endorsed by KDPH).</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/render_onepager.html">render_onepager</a></span><span class="op">(</span><span class="va">data</span>, template <span class="op">=</span> <span class="st">"trend_snapshot"</span>, theme <span class="op">=</span> <span class="st">"default"</span>, output <span class="op">=</span> <span class="st">"report.pdf"</span><span class="op">)</span></span></code></pre></div>
 <p>Your own project can supply a completely custom theme instead of a built-in name:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/render_onepager.html">render_onepager</a></span><span class="op">(</span><span class="va">data</span>, template <span class="op">=</span> <span class="st">"trend_snapshot"</span>, theme_path <span class="op">=</span> <span class="st">"my-theme.typ"</span>, output <span class="op">=</span> <span class="st">"report.pdf"</span><span class="op">)</span></span></code></pre></div>
 <p>A theme is a single Typst dictionary of colors, typography, and spacing tokens. See any file in <code>inst/typst/themes/</code> for the full schema, or <code><a href="reference/list_themes.html">list_themes()</a></code> to see what’s built in.</p>
-<p>Logos are separate from theming: every template takes a primary logo (always shown) plus two optional partner logos, toggled independently via <code>show_partner_a</code>/<code>show_partner_b</code>, so a single organization, a two-agency partnership, and a three-organization lockup are all first- class cases, no template editing required either way. A <code>font_dir</code> argument to <code><a href="reference/render_onepager.html">render_onepager()</a></code> makes a directory of font files available to Typst for a compile, for a theme’s font that isn’t installed system-wide. See <code><a href="articles/theming.html">vignette("theming")</a></code> for all of the above.</p>
+<p>Logos are separate from theming: every template takes a primary logo (always shown) plus two optional partner logos, off by default and switched on independently via <code>show_partner_a</code>/<code>show_partner_b</code>. A single organization needs only the primary logo; a two-agency partnership and a three-organization lockup are first-class cases too, with no template editing required. A <code>font_dir</code> argument to <code><a href="reference/render_onepager.html">render_onepager()</a></code> makes a directory of font files available to Typst for a compile, for a theme’s font that isn’t installed system-wide. See <code><a href="articles/theming.html">vignette("theming")</a></code> for all of the above.</p>
 </div>
 <div class="section level2">
 <h2 id="accessibility">Accessibility<a class="anchor" aria-label="anchor" href="#accessibility"></a>

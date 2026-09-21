@@ -77,8 +77,8 @@ either one:</p>
 (<code>theme_path = "my-theme.typ"</code>).</li>
 <li>
 <strong>Logos and the header texture</strong> are
-<strong>data</strong>, not theme settings – every template requires
-seven logo/image tokens in the <code>data</code> list you pass to
+<strong>data</strong>, not theme settings: every template requires seven
+logo/image tokens in the <code>data</code> list you pass to
 <code><a href="../reference/render_onepager.html">render_onepager()</a></code>, the same way it requires
 <code>doc_title</code> or <code>org_full</code>. Swapping logos means
 changing those values and staging your own image files, not editing a
@@ -97,10 +97,24 @@ a separate, per-render concern, covered in Part 3.</li>
 </h3>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">onepagr</span><span class="fu">::</span><span class="fu"><a href="../reference/list_themes.html">list_themes</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "default" "uk"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "default" "kdph"    "uk"</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/render_onepager.html">render_onepager</a></span><span class="op">(</span><span class="va">data</span>, template <span class="op">=</span> <span class="st">"trend_snapshot"</span>, theme <span class="op">=</span> <span class="st">"default"</span>, output <span class="op">=</span> <span class="st">"report.pdf"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/render_onepager.html">render_onepager</a></span><span class="op">(</span><span class="va">data</span>, template <span class="op">=</span> <span class="st">"trend_snapshot"</span>, theme <span class="op">=</span> <span class="st">"uk"</span>, output <span class="op">=</span> <span class="st">"report.pdf"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/render_onepager.html">render_onepager</a></span><span class="op">(</span><span class="va">data</span>, template <span class="op">=</span> <span class="st">"trend_snapshot"</span>, theme <span class="op">=</span> <span class="st">"uk"</span>, output <span class="op">=</span> <span class="st">"report.pdf"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/render_onepager.html">render_onepager</a></span><span class="op">(</span><span class="va">data</span>, template <span class="op">=</span> <span class="st">"trend_snapshot"</span>, theme <span class="op">=</span> <span class="st">"kdph"</span>, output <span class="op">=</span> <span class="st">"report.pdf"</span><span class="op">)</span></span></code></pre></div>
+<p>Same template, same data, only <code>theme</code> changed between the
+three calls above (<code>default</code>, <code>uk</code>,
+<code>kdph</code>, left to right):</p>
+<p><img src="../reference/figures/example-trend-snapshot-theme-default.png" class="r-plt" alt="trend_snapshot rendered with the default, brand-neutral theme." width="32%"><img src="../reference/figures/example-trend-snapshot-theme-uk.png" class="r-plt" alt="The same trend_snapshot report rendered with the uk theme instead, showing only colors and typography changed." width="32%"><img src="../reference/figures/example-trend-snapshot-theme-kdph.png" class="r-plt" alt="The same trend_snapshot report rendered with the kdph theme: navy header, indigo bars, and Calibri type." width="32%"></p>
+<p>The <code>kdph</code> theme is an unofficial implementation of the
+Kentucky Department for Public Health’s 2026 Data Visualization Style
+Guidelines. Read the header comment in <code>kdph.typ</code> before
+using it for anything external: the guide’s palette is for data
+visualization and does not replace KDPH’s branding guidelines, logos are
+supplied through the <code>logo_*</code> tokens (the guide puts the KDPH
+logo first), and its contrast numbers were computed and spot-checked
+with PAC on the sample templates, so run PAC on your own content before
+relying on it.</p>
 </div>
 <div class="section level3">
 <h3 id="writing-your-own-theme">Writing your own theme<a class="anchor" aria-label="anchor" href="#writing-your-own-theme"></a>
@@ -238,8 +252,9 @@ and why.</p>
 <div class="section level3">
 <h3 id="logos-are-data-not-template-edits">Logos are data, not template edits<a class="anchor" aria-label="anchor" href="#logos-are-data-not-template-edits"></a>
 </h3>
-<p>Every built-in template requires these tokens in the
-<code>data</code> list you pass to <code><a href="../reference/render_onepager.html">render_onepager()</a></code>:</p>
+<p>Every built-in template reads these tokens from the <code>data</code>
+list you pass to <code><a href="../reference/render_onepager.html">render_onepager()</a></code>. Only the primary logo
+is required:</p>
 <table class="table">
 <colgroup>
 <col width="50%">
@@ -254,26 +269,28 @@ and why.</p>
 <td>
 <code>logo_primary_path</code>, <code>logo_primary_alt</code>
 </td>
-<td>Your own organization’s logo, always shown</td>
+<td>Required. Your own organization’s logo, always shown</td>
 </tr>
 <tr class="even">
 <td>
 <code>logo_partner_a_path</code>, <code>logo_partner_a_alt</code>,
 <code>show_partner_a</code>
 </td>
-<td>An optional co-branding partner, shown left of the primary logo</td>
+<td>Optional, off by default. A co-branding partner, shown left of the
+primary logo</td>
 </tr>
 <tr class="odd">
 <td>
 <code>logo_partner_b_path</code>, <code>logo_partner_b_alt</code>,
 <code>show_partner_b</code>
 </td>
-<td>A second optional co-branding partner, shown right of the primary
-logo</td>
+<td>Optional, off by default. A second co-branding partner, shown right
+of the primary logo</td>
 </tr>
 <tr class="even">
 <td><code>header_texture_path</code></td>
-<td>The decorative background texture behind the header band</td>
+<td>Optional, defaults to onepagr’s bundled texture. The decorative
+background behind the header band</td>
 </tr>
 </tbody>
 </table>
@@ -287,21 +304,38 @@ opaque “logo”, but not every jurisdiction has a three-organization
 design. <code>show_partner_a</code>/<code>show_partner_b</code> are each
 independent <code>"true"</code>/<code>"false"</code> toggles (the
 literal lowercase string, not an R logical; see
-<code><a href="../reference/render_onepager.html">?render_onepager</a></code>), so a single health department reporting
-under its own name gets one logo with no dangling divider, a two-agency
-partnership gets two, and a KIPRC-style three-organization lockup gets
-three. The primary logo is never optional.</p>
+<code><a href="../reference/render_onepager.html">?render_onepager</a></code>) that default to <code>"false"</code>, so
+a single health department reporting under its own name passes only the
+primary logo and gets one logo with no dangling divider. A two-agency
+partnership switches on one partner, and a KIPRC-style
+three-organization lockup switches on both. The primary logo is never
+optional. If you switch a partner on, you must also supply its path and
+alt text: onepagr stops with an error rather than render a blank or
+unlabeled logo.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># A single health department: one logo, no partners.</span></span>
+<code class="sourceCode R"><span><span class="co"># A single health department: one logo, nothing to switch off.</span></span>
 <span><span class="va">data</span><span class="op">$</span><span class="va">logo_primary_path</span> <span class="op">&lt;-</span> <span class="st">"county-health-dept-logo.png"</span></span>
 <span><span class="va">data</span><span class="op">$</span><span class="va">logo_primary_alt</span> <span class="op">&lt;-</span> <span class="st">"Example County Health Department logo"</span></span>
-<span><span class="va">data</span><span class="op">$</span><span class="va">show_partner_a</span> <span class="op">&lt;-</span> <span class="st">"false"</span></span>
-<span><span class="va">data</span><span class="op">$</span><span class="va">show_partner_b</span> <span class="op">&lt;-</span> <span class="st">"false"</span></span>
-<span><span class="va">data</span><span class="op">$</span><span class="va">header_texture_path</span> <span class="op">&lt;-</span> <span class="st">"header-texture.png"</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/render_onepager.html">render_onepager</a></span><span class="op">(</span></span>
 <span>  <span class="va">data</span>, template <span class="op">=</span> <span class="st">"syndromic_alert"</span>, theme <span class="op">=</span> <span class="st">"default"</span>, output <span class="op">=</span> <span class="st">"report.pdf"</span>,</span>
-<span>  extra_assets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"county-health-dept-logo.png"</span>, <span class="st">"header-texture.png"</span><span class="op">)</span></span>
+<span>  extra_assets <span class="op">=</span> <span class="st">"county-health-dept-logo.png"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># A three-organization lockup: switch on both partners and supply each</span></span>
+<span><span class="co"># one's path and alt text.</span></span>
+<span><span class="va">data</span><span class="op">$</span><span class="va">logo_partner_a_path</span> <span class="op">&lt;-</span> <span class="st">"partner-a-logo.png"</span></span>
+<span><span class="va">data</span><span class="op">$</span><span class="va">logo_partner_a_alt</span> <span class="op">&lt;-</span> <span class="st">"Partner A logo"</span></span>
+<span><span class="va">data</span><span class="op">$</span><span class="va">show_partner_a</span> <span class="op">&lt;-</span> <span class="st">"true"</span></span>
+<span><span class="va">data</span><span class="op">$</span><span class="va">logo_partner_b_path</span> <span class="op">&lt;-</span> <span class="st">"partner-b-logo.png"</span></span>
+<span><span class="va">data</span><span class="op">$</span><span class="va">logo_partner_b_alt</span> <span class="op">&lt;-</span> <span class="st">"Partner B logo"</span></span>
+<span><span class="va">data</span><span class="op">$</span><span class="va">show_partner_b</span> <span class="op">&lt;-</span> <span class="st">"true"</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/render_onepager.html">render_onepager</a></span><span class="op">(</span></span>
+<span>  <span class="va">data</span>, template <span class="op">=</span> <span class="st">"syndromic_alert"</span>, theme <span class="op">=</span> <span class="st">"default"</span>, output <span class="op">=</span> <span class="st">"report.pdf"</span>,</span>
+<span>  extra_assets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"county-health-dept-logo.png"</span>, <span class="st">"partner-a-logo.png"</span>, <span class="st">"partner-b-logo.png"</span></span>
+<span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><code>extra_assets</code> stages your files into the same directory
 Typst compiles from (Typst’s compiler sandboxes file access and rejects
@@ -342,12 +376,18 @@ bar the rest of onepagr’s output is held to.</p>
 </h2>
 <p>A theme’s <code>body-font</code> key names the font family Typst
 should use for all body/heading text (e.g. <code>default.typ</code>’s
-<code>body-font: "Liberation Sans"</code>). Two different questions hide
-inside “change the font”:</p>
+<code>body-font: "Liberation Sans"</code>). It can also be a list of
+fallbacks that Typst tries in order, which is how <code>kdph.typ</code>
+asks for Calibri, then Carlito (an open font with identical metrics),
+then Liberation Sans:
+<code>body-font: ("Calibri", "Carlito", "Liberation Sans")</code>. A
+family missing from the list produces a warning, not an error, as long
+as a later one is found. Two different questions hide inside “change the
+font”:</p>
 <ol style="list-style-type: decimal">
 <li>
 <strong>What family name should Typst look for?</strong> That’s the
-theme’s job – change <code>body-font</code> in your own theme file, same
+theme’s job: change <code>body-font</code> in your own theme file, same
 as any other token in Part 1.</li>
 <li>
 <strong>Is that family actually available to Typst at compile

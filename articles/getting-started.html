@@ -177,8 +177,15 @@ using ordinary R (<code><a href="https://rdrr.io/r/base/sprintf.html" class="ext
 numbers.</p>
 </div>
 <div class="section level2">
-<h2 id="what-you-just-got">What you just got<a class="anchor" aria-label="anchor" href="#what-you-just-got"></a>
+<h2 id="what-you-get">What you get<a class="anchor" aria-label="anchor" href="#what-you-get"></a>
 </h2>
+<p>This is the actual PDF the <code><a href="../reference/render_onepager.html">render_onepager()</a></code> call above
+produces (front page; <code>cohort_summary</code> is a fixed two-page
+template, so a matching back page follows it in the real file):</p>
+<pre><code><span><span class="co">#&gt; Warning in sprintf(filenames, pages, format): 2 arguments not used by format</span></span>
+<span><span class="co">#&gt; '/home/runner/work/onepagr/onepagr/docs/articles/getting-started_files/figure-html/unnamed-chunk-4-1.png'</span></span>
+<span><span class="co">#&gt; [1] "/home/runner/work/onepagr/onepagr/docs/articles/getting-started_files/figure-html/unnamed-chunk-4-1.png"</span></span></code></pre>
+<p><img src="getting-started_files/figure-html/unnamed-chunk-4-1.png"><!-- --></p>
 <p>By default, <code><a href="../reference/render_onepager.html">render_onepager()</a></code> leaves the resolved
 <code>.typ</code> source (and everything it needs to recompile: the
 theme, shared components, and assets) next to your output PDF, in a
@@ -190,14 +197,15 @@ only the PDF and nothing else, pass <code>keep_typst = FALSE</code>.</p>
 <div class="section level2">
 <h2 id="picking-a-theme">Picking a theme<a class="anchor" aria-label="anchor" href="#picking-a-theme"></a>
 </h2>
-<p>onepagr ships two built-in themes, selectable by name:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/render_onepager.html">render_onepager</a></span><span class="op">(</span><span class="va">data</span>, template <span class="op">=</span> <span class="st">"cohort_summary"</span>, theme <span class="op">=</span> <span class="st">"default"</span>, output <span class="op">=</span> <span class="st">"report.pdf"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/render_onepager.html">render_onepager</a></span><span class="op">(</span><span class="va">data</span>, template <span class="op">=</span> <span class="st">"cohort_summary"</span>, theme <span class="op">=</span> <span class="st">"uk"</span>, output <span class="op">=</span> <span class="st">"report.pdf"</span><span class="op">)</span></span></code></pre></div>
-<p>List what’s available:</p>
+<p>onepagr ships three built-in themes, selectable by name:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/render_onepager.html">render_onepager</a></span><span class="op">(</span><span class="va">data</span>, template <span class="op">=</span> <span class="st">"cohort_summary"</span>, theme <span class="op">=</span> <span class="st">"default"</span>, output <span class="op">=</span> <span class="st">"report.pdf"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/render_onepager.html">render_onepager</a></span><span class="op">(</span><span class="va">data</span>, template <span class="op">=</span> <span class="st">"cohort_summary"</span>, theme <span class="op">=</span> <span class="st">"uk"</span>, output <span class="op">=</span> <span class="st">"report.pdf"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/render_onepager.html">render_onepager</a></span><span class="op">(</span><span class="va">data</span>, template <span class="op">=</span> <span class="st">"cohort_summary"</span>, theme <span class="op">=</span> <span class="st">"kdph"</span>, output <span class="op">=</span> <span class="st">"report.pdf"</span><span class="op">)</span></span></code></pre></div>
+<p>List what’s available:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">onepagr</span><span class="fu">::</span><span class="fu"><a href="../reference/list_themes.html">list_themes</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "default" "uk"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "default" "kdph"    "uk"</span></span></code></pre></div>
 <p>Your own project can supply a fully custom theme instead. See
 <code><a href="../reference/resolve_theme.html">?resolve_theme</a></code> for how <code>theme_path</code> works, and
 any file under
@@ -210,7 +218,7 @@ token schema a custom theme needs to define.</p>
 <p>To see a template’s real Typst source, or hand-edit one, export it
 into your own project rather than reading it out of the installed
 package:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/export_template.html">export_template</a></span><span class="op">(</span><span class="st">"cohort_summary"</span>, <span class="st">"my-report/"</span>, theme <span class="op">=</span> <span class="st">"uk"</span><span class="op">)</span></span></code></pre></div>
 <p>That copies the template, the resolved theme, shared components, and
 assets into <code>my-report/</code> as one self-contained, independently
@@ -225,11 +233,11 @@ again. Compile your edited copy directly with
 value is missing, <code><a href="../reference/render_onepager.html">render_onepager()</a></code> raises a clear R error
 listing exactly which ones, rather than silently producing a PDF with a
 blank spot. You can check what a template needs ahead of time:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">onepagr</span><span class="fu">::</span><span class="fu"><a href="../reference/list_templates.html">list_templates</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "cohort_summary"       "county_choropleth"    "overdose_spike_alert"</span></span>
 <span><span class="co">#&gt; [4] "syndromic_alert"      "trend_snapshot"</span></span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Path to a built-in template's source, if you want to read its {{{token}}} usage directly</span></span>
 <span><span class="fu">onepagr</span><span class="fu">::</span><span class="fu"><a href="../reference/resolve_template.html">resolve_template</a></span><span class="op">(</span><span class="st">"overdose_spike_alert"</span><span class="op">)</span></span></code></pre></div>
 </div>

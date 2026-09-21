@@ -96,6 +96,13 @@ fonts only).</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>Character, the <code>output</code> path, invisibly.</p>
     </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>A template can declare a token optional with a <code>//</code> comment line,
+<code>// optional-token: name = default</code>. When <code>data</code> lacks that token (or
+it is <code>NULL</code>, empty, or <code>NA</code>), the declared default is used instead of
+raising a missing-token error.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>

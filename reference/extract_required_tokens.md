@@ -16,7 +16,10 @@ extract_required_tokens(path)
 
 - path:
 
-  Character. Path to a .typ file.
+  Character. Path to a .typ file. A token with a declared default (see
+  the optional-token marker in
+  [`compile_typst()`](https://andrew-farrey.github.io/onepagr/reference/compile_typst.md))
+  is not required, so it is left out of the result.
 
 ## Value
 
@@ -40,37 +43,33 @@ tokens), which onepagr's built-in templates never do.
 ``` r
 path <- resolve_template("cohort_summary")
 extract_required_tokens(path)
-#>  [1] "contact_email"                   "logo_partner_a_path"            
-#>  [3] "logo_partner_a_alt"              "show_partner_a"                 
-#>  [5] "logo_primary_path"               "logo_primary_alt"               
-#>  [7] "logo_partner_b_path"             "logo_partner_b_alt"             
-#>  [9] "show_partner_b"                  "org_full"                       
-#> [11] "contact_url"                     "doc_title"                      
-#> [13] "header_texture_path"             "doc_subtitle"                   
-#> [15] "strip_data"                      "strip_period"                   
-#> [17] "strip_design"                    "strip_geography"                
-#> [19] "n_decedents"                     "n_ems_total"                    
-#> [21] "pct_linked"                      "n_prior_ems"                    
-#> [23] "n_eligible_decedents"            "n_unlinked_decedents"           
-#> [25] "wc_linked_median"                "wc_unlinked_median"             
-#> [27] "n_prior_od_ems"                  "pct_linked_male_width"          
-#> [29] "n_male"                          "pct_linked_female_width"        
-#> [31] "n_female"                        "pct_linked_appalachian_width"   
-#> [33] "n_appalachian"                   "pct_linked_nonappalachian_width"
-#> [35] "n_nonappalachian"                "pct_linked_white_width"         
-#> [37] "n_white"                         "pct_linked_black_width"         
-#> [39] "n_black"                         "pct_linked_other_width"         
-#> [41] "n_other"                         "pct_any_prior_enc"              
-#> [43] "pct_od_prior_enc"                "mean_prior_enc"                 
-#> [45] "median_prior_enc"                "n_od_ems_denom"                 
-#> [47] "pct_naloxone_width"              "pct_no_naloxone_width"          
-#> [49] "pct_naloxone"                    "n_naloxone_enc"                 
-#> [51] "pct_no_naloxone"                 "n_no_naloxone_enc"              
-#> [53] "pct_decedent_nax"                "domain_diff_scene"              
-#> [55] "domain_diff_history"             "domain_diff_drug"               
-#> [57] "domain_diff_medication"          "domain_diff_mental"             
-#> [59] "timing_denom"                    "median_days"                    
-#> [61] "timing_iqr"                      "mean_days"                      
-#> [63] "lessons_learned_text"            "disclaimer_text"                
-#> [65] "footnote_sources"               
+#>  [1] "contact_email"                   "logo_primary_path"              
+#>  [3] "logo_primary_alt"                "org_full"                       
+#>  [5] "contact_url"                     "doc_title"                      
+#>  [7] "doc_subtitle"                    "strip_data"                     
+#>  [9] "strip_period"                    "strip_design"                   
+#> [11] "strip_geography"                 "n_decedents"                    
+#> [13] "n_ems_total"                     "pct_linked"                     
+#> [15] "n_prior_ems"                     "n_eligible_decedents"           
+#> [17] "n_unlinked_decedents"            "wc_linked_median"               
+#> [19] "wc_unlinked_median"              "n_prior_od_ems"                 
+#> [21] "pct_linked_male_width"           "n_male"                         
+#> [23] "pct_linked_female_width"         "n_female"                       
+#> [25] "pct_linked_appalachian_width"    "n_appalachian"                  
+#> [27] "pct_linked_nonappalachian_width" "n_nonappalachian"               
+#> [29] "pct_linked_white_width"          "n_white"                        
+#> [31] "pct_linked_black_width"          "n_black"                        
+#> [33] "pct_linked_other_width"          "n_other"                        
+#> [35] "pct_any_prior_enc"               "pct_od_prior_enc"               
+#> [37] "mean_prior_enc"                  "median_prior_enc"               
+#> [39] "n_od_ems_denom"                  "pct_naloxone_width"             
+#> [41] "pct_no_naloxone_width"           "pct_naloxone"                   
+#> [43] "n_naloxone_enc"                  "pct_no_naloxone"                
+#> [45] "n_no_naloxone_enc"               "pct_decedent_nax"               
+#> [47] "domain_diff_scene"               "domain_diff_history"            
+#> [49] "domain_diff_drug"                "domain_diff_medication"         
+#> [51] "domain_diff_mental"              "timing_denom"                   
+#> [53] "median_days"                     "timing_iqr"                     
+#> [55] "mean_days"                       "lessons_learned_text"           
+#> [57] "disclaimer_text"                 "footnote_sources"               
 ```

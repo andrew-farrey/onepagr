@@ -5,9 +5,9 @@ analysis output, using a small set of fixed Typst templates and a
 swappable design-token theme system.
 
 Every template compiles under Typst’s `--pdf-standard ua-1` conformance
-check and is built to pass WCAG 2.2 AA color contrast and PDF/UA-1
-structural tagging, not as a final pass but as a requirement checked at
-every step of development.
+check and is built to pass [WCAG 2.2 AA](https://www.w3.org/TR/WCAG22/)
+color contrast and PDF/UA-1 structural tagging, not as a final pass but
+as a requirement checked at every step of development.
 
 Full documentation, including function reference and vignettes, is
 available at <https://andrew-farrey.github.io/onepagr/>.
@@ -83,20 +83,12 @@ data <- list(
   org_full = "Sample Health Department",
   contact_url = "https://example.org/",
   contact_email = "contact@example.org",
-  # Every template needs a logo lockup and header texture. The paths
-  # below point at onepagr's own bundled placeholder assets (staged
-  # automatically for every render_onepager() call, no extra_assets
-  # needed): swap these for your own project's logo files once you
-  # have them; see vignette("theming") for how.
+  # One logo is all a template needs. This path points at onepagr's own
+  # bundled placeholder (staged automatically, no extra_assets needed):
+  # swap in your own logo file once you have one. Co-branding partner
+  # logos are optional; see vignette("theming").
   logo_primary_path = "assets/primary-org-white.png",
   logo_primary_alt = "Sample Health Department logo",
-  logo_partner_a_path = "assets/partner-org-a-white.png",
-  logo_partner_a_alt = "Partner Organization A logo",
-  show_partner_a = "false",
-  logo_partner_b_path = "assets/partner-org-b-white.png",
-  logo_partner_b_alt = "Partner Organization B logo",
-  show_partner_b = "false",
-  header_texture_path = "assets/header-texture.png",
   severity_level = "critical",
   alert_area = "Sample County",
   alert_issued_at = "August 26, 2026, 9:00 AM",
@@ -155,11 +147,46 @@ Want to see one without any real data yet?
 plus everything it needs to compile, into your own project, ready to
 read, hand-edit, or extend.
 
+## Gallery
+
+Every image below is an actual
+[`render_onepager()`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md)
+output (sample data, `default` theme), not a mock-up. For the fixed
+two-page templates, the front page is on the left and the back page on
+the right.
+
+**`cohort_summary`** ![Cohort Summary template: a two-page one-pager
+contrasting a linked cohort against all cases across region,
+demographics, and encounter history, with a lessons-learned callout and
+implementation timeline.](reference/figures/example-cohort-summary.png)
+
+**`trend_snapshot`** ![Trend Snapshot template: a two-page one-pager
+tracking a single metric across several time periods with
+period-over-period comparison
+bars.](reference/figures/example-trend-snapshot.png)
+
+**`county_choropleth`** ![County Choropleth template: a two-page
+one-pager with a bivariate choropleth map on the front and four
+component-factor maps on the
+back.](reference/figures/example-county-choropleth.png)
+
+**`overdose_spike_alert`** ![Overdose Spike Alert template: a
+single-page anomaly alert bulletin with headline stat cards, a narrative
+section, geographic breakdown, and recommended
+actions.](reference/figures/example-overdose-spike-alert.png)
+
+**`syndromic_alert`** ![Syndromic Alert template: a single-page anomaly
+alert bulletin generalized to any syndrome, structured like the overdose
+spike alert.](reference/figures/example-syndromic-alert.png)
+
 ## Themes
 
-onepagr ships two built-in themes, selectable by name: `default` (a
-brand-neutral palette built on Bootstrap’s own color variables) and `uk`
-(University of Kentucky / KIPRC branding).
+onepagr ships three built-in themes, which can be selected by name:
+`default` (a brand-neutral palette built on Bootstrap’s own color
+variables), `uk` (University of Kentucky / KIPRC branding), and `kdph`
+(Kentucky Department for Public Health colors and fonts, following the
+department’s 2026 Data Visualization Style Guidelines; unofficial and
+not endorsed by KDPH).
 
 ``` r
 
@@ -180,11 +207,11 @@ tokens. See any file in `inst/typst/themes/` for the full schema, or
 to see what’s built in.
 
 Logos are separate from theming: every template takes a primary logo
-(always shown) plus two optional partner logos, toggled independently
-via `show_partner_a`/`show_partner_b`, so a single organization, a
-two-agency partnership, and a three-organization lockup are all first-
-class cases, no template editing required either way. A `font_dir`
-argument to
+(always shown) plus two optional partner logos, off by default and
+switched on independently via `show_partner_a`/`show_partner_b`. A
+single organization needs only the primary logo; a two-agency
+partnership and a three-organization lockup are first-class cases too,
+with no template editing required. A `font_dir` argument to
 [`render_onepager()`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md)
 makes a directory of font files available to Typst for a compile, for a
 theme’s font that isn’t installed system-wide. See

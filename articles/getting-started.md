@@ -120,7 +120,18 @@ using ordinary R ([`sprintf()`](https://rdrr.io/r/base/sprintf.html),
 [`paste()`](https://rdrr.io/r/base/paste.html)), the same way you’d
 assemble any other report’s numbers.
 
-## What you just got
+## What you get
+
+This is the actual PDF the
+[`render_onepager()`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md)
+call above produces (front page; `cohort_summary` is a fixed two-page
+template, so a matching back page follows it in the real file):
+
+    #> Warning in sprintf(filenames, pages, format): 2 arguments not used by format
+    #> '/home/runner/work/onepagr/onepagr/docs/articles/getting-started_files/figure-html/unnamed-chunk-4-1.png'
+    #> [1] "/home/runner/work/onepagr/onepagr/docs/articles/getting-started_files/figure-html/unnamed-chunk-4-1.png"
+
+![](getting-started_files/figure-html/unnamed-chunk-4-1.png)
 
 By default,
 [`render_onepager()`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md)
@@ -133,12 +144,13 @@ open it. If you want only the PDF and nothing else, pass
 
 ## Picking a theme
 
-onepagr ships two built-in themes, selectable by name:
+onepagr ships three built-in themes, selectable by name:
 
 ``` r
 
 render_onepager(data, template = "cohort_summary", theme = "default", output = "report.pdf")
 render_onepager(data, template = "cohort_summary", theme = "uk", output = "report.pdf")
+render_onepager(data, template = "cohort_summary", theme = "kdph", output = "report.pdf")
 ```
 
 List what’s available:
@@ -146,7 +158,7 @@ List what’s available:
 ``` r
 
 onepagr::list_themes()
-#> [1] "default" "uk"
+#> [1] "default" "kdph"    "uk"
 ```
 
 Your own project can supply a fully custom theme instead. See

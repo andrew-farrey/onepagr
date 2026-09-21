@@ -19,5 +19,7 @@ onepagr_theme_schema()
 ## Value
 
 A list with `theme` (named character vector, key -\> Typst `type()`
-name), `theme_grad` (same shape), and `radius_card` (the nested
-dictionary `theme$radius-card` must contain).
+name; `|` separates accepted alternatives, so `body-font` is
+`"str|array"` to allow a font fallback list), `theme_grad` (same shape),
+and `radius_card` (the nested dictionary `theme$radius-card` must
+contain).

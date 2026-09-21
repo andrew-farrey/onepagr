@@ -6,7 +6,7 @@ and it’s worth knowing which is which before you customize either one:
 - **Colors and spacing** are controlled by a **theme**: a single Typst
   dictionary, selectable by name (`theme = "uk"`) or supplied as your
   own file (`theme_path = "my-theme.typ"`).
-- **Logos and the header texture** are **data**, not theme settings –
+- **Logos and the header texture** are **data**, not theme settings:
   every template requires seven logo/image tokens in the `data` list you
   pass to
   [`render_onepager()`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md),
@@ -26,14 +26,36 @@ This vignette covers all three.
 ``` r
 
 onepagr::list_themes()
-#> [1] "default" "uk"
+#> [1] "default" "kdph"    "uk"
 ```
 
 ``` r
 
 render_onepager(data, template = "trend_snapshot", theme = "default", output = "report.pdf")
 render_onepager(data, template = "trend_snapshot", theme = "uk", output = "report.pdf")
+render_onepager(data, template = "trend_snapshot", theme = "kdph", output = "report.pdf")
 ```
+
+Same template, same data, only `theme` changed between the three calls
+above (`default`, `uk`, `kdph`, left to right):
+
+![trend_snapshot rendered with the default, brand-neutral
+theme.](../reference/figures/example-trend-snapshot-theme-default.png)![The
+same trend_snapshot report rendered with the uk theme instead, showing
+only colors and typography
+changed.](../reference/figures/example-trend-snapshot-theme-uk.png)![The
+same trend_snapshot report rendered with the kdph theme: navy header,
+indigo bars, and Calibri
+type.](../reference/figures/example-trend-snapshot-theme-kdph.png)
+
+The `kdph` theme is an unofficial implementation of the Kentucky
+Department for Public Health’s 2026 Data Visualization Style Guidelines.
+Read the header comment in `kdph.typ` before using it for anything
+external: the guide’s palette is for data visualization and does not
+replace KDPH’s branding guidelines, logos are supplied through the
+`logo_*` tokens (the guide puts the KDPH logo first), and its contrast
+numbers were computed and spot-checked with PAC on the sample templates,
+so run PAC on your own content before relying on it.
 
 ### Writing your own theme
 
@@ -127,16 +149,17 @@ render_onepager(data, template = "trend_snapshot", theme_path = "my-theme.typ", 
 
 ### Logos are data, not template edits
 
-Every built-in template requires these tokens in the `data` list you
-pass to
-[`render_onepager()`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md):
+Every built-in template reads these tokens from the `data` list you pass
+to
+[`render_onepager()`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md).
+Only the primary logo is required:
 
 | Token | Meaning |
 |----|----|
-| `logo_primary_path`, `logo_primary_alt` | Your own organization’s logo, always shown |
-| `logo_partner_a_path`, `logo_partner_a_alt`, `show_partner_a` | An optional co-branding partner, shown left of the primary logo |
-| `logo_partner_b_path`, `logo_partner_b_alt`, `show_partner_b` | A second optional co-branding partner, shown right of the primary logo |
-| `header_texture_path` | The decorative background texture behind the header band |
+| `logo_primary_path`, `logo_primary_alt` | Required. Your own organization’s logo, always shown |
+| `logo_partner_a_path`, `logo_partner_a_alt`, `show_partner_a` | Optional, off by default. A co-branding partner, shown left of the primary logo |
+| `logo_partner_b_path`, `logo_partner_b_alt`, `show_partner_b` | Optional, off by default. A second co-branding partner, shown right of the primary logo |
+| `header_texture_path` | Optional, defaults to onepagr’s bundled texture. The decorative background behind the header band |
 
 Changing a logo means changing these values plus staging the actual
 image file, via
@@ -149,24 +172,40 @@ not every jurisdiction has a three-organization design.
 `show_partner_a`/`show_partner_b` are each independent
 `"true"`/`"false"` toggles (the literal lowercase string, not an R
 logical; see
-[`?render_onepager`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md)),
-so a single health department reporting under its own name gets one logo
-with no dangling divider, a two-agency partnership gets two, and a
-KIPRC-style three-organization lockup gets three. The primary logo is
-never optional.
+[`?render_onepager`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md))
+that default to `"false"`, so a single health department reporting under
+its own name passes only the primary logo and gets one logo with no
+dangling divider. A two-agency partnership switches on one partner, and
+a KIPRC-style three-organization lockup switches on both. The primary
+logo is never optional. If you switch a partner on, you must also supply
+its path and alt text: onepagr stops with an error rather than render a
+blank or unlabeled logo.
 
 ``` r
 
-# A single health department: one logo, no partners.
+# A single health department: one logo, nothing to switch off.
 data$logo_primary_path <- "county-health-dept-logo.png"
 data$logo_primary_alt <- "Example County Health Department logo"
-data$show_partner_a <- "false"
-data$show_partner_b <- "false"
-data$header_texture_path <- "header-texture.png"
 
 render_onepager(
   data, template = "syndromic_alert", theme = "default", output = "report.pdf",
-  extra_assets = c("county-health-dept-logo.png", "header-texture.png")
+  extra_assets = "county-health-dept-logo.png"
+)
+
+# A three-organization lockup: switch on both partners and supply each
+# one's path and alt text.
+data$logo_partner_a_path <- "partner-a-logo.png"
+data$logo_partner_a_alt <- "Partner A logo"
+data$show_partner_a <- "true"
+data$logo_partner_b_path <- "partner-b-logo.png"
+data$logo_partner_b_alt <- "Partner B logo"
+data$show_partner_b <- "true"
+
+render_onepager(
+  data, template = "syndromic_alert", theme = "default", output = "report.pdf",
+  extra_assets = c(
+    "county-health-dept-logo.png", "partner-a-logo.png", "partner-b-logo.png"
+  )
 )
 ```
 
@@ -207,9 +246,14 @@ accessibility bar the rest of onepagr’s output is held to.
 
 A theme’s `body-font` key names the font family Typst should use for all
 body/heading text (e.g. `default.typ`’s `body-font: "Liberation Sans"`).
-Two different questions hide inside “change the font”:
+It can also be a list of fallbacks that Typst tries in order, which is
+how `kdph.typ` asks for Calibri, then Carlito (an open font with
+identical metrics), then Liberation Sans:
+`body-font: ("Calibri", "Carlito", "Liberation Sans")`. A family missing
+from the list produces a warning, not an error, as long as a later one
+is found. Two different questions hide inside “change the font”:
 
-1.  **What family name should Typst look for?** That’s the theme’s job –
+1.  **What family name should Typst look for?** That’s the theme’s job:
     change `body-font` in your own theme file, same as any other token
     in Part 1.
 2.  **Is that family actually available to Typst at compile time?**
