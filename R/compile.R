@@ -167,6 +167,9 @@ compile_typst <- function(path, data, output, font_dir = NULL) {
   writeLines(rendered, typ_out)
 
   font_args <- if (!is.null(font_dir)) c("--font-path", shQuote(font_dir))
+  # A failed compile must not be masked by an older PDF at the same path:
+  # success is judged by the file existing, so clear it first.
+  unlink(output)
   # suppressWarnings() only silences system2()'s own "had status N" warning,
   # which fires unconditionally on a non-zero exit whenever stdout is
   # captured as text: redundant here since a non-zero exit is already

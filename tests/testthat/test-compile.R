@@ -217,3 +217,21 @@ test_that("compile_typst fills an omitted optional token from its default", {
     expect_match(paste(readLines(rendered), collapse = "\n"), "size 12")
   }
 })
+
+test_that("compile_typst does not report success from a stale output file", {
+  skip_if_not(quarto::quarto_available())
+  dir <- tempfile()
+  dir.create(dir)
+  on.exit(unlink(dir, recursive = TRUE))
+  good <- file.path(dir, "good.typ")
+  writeLines(c("#set document(title: [ok])", "hello"), good)
+  out <- file.path(dir, "out.pdf")
+
+  compile_typst(good, list(), out)
+  expect_true(file.exists(out))
+
+  bad <- file.path(dir, "bad.typ")
+  writeLines("#unknown-function()", bad)
+  expect_error(compile_typst(bad, list(), out), "Typst compilation failed")
+  expect_false(file.exists(out))
+})
