@@ -82,7 +82,11 @@ string <code>"true"</code> or <code>"false"</code>. These are substituted direct
 Typst string comparisons, so an R logical (which whisker coerces to
 <code>"TRUE"</code>/<code>"FALSE"</code>, uppercase) or any other value fails the compile
 loudly with a Typst <code>panic()</code> rather than silently rendering with
-the wrong severity styling or a mis-toggled section.</p></dd>
+the wrong severity styling or a mis-toggled section.</p>
+<p>Every template also reads three optional data values: <code>min_font_size</code>
+(in points; no text is set smaller than this), and <code>font_scale</code> and
+<code>space_scale</code> (multipliers for text size and for spacing). Each one
+overrides the theme's own setting for this render when supplied.</p></dd>
 
 
 <dt id="arg-template">template<a class="anchor" aria-label="anchor" href="#arg-template"></a></dt>
@@ -149,6 +153,9 @@ components, and assets it was compiled with, self-contained and
 independently recompilable, not hidden in a disposable tempdir. Set
 <code>keep_typst = FALSE</code> to compile in a disposable tempdir instead and
 return only the PDF.</p>
+<p>When a fixed-page template's output has a different page count than it
+was designed for (for example after raising the type size), a message
+reports it. It is only a message: the PDF is still written.</p>
     </div>
 
     <div class="section level2">

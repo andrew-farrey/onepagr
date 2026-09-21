@@ -317,6 +317,57 @@ suffice), a handful of logo files, and the `data` list documented in
 and
 [`vignette("end-to-end-workflow")`](https://andrew-farrey.github.io/onepagr/articles/end-to-end-workflow.md).
 
+## Part 4: Type size and spacing
+
+Three theme keys control type and spacing. Each has a no-op default, so
+a built-in theme renders exactly as documented until you change one.
+
+| Key | Meaning |
+|----|----|
+| `min-font-size` | No text renders smaller than this. `0pt` means no floor. |
+| `font-scale` | Multiplies every text size (and the boxes and label columns that hold text). `1.0` is unchanged. |
+| `space-scale` | Multiplies padding, gaps, and vertical spacing. `1.0` is unchanged. |
+
+You can also set any of them for one report without touching a theme,
+through optional data tokens (`min_font_size` in points, `font_scale`,
+`space_scale`), passed as strings such as “12”:
+
+``` r
+
+# No text smaller than 12pt, for a large-print version.
+render_onepager(
+  c(data, list(min_font_size = "12")),
+  template = "trend_snapshot", theme = "default", output = "large-print.pdf"
+)
+```
+
+A per-render value wins over the theme’s. An unset one falls back to it.
+
+The floor only raises text that is below it and leaves larger text
+alone. It does not scale everything, so with a 12pt floor the smaller
+sizes (7 to 9pt in the built-in templates) all become 12pt and weight
+and color carry the hierarchy. `font-scale` is the proportional
+alternative: it keeps every size relationship and grows the layout with
+it. The floor governs text the templates typeset. It cannot change text
+baked into a map image or a logo you supply.
+
+The built-in fixed-page templates are designed to fill exactly 2 pages
+at the defaults, and are tested that way under every built-in theme.
+Raising type or spacing can push them past 2 pages (a 10pt floor takes
+`cohort_summary` to 4 pages and `county_choropleth` to 3). onepagr
+allows that and prints a message when it happens, for example
+“cohort_summary is designed for 2 pages; this render produced 4.” Extra
+pages of a fixed template have no footer, because the footer is placed
+once on each designed page. A render that has been scaled or floored is
+outside the package’s accessibility verification, so run PAC on the
+result.
+
+Boxes that hold text grow with the type: label columns, the map
+explainer box in `county_choropleth`, and the reserved bottom margin
+that holds the footer in the alert templates. Map images, logos, and the
+header texture are fixed-size and do not. After a floored or scaled
+render, look it over for text that runs past its box, and run PAC on it.
+
 ## See also
 
 - [`vignette("getting-started", package = "onepagr")`](https://andrew-farrey.github.io/onepagr/articles/getting-started.md)

@@ -37,6 +37,11 @@ render_onepager(
   loudly with a Typst `panic()` rather than silently rendering with the
   wrong severity styling or a mis-toggled section.
 
+  Every template also reads three optional data values: `min_font_size`
+  (in points; no text is set smaller than this), and `font_scale` and
+  `space_scale` (multipliers for text size and for spacing). Each one
+  overrides the theme's own setting for this render when supplied.
+
 - template:
 
   Character. A built-in template name (see
@@ -104,6 +109,10 @@ components, and assets it was compiled with, self-contained and
 independently recompilable, not hidden in a disposable tempdir. Set
 `keep_typst = FALSE` to compile in a disposable tempdir instead and
 return only the PDF.
+
+When a fixed-page template's output has a different page count than it
+was designed for (for example after raising the type size), a message
+reports it. It is only a message: the PDF is still written.
 
 ## Examples
 

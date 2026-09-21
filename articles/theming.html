@@ -455,6 +455,75 @@ and the <code>data</code> list documented in
 <code><a href="../articles/end-to-end-workflow.html">vignette("end-to-end-workflow")</a></code>.</p>
 </div>
 <div class="section level2">
+<h2 id="part-4-type-size-and-spacing">Part 4: Type size and spacing<a class="anchor" aria-label="anchor" href="#part-4-type-size-and-spacing"></a>
+</h2>
+<p>Three theme keys control type and spacing. Each has a no-op default,
+so a built-in theme renders exactly as documented until you change
+one.</p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr class="header">
+<th>Key</th>
+<th>Meaning</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>min-font-size</code></td>
+<td>No text renders smaller than this. <code>0pt</code> means no
+floor.</td>
+</tr>
+<tr class="even">
+<td><code>font-scale</code></td>
+<td>Multiplies every text size (and the boxes and label columns that
+hold text). <code>1.0</code> is unchanged.</td>
+</tr>
+<tr class="odd">
+<td><code>space-scale</code></td>
+<td>Multiplies padding, gaps, and vertical spacing. <code>1.0</code> is
+unchanged.</td>
+</tr>
+</tbody>
+</table>
+<p>You can also set any of them for one report without touching a theme,
+through optional data tokens (<code>min_font_size</code> in points,
+<code>font_scale</code>, <code>space_scale</code>), passed as strings
+such as “12”:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># No text smaller than 12pt, for a large-print version.</span></span>
+<span><span class="fu"><a href="../reference/render_onepager.html">render_onepager</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">data</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>min_font_size <span class="op">=</span> <span class="st">"12"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  template <span class="op">=</span> <span class="st">"trend_snapshot"</span>, theme <span class="op">=</span> <span class="st">"default"</span>, output <span class="op">=</span> <span class="st">"large-print.pdf"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>A per-render value wins over the theme’s. An unset one falls back to
+it.</p>
+<p>The floor only raises text that is below it and leaves larger text
+alone. It does not scale everything, so with a 12pt floor the smaller
+sizes (7 to 9pt in the built-in templates) all become 12pt and weight
+and color carry the hierarchy. <code>font-scale</code> is the
+proportional alternative: it keeps every size relationship and grows the
+layout with it. The floor governs text the templates typeset. It cannot
+change text baked into a map image or a logo you supply.</p>
+<p>The built-in fixed-page templates are designed to fill exactly 2
+pages at the defaults, and are tested that way under every built-in
+theme. Raising type or spacing can push them past 2 pages (a 10pt floor
+takes <code>cohort_summary</code> to 4 pages and
+<code>county_choropleth</code> to 3). onepagr allows that and prints a
+message when it happens, for example “cohort_summary is designed for 2
+pages; this render produced 4.” Extra pages of a fixed template have no
+footer, because the footer is placed once on each designed page. A
+render that has been scaled or floored is outside the package’s
+accessibility verification, so run PAC on the result.</p>
+<p>Boxes that hold text grow with the type: label columns, the map
+explainer box in <code>county_choropleth</code>, and the reserved bottom
+margin that holds the footer in the alert templates. Map images, logos,
+and the header texture are fixed-size and do not. After a floored or
+scaled render, look it over for text that runs past its box, and run PAC
+on it.</p>
+</div>
+<div class="section level2">
 <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a>
 </h2>
 <ul>

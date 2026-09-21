@@ -15,6 +15,7 @@
 <url><loc>https://andrew-farrey.github.io/onepagr/reference/compile_typst.html</loc></url>
 <url><loc>https://andrew-farrey.github.io/onepagr/reference/download_with_timeout.html</loc></url>
 <url><loc>https://andrew-farrey.github.io/onepagr/reference/export_template.html</loc></url>
+<url><loc>https://andrew-farrey.github.io/onepagr/reference/extract_designed_pages.html</loc></url>
 <url><loc>https://andrew-farrey.github.io/onepagr/reference/extract_required_tokens.html</loc></url>
 <url><loc>https://andrew-farrey.github.io/onepagr/reference/extract_token_defaults.html</loc></url>
 <url><loc>https://andrew-farrey.github.io/onepagr/reference/fmt_n.html</loc></url>
@@ -24,6 +25,7 @@
 <url><loc>https://andrew-farrey.github.io/onepagr/reference/introspect_theme_typ.html</loc></url>
 <url><loc>https://andrew-farrey.github.io/onepagr/reference/list_templates.html</loc></url>
 <url><loc>https://andrew-farrey.github.io/onepagr/reference/list_themes.html</loc></url>
+<url><loc>https://andrew-farrey.github.io/onepagr/reference/note_page_count.html</loc></url>
 <url><loc>https://andrew-farrey.github.io/onepagr/reference/onepagr_theme_schema.html</loc></url>
 <url><loc>https://andrew-farrey.github.io/onepagr/reference/render_onepager.html</loc></url>
 <url><loc>https://andrew-farrey.github.io/onepagr/reference/resolve_template.html</loc></url>

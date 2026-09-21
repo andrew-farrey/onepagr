@@ -214,6 +214,11 @@ tokens. See any file in `inst/typst/themes/` for the full schema, or
 [`list_themes()`](https://andrew-farrey.github.io/onepagr/reference/list_themes.md)
 to see what’s built in.
 
+Type size and spacing are adjustable too: a theme can set a minimum text
+size (`min-font-size`) plus a font scale and a spacing scale, and any of
+them can be overridden for one render. See
+[`vignette("theming")`](https://andrew-farrey.github.io/onepagr/articles/theming.md).
+
 Logos are separate from theming: every template takes a primary logo
 (always shown) plus two optional partner logos, off by default and
 switched on independently via `show_partner_a`/`show_partner_b`. A
