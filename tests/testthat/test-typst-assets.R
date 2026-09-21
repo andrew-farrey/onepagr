@@ -151,3 +151,109 @@ test_that("Typst sources avoid constructs win-builder's Typst rejects", {
     }
   }
 })
+
+test_that("apply-scales, fs, and sp adjust text size and spacing", {
+  skip_if_not(quarto::quarto_available())
+  skip_if_not(requireNamespace("pdftools", quietly = TRUE))
+  dir <- tempfile()
+  on.exit(unlink(dir, recursive = TRUE))
+  export_template("county_choropleth", dir)
+  typ <- file.path(dir, "scales_probe.typ")
+  writeLines(
+    c(
+      "// optional-token: min_font_size =",
+      "// optional-token: font_scale =",
+      "// optional-token: space_scale =",
+      "#import \"theme.typ\": theme, theme-grad",
+      "#import \"components.typ\": *",
+      paste0(
+        "#let theme = apply-scales(theme, \"{{{min_font_size}}}\", ",
+        "\"{{{font_scale}}}\", \"{{{space_scale}}}\")"
+      ),
+      "#set document(title: [Scales probe])",
+      "#set page(width: 12in, height: 12in, margin: 0.5in)",
+      "#set text(font: theme.body-font)",
+      "#text(size: fs(theme, 40pt))[small] #text(size: fs(theme, 80pt))[large]",
+      "",
+      "#box(inset: (left: sp(theme, 10pt)))[indented]"
+    ),
+    typ
+  )
+  measure <- function(data) {
+    out <- tempfile(fileext = ".pdf")
+    compile_typst(typ, data, out)
+    d <- pdftools::pdf_data(out)[[1]]
+    c(
+      small = d$height[d$text == "small"],
+      large = d$height[d$text == "large"],
+      x = d$x[d$text == "indented"]
+    )
+  }
+
+  base <- measure(list())
+  # 40pt vs 80pt text: the small word is half the height of the large one.
+  expect_equal(base[["small"]] / base[["large"]], 0.5, tolerance = 0.06)
+  expect_equal(base[["x"]], 46)
+
+  # A 60pt floor lifts the 40pt word to 60pt and leaves the 80pt word alone.
+  lifted <- measure(list(min_font_size = "60"))
+  expect_equal(lifted[["small"]] / lifted[["large"]], 60 / 80, tolerance = 0.06)
+  expect_equal(lifted[["large"]], base[["large"]])
+
+  # font_scale 2 doubles both.
+  doubled <- measure(list(font_scale = "2"))
+  expect_equal(doubled[["large"]] / base[["large"]], 2, tolerance = 0.06)
+  expect_equal(doubled[["small"]] / base[["small"]], 2, tolerance = 0.06)
+
+  # The floor applies after the scale: scaled 40pt is 80pt, above a 60pt floor.
+  both <- measure(list(min_font_size = "60", font_scale = "2"))
+  expect_equal(both[["small"]], doubled[["small"]])
+
+  # space_scale moves the inset by exactly the extra 10pt.
+  expect_equal(measure(list(space_scale = "2"))[["x"]], 56)
+
+  expect_error(measure(list(font_scale = "0")), "font_scale must be a positive number")
+  expect_error(measure(list(space_scale = "-1")), "space_scale must be a positive number")
+  expect_error(measure(list(min_font_size = "-2")), "min_font_size must not be negative")
+})
+
+test_that("a per-render data token overrides the theme's own scale", {
+  skip_if_not(quarto::quarto_available())
+  skip_if_not(requireNamespace("pdftools", quietly = TRUE))
+  dir <- tempfile()
+  on.exit(unlink(dir, recursive = TRUE))
+  export_template("county_choropleth", dir)
+  theme_file <- file.path(dir, "theme.typ")
+  lines <- readLines(theme_file, warn = FALSE)
+  lines <- sub("font-scale: 1.0,", "font-scale: 2.0,", lines, fixed = TRUE)
+  expect_true(any(grepl("font-scale: 2.0,", lines, fixed = TRUE)))
+  writeLines(lines, theme_file)
+  typ <- file.path(dir, "precedence_probe.typ")
+  writeLines(
+    c(
+      "// optional-token: min_font_size =",
+      "// optional-token: font_scale =",
+      "// optional-token: space_scale =",
+      "#import \"theme.typ\": theme, theme-grad",
+      "#import \"components.typ\": *",
+      paste0(
+        "#let theme = apply-scales(theme, \"{{{min_font_size}}}\", ",
+        "\"{{{font_scale}}}\", \"{{{space_scale}}}\")"
+      ),
+      "#set document(title: [Precedence probe])",
+      "#set page(width: 12in, height: 12in, margin: 0.5in)",
+      "#set text(font: theme.body-font)",
+      "#text(size: fs(theme, 40pt))[large]"
+    ),
+    typ
+  )
+  height_of_large <- function(data) {
+    out <- tempfile(fileext = ".pdf")
+    compile_typst(typ, data, out)
+    pdftools::pdf_data(out)[[1]]$height[1]
+  }
+  from_theme <- height_of_large(list())
+  overridden <- height_of_large(list(font_scale = "1"))
+  # The theme says 2.0, the data token says 1: the token wins.
+  expect_equal(from_theme / overridden, 2, tolerance = 0.06)
+})

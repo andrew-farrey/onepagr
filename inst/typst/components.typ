@@ -30,6 +30,68 @@
 // (see county_choropleth's contact-email comment for why those two
 // substitution contexts behave differently).
 
+// Type and spacing controls. A theme carries three settings: min-font-size
+// (no text renders smaller than this; 0pt means no floor), font-scale, and
+// space-scale (both multipliers, 1.0 means unchanged). Each template calls
+// apply-scales() once, right after its imports, with the three per-render
+// override strings from its data tokens (empty means "use the theme's
+// value"). The returned theme has body-size and the space-* keys already
+// adjusted, so existing `theme.space-xs` and `theme.body-size` call sites
+// need no changes, plus a derived font-ratio used by fd().
+//
+//   fs(theme, len)  a text size: scaled, then raised to the floor.
+//   fd(theme, len)  a dimension that holds text (a label column, a fixed-
+//                   height box): grows by whichever is larger, the font
+//                   scale or the ratio the floor implies for the smallest
+//                   text in the package, so text does not clip or wrap.
+//   sp(theme, len)  padding or a gap: scaled by space-scale.
+//
+// Strokes, radii, and image, logo, and map sizes deliberately stay literal.
+// The smallest text size anywhere in the package is 7pt; if a smaller one
+// is ever added, lower this constant with it.
+#let smallest-text = 7pt
+
+#let parse-scale(name, value, fallback) = {
+  if value == "" {
+    fallback
+  } else {
+    let parsed = float(value)
+    if parsed <= 0 { panic(name + " must be a positive number, got: " + value) }
+    parsed
+  }
+}
+
+#let parse-min-size(value, fallback) = {
+  if value == "" {
+    fallback
+  } else {
+    let parsed = float(value)
+    if parsed < 0 { panic("min_font_size must not be negative, got: " + value) }
+    parsed * 1pt
+  }
+}
+
+#let apply-scales(theme, min-override, font-override, space-override) = {
+  let font-scale = parse-scale("font_scale", font-override, theme.font-scale)
+  let space-scale = parse-scale("space_scale", space-override, theme.space-scale)
+  let min-size = parse-min-size(min-override, theme.min-font-size)
+  theme + (
+    min-font-size: min-size,
+    font-scale: font-scale,
+    space-scale: space-scale,
+    font-ratio: calc.max(font-scale, min-size / smallest-text),
+    body-size: calc.max(theme.body-size * font-scale, min-size),
+    space-xs: theme.space-xs * space-scale,
+    space-sm: theme.space-sm * space-scale,
+    space-md: theme.space-md * space-scale,
+    space-lg: theme.space-lg * space-scale,
+  )
+}
+
+#let fs(theme, len) = calc.max(len * theme.font-scale, theme.min-font-size)
+#let fd(theme, len) = len * theme.font-ratio
+#let sp(theme, len) = len * theme.space-scale
+
 // Stat card: a big number over a small label. fill/stroke/radius/inset are
 // applied by the enclosing grid() itself (sizes to the row's resolved
 // height automatically). Do NOT wrap this in its own rect(height:100%) --
