@@ -164,7 +164,7 @@
 // HEADLINE MAP: SVI vs. OVERDOSE DEATH RATE
 // ============================================================
 #v(theme.space-md)
-= SOCIAL VULNERABILITY AND OVERDOSE DEATH RATES, BY COUNTY
+= SOCIAL VULNERABILITY INDEX AND OVERDOSE DEATH RATES, BY COUNTY
 #v(theme.space-sm)
 
 // Front-page real estate: the headline map is this page's dominant
