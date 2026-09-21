@@ -243,3 +243,30 @@ test_that("legible-ramp keeps every SVI label at 4.5:1 or better for each theme"
     unlink(dir, recursive = TRUE)
   }
 })
+
+test_that("check_theme reports a missing type and spacing key", {
+  skip_if_no_typst_eval()
+  lines <- readLines(resolve_theme("default"), warn = FALSE)
+  lines <- lines[!grepl("^\\s*font-scale:", lines)]
+  tmp <- tempfile(fileext = ".typ")
+  writeLines(lines, tmp)
+  on.exit(unlink(tmp))
+
+  result <- suppressMessages(check_theme(theme_path = tmp))
+  expect_false(result$ok)
+  expect_true("font-scale" %in% result$missing)
+})
+
+test_that("check_theme accepts an integer scale factor", {
+  skip_if_no_typst_eval()
+  lines <- readLines(resolve_theme("default"), warn = FALSE)
+  lines <- sub("font-scale: 1.0,", "font-scale: 1,", lines, fixed = TRUE)
+  expect_true(any(grepl("font-scale: 1,", lines, fixed = TRUE)))
+  tmp <- tempfile(fileext = ".typ")
+  writeLines(lines, tmp)
+  on.exit(unlink(tmp))
+
+  result <- suppressMessages(check_theme(theme_path = tmp))
+  expect_true(result$ok)
+  expect_equal(nrow(result$type_mismatches), 0)
+})

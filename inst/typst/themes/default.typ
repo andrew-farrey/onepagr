@@ -113,6 +113,16 @@
   body-font: "Liberation Sans",
   body-size: 10pt,
 
+  // -- Type and spacing controls ----------------------------------------
+  // min-font-size: no text renders smaller than this (0pt means no floor).
+  // font-scale multiplies text sizes and text-adjacent dimensions;
+  // space-scale multiplies insets, gutters, gaps, and vertical spacing.
+  // All three are no-ops here. A render can override each one with the
+  // min_font_size / font_scale / space_scale data tokens.
+  min-font-size: 0pt,
+  font-scale: 1.0,
+  space-scale: 1.0,
+
   // -- Spacing scale (systemic #v() rhythm, identical across templates) --
   space-xs: 2pt,
   space-sm: 3pt,
