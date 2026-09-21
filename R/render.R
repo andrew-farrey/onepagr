@@ -13,6 +13,10 @@
 #' `keep_typst = FALSE` to compile in a disposable tempdir instead and
 #' return only the PDF.
 #'
+#' When a fixed-page template's output has a different page count than it
+#' was designed for (for example after raising the type size), a message
+#' reports it. It is only a message: the PDF is still written.
+#'
 #' @param data Named list of whisker substitution values. For alert-style
 #'   templates (`overdose_spike_alert`, `syndromic_alert`), the
 #'   `severity_level` token must be the literal lowercase string
@@ -23,6 +27,11 @@
 #'   `"TRUE"`/`"FALSE"`, uppercase) or any other value fails the compile
 #'   loudly with a Typst `panic()` rather than silently rendering with
 #'   the wrong severity styling or a mis-toggled section.
+#'
+#'   Every template also reads three optional data values: `min_font_size`
+#'   (in points; no text is set smaller than this), and `font_scale` and
+#'   `space_scale` (multipliers for text size and for spacing). Each one
+#'   overrides the theme's own setting for this render when supplied.
 #' @param template Character. A built-in template name (see [list_templates()]).
 #' @param theme Character. A built-in theme name, or a path to a custom
 #'   theme .typ file (see [resolve_theme()]). Default `"default"`.
@@ -159,7 +168,13 @@ note_page_count <- function(template_path, output, template) {
   if (is.na(designed) || !pdftools_available()) {
     return(invisible(NULL))
   }
-  actual <- pdftools::pdf_info(output)$pages
+  actual <- tryCatch(
+    pdftools::pdf_info(output)$pages,
+    error = function(e) NA_integer_
+  )
+  if (is.na(actual)) {
+    return(invisible(NULL))
+  }
   if (actual != designed) {
     message(
       template, " is designed for ", designed, " pages; this render produced ",

@@ -190,6 +190,13 @@ compile_typst <- function(path, data, output, font_dir = NULL) {
   # A failed compile must not be masked by an older PDF at the same path:
   # success is judged by the file existing, so clear it first.
   unlink(output)
+  if (file.exists(output)) {
+    stop(
+      "Cannot replace the existing output file (is it open in another ",
+      "program?): ", output,
+      call. = FALSE
+    )
+  }
   # suppressWarnings() only silences system2()'s own "had status N" warning,
   # which fires unconditionally on a non-zero exit whenever stdout is
   # captured as text: redundant here since a non-zero exit is already

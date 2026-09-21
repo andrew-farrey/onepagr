@@ -141,3 +141,15 @@ test_that("note_page_count is silent without a marker or without pdftools", {
   testthat::local_mocked_bindings(pdftools_available = function() FALSE)
   expect_no_message(note_page_count(marker, "unused.pdf", "cohort_summary"))
 })
+
+test_that("note_page_count stays silent when the PDF cannot be read", {
+  skip_if_not_installed("pdftools")
+  typ <- tempfile(fileext = ".typ")
+  writeLines("// designed-pages: 2", typ)
+  on.exit(unlink(typ))
+  testthat::local_mocked_bindings(
+    pdf_info = function(...) stop("unreadable"), .package = "pdftools"
+  )
+  expect_no_message(note_page_count(typ, "unused.pdf", "cohort_summary"))
+  expect_no_error(note_page_count(typ, "unused.pdf", "cohort_summary"))
+})
