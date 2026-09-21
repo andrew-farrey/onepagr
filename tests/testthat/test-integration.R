@@ -346,7 +346,7 @@ test_that("min_font_size 12 leaves no text smaller than the floor, in every temp
   skip_if_not(quarto::quarto_available())
   skip_if_not(requireNamespace("pdftools", quietly = TRUE))
   for (template in list_templates()) {
-    pdf <- scaled_render(template, list(min_font_size = "12"))
+    pdf <- suppressMessages(scaled_render(template, list(min_font_size = "12")))
     expect_gte(smallest_text_height(pdf), 12 * 0.75, label = template)
   }
   # The same render without the floor does contain smaller text, so the
