@@ -135,10 +135,12 @@ This is the actual PDF the `render_onepager()` call above produces
 matching back page follows it in the real file):
 
 ```{r, eval = pdftools_ready, echo = FALSE}
-front_page <- pdftools::pdf_convert(
-  out, pages = 1, dpi = 100,
-  filenames = file.path(tempdir(), "getting-started-cohort-summary.png"),
-  verbose = FALSE
+# Written under knitr's figure path, not tempdir(): pkgdown copies figures
+# after the article renders, by which point a tempdir() file is gone.
+front_page <- knitr::fig_path(".png")
+dir.create(dirname(front_page), recursive = TRUE, showWarnings = FALSE)
+pdftools::pdf_convert(
+  out, pages = 1, dpi = 100, filenames = front_page, verbose = FALSE
 )
 knitr::include_graphics(front_page)
 ```

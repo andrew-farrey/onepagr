@@ -209,10 +209,12 @@ This is the actual PDF that call produces, built from the real
 `z = 2.59` finding computed above, not placeholder text:
 
 ```{r, eval = pdftools_ready, echo = FALSE}
-front_page <- pdftools::pdf_convert(
-  out, pages = 1, dpi = 100,
-  filenames = file.path(tempdir(), "end-to-end-syndromic-alert.png"),
-  verbose = FALSE
+# Written under knitr's figure path, not tempdir(): pkgdown copies figures
+# after the article renders, by which point a tempdir() file is gone.
+front_page <- knitr::fig_path(".png")
+dir.create(dirname(front_page), recursive = TRUE, showWarnings = FALSE)
+pdftools::pdf_convert(
+  out, pages = 1, dpi = 100, filenames = front_page, verbose = FALSE
 )
 knitr::include_graphics(front_page)
 ```
