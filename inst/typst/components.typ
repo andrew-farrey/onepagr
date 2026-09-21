@@ -52,23 +52,20 @@
 #let smallest-text = 7pt
 
 #let parse-scale(name, value, fallback) = {
-  if value == "" {
-    fallback
-  } else {
-    let parsed = float(value)
-    if parsed <= 0 { panic(name + " must be a positive number, got: " + value) }
-    parsed
+  let parsed = if value == "" { fallback } else { float(value) }
+  // nan is checked first: Typst refuses to compare it with a number.
+  if parsed != parsed or parsed <= 0 {
+    panic(name + " must be a positive number, got: " + repr(parsed))
   }
+  parsed
 }
 
 #let parse-min-size(value, fallback) = {
-  if value == "" {
-    fallback
-  } else {
-    let parsed = float(value)
-    if parsed < 0 { panic("min_font_size must not be negative, got: " + value) }
-    parsed * 1pt
+  let parsed = if value == "" { fallback } else { float(value) * 1pt }
+  if parsed < 0pt {
+    panic("min_font_size must not be negative, got: " + repr(parsed))
   }
+  parsed
 }
 
 #let apply-scales(theme, min-override, font-override, space-override) = {
@@ -470,8 +467,12 @@
   show heading: set block(spacing: 0.4em)
   show heading.where(level: 1): set text(size: fs(theme, 9pt), weight: "bold", fill: theme.brand-blue, tracking: fd(theme, 1pt))
   show heading.where(level: 2): set text(size: fs(theme, 7.5pt), weight: "bold")
+  // The alert templates place their footer inside this reserved margin, and
+  // the footer's text and padding scale, so the reserve scales with whichever
+  // factor is larger. The fixed-page templates pass 0pt, so it stays 0pt for
+  // them. This is the only page-geometry value that scales.
   set page(
-    margin: (x: 0pt, top: 0pt, bottom: margin-bottom), paper: "us-letter",
+    margin: (x: 0pt, top: 0pt, bottom: margin-bottom * calc.max(theme.font-ratio, theme.space-scale)), paper: "us-letter",
     footer: footer,
   )
   body

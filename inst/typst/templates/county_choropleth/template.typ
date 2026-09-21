@@ -270,7 +270,9 @@
     )
   ],
   [
-    #text-box(theme, theme-grad, [HOW TO READ THIS MAP], height: headline-map-height)[
+    // This box holds text, so its height uses fd and grows with the type;
+    // the map box beside it stays a fixed size.
+    #text-box(theme, theme-grad, [HOW TO READ THIS MAP], height: fd(theme, headline-map-height))[
       Each county is shaded by two ranks at once: Social Vulnerability Index (SVI, left #sym.arrow.r right) and overdose death rate (bottom #sym.arrow.r top), each split into thirds across all 120 counties.
       #v(theme.space-xs)
       // Verified directly against biscale::bi_pal("BlueOr", dim=3), not

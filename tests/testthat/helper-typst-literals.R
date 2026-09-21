@@ -2,6 +2,12 @@
 # Returns the lines of a Typst source that still contain a bare pt literal in
 # a category that must go through fs()/fd()/sp() (see components.typ).
 bare_scaled_literals <- function(lines) {
+  # The detector is line based, so a value split across several lines is
+  # invisible to it. Keep guarded values on one line.
+  # label-width: is deliberately not a guarded key. Call sites pass bare pt
+  # values that bar-row and domain-bar wrap in fd internally, so a future
+  # component whose own label-width: default is not wrapped would not be
+  # caught here.
   keys <- c(
     "size", "tracking", "inset", "column-gutter", "row-gutter", "gutter",
     "narrative-callout-gap", "columns"

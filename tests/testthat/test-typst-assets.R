@@ -359,3 +359,44 @@ test_that("fd and the adjusted theme keys follow the scales", {
   # space-md is pre-multiplied by space_scale: 4pt -> 8pt.
   expect_equal(measure(list(space_scale = "2"))[["spaced_x"]], 44)
 })
+
+test_that("scale values are validated after resolution, including the theme's own", {
+  skip_if_not(quarto::quarto_available())
+  dir <- tempfile()
+  on.exit(unlink(dir, recursive = TRUE))
+  export_template("county_choropleth", dir)
+  theme_file <- file.path(dir, "theme.typ")
+  original <- readLines(theme_file, warn = FALSE)
+  typ <- file.path(dir, "validate_probe.typ")
+  writeLines(
+    c(
+      "// optional-token: min_font_size =",
+      "// optional-token: font_scale =",
+      "// optional-token: space_scale =",
+      "#import \"theme.typ\": theme, theme-grad",
+      "#import \"components.typ\": *",
+      paste0(
+        "#let theme = apply-scales(theme, \"{{{min_font_size}}}\", ",
+        "\"{{{font_scale}}}\", \"{{{space_scale}}}\")"
+      ),
+      "#set document(title: [Validate probe])",
+      "#set page(width: 12in, height: 12in, margin: 0.5in)",
+      "#set text(font: theme.body-font)",
+      "#text(size: fs(theme, 10pt))[probe]"
+    ),
+    typ
+  )
+  compile_probe <- function(data) {
+    compile_typst(typ, data, tempfile(fileext = ".pdf"))
+  }
+
+  # A theme that itself sets a non-positive scale is rejected, not silently used.
+  zeroed <- sub("font-scale: 1.0,", "font-scale: 0.0,", original, fixed = TRUE)
+  expect_true(any(grepl("font-scale: 0.0,", zeroed, fixed = TRUE)))
+  writeLines(zeroed, theme_file)
+  expect_error(compile_probe(list()), "font_scale must be a positive number")
+
+  writeLines(original, theme_file)
+  expect_error(compile_probe(list(font_scale = "nan")), "font_scale must be a positive number")
+  expect_error(compile_probe(list(font_scale = "-2")), "font_scale must be a positive number")
+})

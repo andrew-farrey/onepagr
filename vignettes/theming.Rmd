@@ -312,7 +312,8 @@ built-in theme renders exactly as documented until you change one.
 | `space-scale` | Multiplies padding, gaps, and vertical spacing. `1.0` is unchanged. |
 
 You can also set any of them for one report without touching a theme, through
-optional data tokens (`min_font_size` in points, `font_scale`, `space_scale`):
+optional data tokens (`min_font_size` in points, `font_scale`, `space_scale`),
+passed as strings such as "12":
 
 ```{r, eval = FALSE}
 # No text smaller than 12pt, for a large-print version.
@@ -334,12 +335,19 @@ supply.
 
 The built-in fixed-page templates are designed to fill exactly 2 pages at the
 defaults, and are tested that way under every built-in theme. Raising type or
-spacing can push them past 2 pages (a 10pt floor takes `cohort_summary` to 4).
+spacing can push them past 2 pages (a 10pt floor takes `cohort_summary` to 4
+pages and `county_choropleth` to 3).
 onepagr allows that and prints a message when it happens, for example
 "cohort_summary is designed for 2 pages; this render produced 4." Extra pages
 of a fixed template have no footer, because the footer is placed once on each
 designed page. A render that has been scaled or floored is outside the
 package's accessibility verification, so run PAC on the result.
+
+Boxes that hold text grow with the type: label columns, the map explainer box
+in `county_choropleth`, and the reserved bottom margin that holds the footer
+in the alert templates. Map images, logos, and the header texture are
+fixed-size and do not. After a floored or scaled render, look it over for
+text that runs past its box, and run PAC on it.
 
 ## See also
 
