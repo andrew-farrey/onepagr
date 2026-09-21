@@ -291,10 +291,6 @@ without it.
   formats the numbers and percentages, and
   [pdftools](https://CRAN.R-project.org/package=pdftools) reads page
   counts and text geometry from the finished PDFs.
-- [testthat](https://CRAN.R-project.org/package=testthat),
-  [knitr](https://CRAN.R-project.org/package=knitr), and
-  [rmarkdown](https://CRAN.R-project.org/package=rmarkdown) run the
-  tests and build the vignettes.
 - [PAC](https://pac.pdf-accessibility.org/en), the PDF Accessibility
   Checker from the Access for All foundation, is what the accessibility
   claims above were checked against.
