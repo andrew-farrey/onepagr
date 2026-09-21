@@ -155,29 +155,37 @@ output (sample data, `default` theme), not a mock-up. For the fixed
 two-page templates, the front page is on the left and the back page on
 the right.
 
-**`cohort_summary`** ![Cohort Summary template: a two-page one-pager
-contrasting a linked cohort against all cases across region,
-demographics, and encounter history, with a lessons-learned callout and
-implementation timeline.](reference/figures/example-cohort-summary.png)
+**`cohort_summary`**
 
-**`trend_snapshot`** ![Trend Snapshot template: a two-page one-pager
-tracking a single metric across several time periods with
-period-over-period comparison
+![Cohort Summary template: a two-page one-pager contrasting a linked
+cohort against all cases across region, demographics, and encounter
+history, with a lessons-learned callout and implementation
+timeline.](reference/figures/example-cohort-summary.png)
+
+**`trend_snapshot`**
+
+![Trend Snapshot template: a two-page one-pager tracking a single metric
+across several time periods with period-over-period comparison
 bars.](reference/figures/example-trend-snapshot.png)
 
-**`county_choropleth`** ![County Choropleth template: a two-page
-one-pager with a bivariate choropleth map on the front and four
-component-factor maps on the
+**`county_choropleth`**
+
+![County Choropleth template: a two-page one-pager with a bivariate
+choropleth map on the front and four component-factor maps on the
 back.](reference/figures/example-county-choropleth.png)
 
-**`overdose_spike_alert`** ![Overdose Spike Alert template: a
-single-page anomaly alert bulletin with headline stat cards, a narrative
-section, geographic breakdown, and recommended
+**`overdose_spike_alert`**
+
+![Overdose Spike Alert template: a single-page anomaly alert bulletin
+with headline stat cards, a narrative section, geographic breakdown, and
+recommended
 actions.](reference/figures/example-overdose-spike-alert.png)
 
-**`syndromic_alert`** ![Syndromic Alert template: a single-page anomaly
-alert bulletin generalized to any syndrome, structured like the overdose
-spike alert.](reference/figures/example-syndromic-alert.png)
+**`syndromic_alert`**
+
+![Syndromic Alert template: a single-page anomaly alert bulletin
+generalized to any syndrome, structured like the overdose spike
+alert.](reference/figures/example-syndromic-alert.png)
 
 ## Themes
 
