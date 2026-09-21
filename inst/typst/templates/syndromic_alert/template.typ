@@ -15,6 +15,12 @@
 // comment.
 #import "theme.typ": theme, theme-grad
 #import "components.typ": *
+// Optional data: type and spacing controls (see the theming vignette).
+// Empty means "use the theme's value".
+// optional-token: min_font_size =
+// optional-token: font_scale =
+// optional-token: space_scale =
+#let theme = apply-scales(theme, "{{{min_font_size}}}", "{{{font_scale}}}", "{{{space_scale}}}")
 
 // Route contact_email through a variable rather than splicing
 // {{{contact_email}}} directly into markup body wherever it's displayed.
@@ -63,15 +69,15 @@
 // #pagebreak() to hook a per-page placement onto).
 #apply-base-styles([{{{doc_title}}}], "{{{org_full}}}", theme, footer: footer)[
 
-#block(width: 100%, fill: theme-grad.brand-blue-grad, clip: true, inset: (x: 20pt, y: 10pt), above: 0pt, below: 0pt)[
+#block(width: 100%, fill: theme-grad.brand-blue-grad, clip: true, inset: (x: sp(theme, 20pt), y: sp(theme, 10pt)), above: 0pt, below: 0pt)[
   #place(top + right, dx: 40pt, dy: -30pt)[
     #pdf.artifact(kind: "other")[#image("{{{header_texture_path}}}", width: 260pt)]
   ]
-  #grid(columns: (auto, 1fr), column-gutter: 14pt, align: horizon,
+  #grid(columns: (auto, 1fr), column-gutter: sp(theme, 14pt), align: horizon,
     image("{{{logo_primary_path}}}", height: 28pt, alt: "{{{logo_primary_alt}}}"),
     [
-      #text(fill: white, size: 12pt, weight: "bold")[{{{doc_title}}}] \
-      #text(fill: white.transparentize(15%), size: 9pt)[{{{doc_subtitle}}}]
+      #text(fill: white, size: fs(theme, 12pt), weight: "bold")[{{{doc_title}}}] \
+      #text(fill: white.transparentize(15%), size: fs(theme, 9pt))[{{{doc_subtitle}}}]
     ]
   )
 ]
@@ -79,9 +85,9 @@
 #pad(x: theme.content-pad-x)[
 #v(theme.space-md)
 
-#block(breakable: false, fill: severity.bg, stroke: (left: theme.stroke-accent-left + severity.color, rest: theme.stroke-border + theme.box-border), radius: theme.radius-card, inset: (x: 10pt, y: 8pt), width: 100%)[
-  #text(size: 11pt, weight: "bold", fill: severity.text)[⚠ ALERT] #h(1em)
-  #text(size: 9pt, fill: severity.text)[{{{alert_condition}}} #sym.dot.c {{{alert_facility_region}}} #sym.dot.c issued {{{alert_issued_at}}}]
+#block(breakable: false, fill: severity.bg, stroke: (left: theme.stroke-accent-left + severity.color, rest: theme.stroke-border + theme.box-border), radius: theme.radius-card, inset: (x: sp(theme, 10pt), y: sp(theme, 8pt)), width: 100%)[
+  #text(size: fs(theme, 11pt), weight: "bold", fill: severity.text)[⚠ ALERT] #h(1em)
+  #text(size: fs(theme, 9pt), fill: severity.text)[{{{alert_condition}}} #sym.dot.c {{{alert_facility_region}}} #sym.dot.c issued {{{alert_issued_at}}}]
 ]
 
 #v(theme.space-md)
@@ -90,16 +96,16 @@
 // variant), not the vivid severity.color -- same contrast fix as
 // overdose_spike_alert's HEADLINE STATS block, see that file's comment.
 #block(breakable: false)[
-  #grid(columns: (1fr, 1fr), column-gutter: 8pt,
-    fill: theme-grad.card-bg-grad, inset: 10pt,
+  #grid(columns: (1fr, 1fr), column-gutter: sp(theme, 8pt),
+    fill: theme-grad.card-bg-grad, inset: sp(theme, 10pt),
     stroke: (x, ..) => (top: theme.stroke-accent + severity.color, rest: theme.stroke-border + theme.box-border),
     [
-      #text(size: 28pt, weight: "bold", fill: severity.text)[{{{n_observed}}}] \
-      #text(size: 8.5pt, fill: theme.text-secondary)[observed, vs. expected {{{n_expected}}}]
+      #text(size: fs(theme, 28pt), weight: "bold", fill: severity.text)[{{{n_observed}}}] \
+      #text(size: fs(theme, 8.5pt), fill: theme.text-secondary)[observed, vs. expected {{{n_expected}}}]
     ],
     [
-      #text(size: 14pt, weight: "bold", fill: theme.brand-midnight)[{{{test_statistic_label}}}] \
-      #text(size: 8.5pt, fill: theme.text-secondary)[{{{test_statistic_value}}}]
+      #text(size: fs(theme, 14pt), weight: "bold", fill: theme.brand-midnight)[{{{test_statistic_label}}}] \
+      #text(size: fs(theme, 8.5pt), fill: theme.text-secondary)[{{{test_statistic_value}}}]
     ],
   )
 ]
@@ -116,9 +122,9 @@
 = TREND LEADING TO ALERT
 #v(theme.space-sm)
 #block(breakable: false)[
-  #grid(columns: (1fr, 1fr, 1fr, 1fr, 1fr), column-gutter: 4pt, align: horizon,
+  #grid(columns: (1fr, 1fr, 1fr, 1fr, 1fr), column-gutter: sp(theme, 4pt), align: horizon,
     fill: (x, ..) => if x == 4 { theme-grad.brand-blue-grad } else { theme-grad.card-bg-grad },
-    inset: 8pt,
+    inset: sp(theme, 8pt),
     stroke: (x, ..) => if x == 4 { theme.stroke-border + theme.brand-midnight } else { theme.stroke-border + theme.box-border },
     stat-card(theme, [{{{trend_d4}}}], [{{{trend_label4}}}]),
     stat-card(theme, [{{{trend_d3}}}], [{{{trend_label3}}}]),
@@ -145,8 +151,8 @@
     // "4 months ago".."This month").
     align(center)[
       #text(fill: white)[
-        #text(size: 22pt, weight: "bold")[{{{trend_d0}}}] \
-        #text(size: 8pt)[{{{trend_label0}}}]
+        #text(size: fs(theme, 22pt), weight: "bold")[{{{trend_d0}}}] \
+        #text(size: fs(theme, 8pt))[{{{trend_label0}}}]
       ]
     ],
   )
@@ -194,7 +200,7 @@
 ]
 
 #v(theme.space-sm)
-#text(size: 7pt, fill: theme.text-muted)[*Data sources:* {{{footnote_sources}}} #h(0.5em)|#h(0.5em) *Contact:* {{{org_full}}} at #link("mailto:" + contact-email)[#contact-email]]
+#text(size: fs(theme, 7pt), fill: theme.text-muted)[*Data sources:* {{{footnote_sources}}} #h(0.5em)|#h(0.5em) *Contact:* {{{org_full}}} at #link("mailto:" + contact-email)[#contact-email]]
 ] // close body #pad(x: theme.content-pad-x)
 
 ] // close #apply-base-styles body

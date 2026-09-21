@@ -98,8 +98,8 @@
 // that has no fixed height to resolve against inside an auto-sized grid
 // row and blows up to the page's remaining space instead.
 #let stat-card(theme, num, label, color: none) = align(center)[
-  #text(size: 22pt, weight: "bold", fill: if color == none { theme.brand-blue } else { color })[#num] \
-  #text(size: 8pt, fill: theme.text-secondary)[#label]
+  #text(size: fs(theme, 22pt), weight: "bold", fill: if color == none { theme.brand-blue } else { color })[#num] \
+  #text(size: fs(theme, 8pt), fill: theme.text-secondary)[#label]
 ]
 
 // Callout box: a big number/value with explanatory body text, left-border
@@ -107,10 +107,10 @@
 #let callout(theme, theme-grad, num, body-text, color: none, bg: none, text-color: none) = rect(
   fill: if bg == none { theme-grad.callout-bg-grad } else { bg },
   stroke: (left: theme.stroke-accent-left + (if color == none { theme.brand-blue } else { color }), rest: theme.stroke-border + theme.box-border),
-  radius: theme.radius-card, inset: (x: 8pt, y: 6pt), width: 100%,
+  radius: theme.radius-card, inset: (x: sp(theme, 8pt), y: sp(theme, 6pt)), width: 100%,
 )[
-  #text(size: 20pt, weight: "bold", fill: if color == none { theme.brand-blue } else { color })[#num] \
-  #text(size: 8.5pt, fill: if text-color == none { rgb("#1a3a7a") } else { text-color })[#body-text]
+  #text(size: fs(theme, 20pt), weight: "bold", fill: if color == none { theme.brand-blue } else { color })[#num] \
+  #text(size: fs(theme, 8.5pt), fill: if text-color == none { rgb("#1a3a7a") } else { text-color })[#body-text]
 ]
 
 // Composition bar row: label, proportional bar, "% . n=" text AFTER the
@@ -118,27 +118,27 @@
 // (e.g. 1% to 86%), too wide a range for text-inside-the-fill to hold up
 // at the low end.
 #let bar-row(theme, label, pct, n, label-width: 75pt, muted: false) = grid(
-  columns: (label-width, 1fr, auto),
-  column-gutter: 8pt,
+  columns: (fd(theme, label-width), 1fr, auto),
+  column-gutter: sp(theme, 8pt),
   align: (right, left, left),
-  [#text(size: 8.5pt, fill: theme.text-secondary)[#label]],
-  box(fill: white, stroke: theme.stroke-hairline + theme.border-color, radius: 3pt, height: 14pt, width: 100%)[
+  [#text(size: fs(theme, 8.5pt), fill: theme.text-secondary)[#label]],
+  box(fill: white, stroke: theme.stroke-hairline + theme.border-color, radius: 3pt, height: fd(theme, 14pt), width: 100%)[
     #box(fill: if muted { theme.text-muted } else { theme.brand-blue }, stroke: theme.stroke-fill + black, radius: 3pt, height: 100%, width: pct * 1%)
   ],
-  [#text(size: 8.5pt, fill: black, weight: "bold")[#pct% #sym.dot.c n = #n]],
+  [#text(size: fs(theme, 8.5pt), fill: black, weight: "bold")[#pct% #sym.dot.c n = #n]],
 )
 
 // Compact bar for raw-magnitude values (not percentages) against a fixed
 // max, e.g. a mean additional-mentions-per-record metric.
 #let domain-bar(theme, label, value, max: 8.0, label-width: 82pt) = grid(
-  columns: (label-width, 1fr, auto),
-  column-gutter: 6pt,
+  columns: (fd(theme, label-width), 1fr, auto),
+  column-gutter: sp(theme, 6pt),
   align: (right, left, left),
-  [#text(size: 7.5pt, fill: theme.text-secondary)[#label]],
-  box(fill: white, stroke: theme.stroke-hairline + theme.border-color, radius: 3pt, height: 12pt, width: 100%)[
+  [#text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[#label]],
+  box(fill: white, stroke: theme.stroke-hairline + theme.border-color, radius: 3pt, height: fd(theme, 12pt), width: 100%)[
     #box(fill: theme.brand-blue, stroke: theme.stroke-fill + black, radius: 3pt, height: 100%, width: (value / max * 100) * 1%)
   ],
-  [#text(size: 7.5pt, fill: black, weight: "bold")[+#value units]],
+  [#text(size: fs(theme, 7.5pt), fill: black, weight: "bold")[+#value units]],
 )
 
 // Repeating page footer -- Typst's native #set page(footer:) prints this
@@ -238,7 +238,7 @@
 // height is ignored), and the logo is centered inside it, so dy moves a
 // logo relative to a stable row. Defaults (32pt, 0pt)
 // reproduce the original fixed-height lockup exactly.
-#let page-footer(theme, theme-grad, logo-a, logo-a-alt, show-partner-a, logo-primary, logo-primary-alt, logo-b, logo-b-alt, show-partner-b, org-full, contact-url, contact-email, texture: "assets/header-texture.png", strip-links: true, logo-a-height: 32pt, logo-height: 32pt, logo-b-height: 32pt, logo-a-dy: 0pt, logo-dy: 0pt, logo-b-dy: 0pt) = box(width: 100%, fill: theme-grad.brand-blue-grad, clip: true, stroke: (top: theme.stroke-accent + theme.brand-midnight), inset: (x: 20pt, y: 10pt))[
+#let page-footer(theme, theme-grad, logo-a, logo-a-alt, show-partner-a, logo-primary, logo-primary-alt, logo-b, logo-b-alt, show-partner-b, org-full, contact-url, contact-email, texture: "assets/header-texture.png", strip-links: true, logo-a-height: 32pt, logo-height: 32pt, logo-b-height: 32pt, logo-a-dy: 0pt, logo-dy: 0pt, logo-b-dy: 0pt) = box(width: 100%, fill: theme-grad.brand-blue-grad, clip: true, stroke: (top: theme.stroke-accent + theme.brand-midnight), inset: (x: sp(theme, 20pt), y: sp(theme, 10pt)))[
   #place(top + right, dx: 40pt, dy: -30pt)[
     #pdf.artifact(kind: "other")[#image(texture, width: 200pt)]
   ]
@@ -288,13 +288,13 @@
           // same box/inset/gutter structure, ported back here. 8pt (15pt
           // inset minus the 7pt gutter it's compensating for) equalizes
           // the two gaps at 15pt each.
-          box(height: row-height, inset: (left: 15pt, right: 8pt), stroke: (left: 0.6pt + white.transparentize(45%)))[#logo-img]
+          box(height: row-height, inset: (left: sp(theme, 15pt), right: sp(theme, 8pt)), stroke: (left: 0.6pt + white.transparentize(45%)))[#logo-img]
         } else {
           box(height: row-height)[#logo-img]
         }
       )
     }
-    grid(columns: (auto,) * cells.len(), column-gutter: 7pt, align: horizon, ..cells)
+    grid(columns: (auto,) * cells.len(), column-gutter: sp(theme, 7pt), align: horizon, ..cells)
   }
   // Explicit #link() calls, not bare #contact-url/#contact-email
   // interpolation -- confirmed directly that Typst's auto-link detection
@@ -308,7 +308,7 @@
   // was added, which is what caught this. contact-email uses the same
   // "mailto:" + contact-email pattern already proven safe elsewhere in
   // this package (see county_choropleth/template.typ's own footnote).
-  #let org-info = align(right)[#text(fill: white, size: 8pt)[*#org-full* \ #link(contact-url)[#contact-url] \ #link("mailto:" + contact-email)[#contact-email]]]
+  #let org-info = align(right)[#text(fill: white, size: fs(theme, 8pt))[*#org-full* \ #link(contact-url)[#contact-url] \ #link("mailto:" + contact-email)[#contact-email]]]
   #grid(columns: (auto, 1fr), align: horizon,
     logo-lockup,
     if strip-links [
@@ -340,12 +340,12 @@
 #let text-box(theme, theme-grad, label, body, color: none, bg: none, text-color: none, height: auto) = rect(
   fill: if bg == none { theme-grad.card-bg-grad } else { bg },
   stroke: (top: theme.stroke-accent + (if color == none { theme.brand-midnight } else { color }), rest: theme.stroke-border + theme.box-border),
-  inset: 7pt, width: 100%, height: height,
+  inset: sp(theme, 7pt), width: 100%, height: height,
 )[
-  #show heading: set text(size: 8pt, weight: "bold", fill: if color == none { theme.brand-midnight } else { color }, tracking: 0.5pt)
+  #show heading: set text(size: fs(theme, 8pt), weight: "bold", fill: if color == none { theme.brand-midnight } else { color }, tracking: fd(theme, 0.5pt))
   == #label
   #v(theme.space-xs)
-  #text(size: 8.5pt, fill: if text-color == none { black } else { text-color })[#body]
+  #text(size: fs(theme, 8.5pt), fill: if text-color == none { black } else { text-color })[#body]
 ]
 
 // Resolves a severity_level token to its full color triple, or fails
@@ -468,8 +468,8 @@
   set par(leading: 0.5em)
   set list(spacing: 0.35em)
   show heading: set block(spacing: 0.4em)
-  show heading.where(level: 1): set text(size: 9pt, weight: "bold", fill: theme.brand-blue, tracking: 1pt)
-  show heading.where(level: 2): set text(size: 7.5pt, weight: "bold")
+  show heading.where(level: 1): set text(size: fs(theme, 9pt), weight: "bold", fill: theme.brand-blue, tracking: fd(theme, 1pt))
+  show heading.where(level: 2): set text(size: fs(theme, 7.5pt), weight: "bold")
   set page(
     margin: (x: 0pt, top: 0pt, bottom: margin-bottom), paper: "us-letter",
     footer: footer,

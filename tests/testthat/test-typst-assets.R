@@ -257,3 +257,36 @@ test_that("a per-render data token overrides the theme's own scale", {
   # The theme says 2.0, the data token says 1: the token wins.
   expect_equal(from_theme / overridden, 2, tolerance = 0.06)
 })
+
+test_that("bare_scaled_literals finds bare literals and ignores wrapped ones", {
+  expect_length(bare_scaled_literals("box(inset: 7pt, radius: 3pt)"), 1)
+  expect_length(bare_scaled_literals("box(inset: (x: sp(theme, 20pt), y: 10pt))"), 1)
+  expect_length(bare_scaled_literals(
+    "box(inset: (x: sp(theme, 20pt), y: sp(theme, 10pt)), stroke: 0.5pt + red)"
+  ), 0)
+  expect_length(bare_scaled_literals("#text(size: 8pt)[x]"), 1)
+  expect_length(bare_scaled_literals("#text(size: fs(theme, 8pt))[x]"), 0)
+  expect_length(bare_scaled_literals("#v(6pt)"), 1)
+  expect_length(bare_scaled_literals("#v(sp(theme, 6pt))"), 0)
+  expect_length(bare_scaled_literals("// inset: 7pt in a comment"), 0)
+  expect_length(bare_scaled_literals("#text(size: 0.8em)[x]"), 1)
+  expect_length(bare_scaled_literals("#text(size: 1.15em)[x]"), 0)
+  expect_length(bare_scaled_literals("grid(column-gutter: 14pt)"), 1)
+})
+
+test_that("no size, tracking, inset, gutter, or #v literal bypasses fs, fd, sp", {
+  files <- c(
+    system.file("typst", "components.typ", package = "onepagr"),
+    list.files(
+      system.file("typst", "templates", package = "onepagr"),
+      pattern = "^template\\.typ$", recursive = TRUE, full.names = TRUE
+    )
+  )
+  expect_length(files, 6)
+  for (f in files) {
+    expect_equal(
+      bare_scaled_literals(readLines(f, warn = FALSE)), character(0),
+      info = paste(basename(dirname(f)), basename(f))
+    )
+  }
+})
