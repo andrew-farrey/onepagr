@@ -28,6 +28,30 @@
 // optional-token: space_scale =
 #let theme = apply-scales(theme, "{{{min_font_size}}}", "{{{font_scale}}}", "{{{space_scale}}}")
 
+// Optional data: section headings and box labels. Each defaults to the
+// text shown here, so a report needs to supply one only to reword it. A
+// value is set as Typst markup: put a backslash before @, $, * , _ , # or
+// a backtick to show it literally.
+// optional-token: banner_label = SPIKE ALERT
+// optional-token: heading_alert_details = ALERT DETAILS
+// optional-token: label_whats_happening = WHAT'S HAPPENING
+// optional-token: label_geo_breakdown = GEOGRAPHIC BREAKDOWN
+// optional-token: label_actions = RECOMMENDED ACTIONS
+// optional-token: label_resources = LOCAL RESPONSE RESOURCES
+// Optional data: the reader-facing text. Each one defaults to the text
+// shown here. Prefixes: strip_label_ and footer_label_ (metadata strip and
+// footer labels), stat_ (captions on numbers), bar_ (bar-row labels),
+// text_ (paragraphs, bullets and notes), alt_ (chart and map alt text),
+// chips_ (a list of short items separated by |), figure_path and
+// map_title0. A default may refer to data tokens, as {{{n_total}}} does.
+// optional-token: stat_events = overdoses in the last {{{window_days}}} days
+// optional-token: stat_spikes = spikes in the last {{{spike_window_days}}} days
+// optional-token: text_threshold_note = Spike threshold: #sym.gt.eq {{{threshold}}} overdoses. {{{alert_area}}} met or exceeded this threshold, triggering this alert.
+// optional-token: banner_issued = issued
+// optional-token: footer_label_sources = Data sources:
+// optional-token: footer_label_contact = Contact:
+// optional-token: footer_contact_joiner = at
+
 // Route contact_email through a variable rather than splicing
 // {{{contact_email}}} directly into markup body wherever it's displayed.
 // "\@"-escaping the token only fixes Typst's "@" label-syntax parsing
@@ -111,8 +135,8 @@
 // shape, so a separate strip band would be redundant.
 // ============================================================
 #block(breakable: false, fill: severity.bg, stroke: (left: theme.stroke-accent-left + severity.color, rest: theme.stroke-border + theme.box-border), radius: theme.radius-card, inset: (x: sp(theme, 10pt), y: sp(theme, 8pt)), width: 100%)[
-  #text(size: fs(theme, 11pt), weight: "bold", fill: severity.text)[⚠ SPIKE ALERT] #h(1em)
-  #text(size: fs(theme, 9pt), fill: severity.text)[{{{alert_area}}} #sym.dot.c issued {{{alert_issued_at}}}]
+  #text(size: fs(theme, 11pt), weight: "bold", fill: severity.text)[⚠ {{{banner_label}}}] #h(1em)
+  #text(size: fs(theme, 9pt), fill: severity.text)[{{{alert_area}}} #sym.dot.c {{{banner_issued}}} {{{alert_issued_at}}}]
 ]
 
 #v(theme.space-md)
@@ -131,30 +155,30 @@
     stroke: (x, ..) => (top: theme.stroke-accent + severity.color, rest: theme.stroke-border + theme.box-border),
     [
       #text(size: fs(theme, 28pt), weight: "bold", fill: severity.text)[{{{n_events}}}] \
-      #text(size: fs(theme, 8.5pt), fill: theme.text-secondary)[overdoses in the last {{{window_days}}} days]
+      #text(size: fs(theme, 8.5pt), fill: theme.text-secondary)[{{{stat_events}}}]
     ],
     [
       #text(size: fs(theme, 28pt), weight: "bold", fill: severity.text)[{{{n_spikes}}}] \
-      #text(size: fs(theme, 8.5pt), fill: theme.text-secondary)[spikes in the last {{{spike_window_days}}} days]
+      #text(size: fs(theme, 8.5pt), fill: theme.text-secondary)[{{{stat_spikes}}}]
     ],
   )
 ]
 
 #v(theme.space-xs)
-#text(size: fs(theme, 7.5pt), fill: theme.text-muted)[Spike threshold: #sym.gt.eq {{{threshold}}} overdoses. {{{alert_area}}} met or exceeded this threshold, triggering this alert.]
+#text(size: fs(theme, 7.5pt), fill: theme.text-muted)[{{{text_threshold_note}}}]
 
 #v(theme.space-md)
 
 // ============================================================
 // ALERT DETAILS -- H1 heading required for PDF/UA-1 structure
 // ============================================================
-= ALERT DETAILS
+= {{{heading_alert_details}}}
 #v(theme.space-sm)
 
 // ============================================================
 // WHAT'S HAPPENING
 // ============================================================
-#text-box(theme, theme-grad, [WHAT'S HAPPENING], [{{{narrative_text}}}])
+#text-box(theme, theme-grad, [{{{label_whats_happening}}}], [{{{narrative_text}}}])
 
 #v(theme.space-sm)
 
@@ -165,7 +189,7 @@
 // directly in geo_breakdown_text for the proportional-bar visual
 // treatment, or plain text/bullets -- see design doc Section 6.
 // ============================================================
-#text-box(theme, theme-grad, [GEOGRAPHIC BREAKDOWN], [{{{geo_breakdown_text}}}])
+#text-box(theme, theme-grad, [{{{label_geo_breakdown}}}], [{{{geo_breakdown_text}}}])
 
 #v(theme.space-sm)
 
@@ -178,7 +202,7 @@
 // verified only to the 3:1 large-text threshold. See themes/default.typ
 // and themes/uk.typ's brand-accent-text comments for the full story
 // (this exact mistake shipped once and failed a real PAC WCAG check).
-#text-box(theme, theme-grad, [RECOMMENDED ACTIONS], [{{{actions_text}}}], color: theme.brand-accent-text)
+#text-box(theme, theme-grad, [{{{label_actions}}}], [{{{actions_text}}}], color: theme.brand-accent-text)
 
 // ============================================================
 // LOCAL RESPONSE RESOURCES -- optional, gated on show_resources. The R
@@ -189,11 +213,11 @@
 // ============================================================
 #if bool-token("show_resources", "{{{show_resources}}}") [
   #v(theme.space-sm)
-  #text-box(theme, theme-grad, [LOCAL RESPONSE RESOURCES], [{{{resources_text}}}])
+  #text-box(theme, theme-grad, [{{{label_resources}}}], [{{{resources_text}}}])
 ]
 
 #v(theme.space-sm)
-#text(size: fs(theme, 7pt), fill: theme.text-muted)[*Data sources:* {{{footnote_sources}}} #h(0.5em)|#h(0.5em) *Contact:* {{{org_full}}} at #link("mailto:" + contact-email)[#contact-email]]
+#text(size: fs(theme, 7pt), fill: theme.text-muted)[*{{{footer_label_sources}}}* {{{footnote_sources}}} #h(0.5em)|#h(0.5em) *{{{footer_label_contact}}}* {{{org_full}}} {{{footer_contact_joiner}}} #link("mailto:" + contact-email)[#contact-email]]
 ] // close body #pad(x: theme.content-pad-x)
 
 ] // close #apply-base-styles body

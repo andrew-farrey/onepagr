@@ -188,6 +188,120 @@ test_that("extract_required_tokens leaves out tokens with a declared default", {
   expect_true(validate_template_data(tmp, list(doc_title = "x")))
 })
 
+test_that("template_tokens lists required tokens first, then defaults", {
+  tmp <- tempfile(fileext = ".typ")
+  writeLines(
+    c(
+      "// optional-token: heading_x = Results (N = {{{n_total}}})",
+      "// optional-token: blank =",
+      "{{{heading_x}}} {{{doc_title}}} {{{blank}}}"
+    ),
+    tmp
+  )
+  on.exit(unlink(tmp))
+  out <- template_tokens(tmp)
+  expect_equal(names(out), c("token", "required", "default"))
+  expect_equal(out$token, c("doc_title", "n_total", "heading_x", "blank"))
+  expect_equal(out$required, c(TRUE, TRUE, FALSE, FALSE))
+  expect_equal(
+    out$default, c(NA, NA, "Results (N = {{{n_total}}})", "")
+  )
+})
+
+test_that("template_tokens accepts a built-in template name", {
+  out <- template_tokens("cohort_summary")
+  expect_true(all(c("doc_title", "heading_glance") %in% out$token))
+  expect_equal(out$default[out$token == "heading_disclaimer"], "DISCLAIMER")
+  expect_false(anyDuplicated(out$token) > 0)
+  expect_error(template_tokens("no_such_template"), "not a built-in template")
+})
+
+test_that("no built-in template uses a double-brace token", {
+  # Double braces HTML-escape their value and are invisible to
+  # extract_required_tokens(), so a missing value would go unnoticed.
+  for (template in list_templates()) {
+    lines <- readLines(resolve_template(template), warn = FALSE)
+    lines <- sub("//.*$", "", lines)
+    double_brace <- "(?<!\\{)\\{\\{[A-Za-z0-9_.]+\\}\\}(?!\\})"
+    expect_false(any(grepl(double_brace, lines, perl = TRUE)), info = template)
+  }
+})
+
+test_that("warn_unknown_tokens flags a typo and suggests the token", {
+  tmp <- tempfile(fileext = ".typ")
+  writeLines(
+    c(
+      "// optional-token: heading_glance = AT A GLANCE",
+      "{{{heading_glance}}} {{{doc_title}}}"
+    ),
+    tmp
+  )
+  on.exit(unlink(tmp))
+  data <- list(doc_title = "x", heading_glnce = "y")
+  expect_warning(
+    warn_unknown_tokens(tmp, data),
+    "\"heading_glnce\" was ignored.*Did you mean \"heading_glance\"[?]"
+  )
+})
+
+test_that("warn_unknown_tokens flags an unrelated name without a suggestion", {
+  tmp <- tempfile(fileext = ".typ")
+  writeLines("{{{doc_title}}}", tmp)
+  on.exit(unlink(tmp))
+  warning_text <- tryCatch(
+    warn_unknown_tokens(tmp, list(doc_title = "x", zzz_unrelated_zzz = "y")),
+    warning = function(w) conditionMessage(w)
+  )
+  expect_match(warning_text, "\"zzz_unrelated_zzz\" was ignored")
+  expect_no_match(warning_text, "Did you mean")
+})
+
+test_that("warn_unknown_tokens stays silent for known and shared names", {
+  tmp <- tempfile(fileext = ".typ")
+  writeLines("{{{doc_title}}}", tmp)
+  on.exit(unlink(tmp))
+  # heading_glance belongs to a built-in template, not this one: a data list
+  # shared across templates must not warn.
+  expect_no_warning(
+    warn_unknown_tokens(
+      tmp, list(doc_title = "x", heading_glance = "y", n_decedents = "1")
+    )
+  )
+  expect_no_warning(warn_unknown_tokens(tmp, list(doc_title = "x")))
+})
+
+test_that("extract_required_tokens counts tokens a default refers to", {
+  tmp <- tempfile(fileext = ".typ")
+  writeLines(
+    c(
+      "// optional-token: heading_x = Results (N = {{{n_total}}})",
+      "{{{heading_x}}} {{{doc_title}}}"
+    ),
+    tmp
+  )
+  on.exit(unlink(tmp))
+  expect_equal(extract_required_tokens(tmp), c("doc_title", "n_total"))
+})
+
+test_that("fill_token_defaults renders a default against the data", {
+  tmp <- tempfile(fileext = ".typ")
+  writeLines(
+    c(
+      "// optional-token: heading_x = Results (N = {{{n_total}}}) & more",
+      "// optional-token: heading_y = Plain",
+      "{{{heading_x}}} {{{heading_y}}} {{{n_total}}}"
+    ),
+    tmp
+  )
+  on.exit(unlink(tmp))
+  out <- fill_token_defaults(tmp, list(n_total = "12", heading_y = "Mine"))
+  expect_equal(out$heading_x, "Results (N = 12) & more")
+  expect_equal(out$heading_y, "Mine")
+  # A supplied value is taken literally, never rendered again.
+  out <- fill_token_defaults(tmp, list(n_total = "12", heading_x = "{{{n_total}}}"))
+  expect_equal(out$heading_x, "{{{n_total}}}")
+})
+
 test_that("compile_typst fills an omitted optional token from its default", {
   skip_if_not(quarto::quarto_available())
   dir <- tempfile()

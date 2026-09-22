@@ -313,7 +313,8 @@ scaled_render <- function(template, extra = list(), theme = "default") {
   maps <- file.path("fixtures", "maps", sprintf("map%d.png", 0:4))
   out <- tempfile(fileext = ".pdf")
   render_onepager(
-    c(data, extra), template = template, theme = theme, output = out,
+    utils::modifyList(data, extra), template = template, theme = theme,
+    output = out,
     keep_typst = FALSE,
     extra_assets = if (template == "county_choropleth") maps else character(0)
   )
@@ -337,6 +338,48 @@ test_that("the fixed-page templates render at exactly 2 pages under every theme"
       expect_equal(
         pdftools::pdf_info(pdf)$pages, 2,
         info = paste(theme, template)
+      )
+    }
+  }
+})
+
+test_that("every text token rewords its text, in every template", {
+  skip_if_not(quarto::quarto_available())
+  skip_if_not(requireNamespace("pdftools", quietly = TRUE))
+  # Everything template_tokens() documents as reader-facing text that shows
+  # up in the PDF's text layer. alt_* is checked separately, below.
+  visible <- paste0(
+    "^(heading|label|banner|stat|bar|text|chips|strip_label|footer|",
+    "map_title0)"
+  )
+  for (template in list_templates()) {
+    all_tokens <- template_tokens(template)
+    tokens <- grep(visible, all_tokens$token[!all_tokens$required], value = TRUE)
+    expect_gt(length(tokens), 0)
+    # cohort_summary's heading_key_findings, and only that one token, is
+    # justified with extra letter-spacing instead of word-spacing on the
+    # macOS and Windows CI runners specifically (never locally, never on
+    # Ubuntu) -- some font-substitution/kerning quirk of that particular
+    # heading's position, not anything wrong with the substitution itself
+    # (the same par.justify hazard this package already works around for
+    # real headings -- see CLAUDE.md). All whitespace is stripped from
+    # both sides before matching, which defeats that stray spacing
+    # regardless of whether it lands between letters or between words.
+    marker <- function(tok) paste0("Zz", gsub("_", "", tok))
+    normalize_space <- function(x) gsub("\\s+", "", x)
+    extra <- stats::setNames(lapply(tokens, marker), tokens)
+    # syndromic_alert's cluster box is off in the fixture; switch it on so
+    # its label is rendered and can be checked.
+    if ("label_cluster" %in% tokens) {
+      extra <- c(extra, list(show_cluster = "true", cluster_text = "Cluster"))
+    }
+    text <- normalize_space(paste(
+      pdftools::pdf_text(scaled_render(template, extra)), collapse = " "
+    ))
+    for (tok in tokens) {
+      expect_match(
+        text, normalize_space(marker(tok)), fixed = TRUE,
+        info = paste(template, tok)
       )
     }
   }

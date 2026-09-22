@@ -349,6 +349,78 @@ in the alert templates. Map images, logos, and the header texture are
 fixed-size and do not. After a floored or scaled render, look it over for
 text that runs past its box, and run PAC on it.
 
+## Part 5: Rewording headings, labels and text
+
+Every piece of reader-facing text in a built-in template is an optional data
+token: section headings, box labels, captions, paragraphs, bullets, bar-chart
+row labels, the metadata strip and footer labels, and the alt text for charts
+and maps. Each one defaults to the text the template ships with, so you supply
+only the ones you want to change, and a template you leave alone renders
+exactly as before. You never need to edit Typst.
+
+`template_tokens()` lists everything a template takes. Required tokens (your
+numbers and names) come first, then the optional ones with their current text:
+
+```{r}
+tokens <- onepagr::template_tokens("overdose_spike_alert")
+tokens[!tokens$required, c("token", "default")]
+```
+
+Optional tokens are named by what they set, so you can filter on the prefix:
+
+| Prefix | Sets |
+|---|---|
+| `heading_*` | Section headings |
+| `label_*`, `banner_*` | Box, group and alert-banner labels |
+| `stat_*` | Captions under big numbers |
+| `bar_*` | Row labels in bar charts |
+| `text_*` | Paragraphs, bullets and notes |
+| `alt_*` | Alt text for charts and maps |
+| `strip_label_*`, `footer_label_*` | Labels in the metadata strip and footer |
+| `chips_*` | A short list of items, separated by `|` |
+
+```{r}
+cohort <- onepagr::template_tokens("cohort_summary")
+head(cohort[grepl("^heading_", cohort$token), c("token", "default")], 4)
+```
+
+Use them like any other value:
+
+```{r, eval = FALSE}
+render_onepager(
+  c(data, list(
+    heading_alert_details = "WHAT WE KNOW",
+    label_actions = "WHAT TO DO NEXT",
+    text_threshold_note = "Alert level: {{{threshold}}} overdoses in 24 hours."
+  )),
+  template = "overdose_spike_alert", theme = "default",
+  output = "reworded.pdf"
+)
+```
+
+A few things to know:
+
+* A name that no template uses is ignored with a warning that suggests the
+  closest token, such as `"heading_glnce" was ignored ... Did you mean
+  "heading_glance"?`. A name that belongs to a different built-in template
+  is left alone, so you can share one data list across templates.
+* A value is set as Typst markup. `*bold*` and `_italic_` work. To show `@`,
+  `$`, `*`, `_`, `#` or a backtick literally, put a backslash before it.
+  Alt text (`alt_*`) is plain text, and should not contain a double quote.
+* The number in a default is filled from your data. A default such as
+  `Results (N = {{{n_total}}})` uses your `n_total`. Your own replacement is
+  used exactly as written, so type any numbers into it yourself. The token in
+  the default is still required, because the template needs it whether or
+  not you keep the default text.
+* Headings stay real headings in the PDF's structure whatever text you give
+  them, so screen readers and the document outline keep working. Update the
+  `alt_*` text whenever you change what a chart or map shows.
+* A longer heading or paragraph can wrap onto more lines and push a
+  fixed-length template past its page count. Render and look after
+  rewording.
+* To change a template's structure rather than its words, such as adding a
+  section, use `export_template()` and edit the Typst.
+
 ## See also
 
 - `vignette("getting-started", package = "onepagr")` for the basic

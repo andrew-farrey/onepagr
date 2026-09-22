@@ -30,7 +30,13 @@ the wrong severity styling or a mis-toggled section.
 Every template also reads three optional data values: \code{min_font_size}
 (in points; no text is set smaller than this), and \code{font_scale} and
 \code{space_scale} (multipliers for text size and for spacing). Each one
-overrides the theme's own setting for this render when supplied.}
+overrides the theme's own setting for this render when supplied.
+
+Reader-facing text is optional too: headings, labels, captions,
+paragraphs, bar labels and alt text are tokens (\verb{heading_*}, \verb{text_*},
+\verb{alt_*} and so on) that each default to the template's own wording.
+\code{\link[=template_tokens]{template_tokens()}} lists what a template takes, with the defaults
+(see \code{vignette("theming")}, Part 5).}
 
 \item{template}{Character. A built-in template name (see \code{\link[=list_templates]{list_templates()}}).}
 

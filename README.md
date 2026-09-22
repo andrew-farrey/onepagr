@@ -23,7 +23,7 @@ Public health teams and similar analysis groups often need to turn a
 piece of analysis into a one-page fact sheet, surveillance brief, or
 alert bulletin: something that can be printed front-and-back, shared as
 a PDF, or read on a phone. Doing that by hand in a slide deck or word
-processor is slow to reproduce and easy to get wrong on accessibility.
+processor is slow to reproduce and makes accessibility easy to get wrong.
 onepagr turns a named list of values into a finished PDF with one
 function call, using templates whose layout and accessibility patterns
 are already solved.
@@ -38,11 +38,11 @@ pak::pak("andrew-farrey/onepagr")
 ```
 
 onepagr also needs [Quarto](https://quarto.org), which bundles
-[Typst](https://typst.app), installed on your system. **Accessible PDF output 
+[Typst](https://typst.app), installed on your system. **Accessible PDF output
 needs Typst 0.14.0 or newer**, the release that [added PDF/UA-1 conformance and
 automatic tagged-PDF support](https://typst.app/docs/changelog/0.14.0/)
-in the first place. Older Typst simply cannot produce an accessible PDF,
-no matter what onepagr does. onepagr itself checks for Typst 0.15.1+ by
+in the first place. Older Typst versions simply cannot produce an accessible
+PDF, no matter what onepagr does. onepagr itself checks for Typst 0.15.1+ by
 default (a newer floor than the bare minimum, confirmed to be what's
 actually bundled by recent Quarto releases). Check whether your system's
 Typst is new enough, and get a clear message naming the actual version

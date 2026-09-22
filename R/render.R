@@ -32,6 +32,12 @@
 #'   (in points; no text is set smaller than this), and `font_scale` and
 #'   `space_scale` (multipliers for text size and for spacing). Each one
 #'   overrides the theme's own setting for this render when supplied.
+#'
+#'   Reader-facing text is optional too: headings, labels, captions,
+#'   paragraphs, bar labels and alt text are tokens (`heading_*`, `text_*`,
+#'   `alt_*` and so on) that each default to the template's own wording.
+#'   [template_tokens()] lists what a template takes, with the defaults
+#'   (see `vignette("theming")`, Part 5).
 #' @param template Character. A built-in template name (see [list_templates()]).
 #' @param theme Character. A built-in theme name, or a path to a custom
 #'   theme .typ file (see [resolve_theme()]). Default `"default"`.
