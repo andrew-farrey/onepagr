@@ -46,6 +46,98 @@ extract_required_tokens <- function(path) {
   setdiff(unique(c(tokens, referenced)), names(defaults))
 }
 
+#' List the tokens a template takes
+#'
+#' Shows every `{{{token}}}` a template reads: the ones your `data` list must
+#' supply, and the optional ones with the value each falls back to. Use it to
+#' find the name of a heading, label, caption or paragraph you want to
+#' reword, then pass that name in `data` (see [render_onepager()]).
+#'
+#' Optional tokens are named by what they set: `heading_*` (section
+#' headings), `label_*` (box and group labels), `banner_label` and
+#' `banner_issued` (alert banners), `stat_*` (captions on numbers), `bar_*`
+#' (bar-chart row labels), `text_*` (paragraphs, bullets and notes),
+#' `alt_*` (chart and map alt text), `strip_label_*` and `footer_label_*`
+#' (the metadata strip and footer labels), and `chips_*` (a short list of
+#' items separated by `|`). Filter on those prefixes with [grepl()].
+#'
+#' A default is Typst markup and can itself contain `{{{token}}}`
+#' references, which are filled from your data. A token that only a default
+#' refers to still counts as required.
+#'
+#' @param template Character. A built-in template name (see
+#'   [list_templates()]), or the path to a `.typ` file such as one written by
+#'   [export_template()].
+#' @return A data frame with one row per token and columns `token`,
+#'   `required` (logical) and `default` (`NA` for a required token). Required
+#'   tokens come first, then optional ones, each in the order the template
+#'   uses them.
+#' @examples
+#' tokens <- template_tokens("cohort_summary")
+#' head(tokens)
+#'
+#' # Every section heading you can reword, with its current text:
+#' tokens[grepl("^heading_", tokens$token), c("token", "default")]
+#' @export
+template_tokens <- function(template) {
+  path <- if (utils::file_test("-f", template)) {
+    template
+  } else {
+    resolve_template(template)
+  }
+  defaults <- extract_token_defaults(path)
+  required <- extract_required_tokens(path)
+  data.frame(
+    token = c(required, names(defaults)),
+    required = rep(c(TRUE, FALSE), c(length(required), length(defaults))),
+    default = c(rep(NA_character_, length(required)), unlist(defaults)),
+    row.names = NULL,
+    stringsAsFactors = FALSE
+  )
+}
+
+#' Warn about data names no template uses
+#'
+#' Internal. A name in `data` that is not a token of this template, or of any
+#' built-in template, is ignored by the render, which is easy to miss when it
+#' is a misspelled optional token (`heading_glnce`). A name that belongs to
+#' another built-in template stays silent, so one data list can be shared
+#' across templates. When a name is close to one of this template's own
+#' tokens, the warning suggests it.
+#'
+#' @param path Character. Path to a .typ file.
+#' @param data Named list of whisker substitution values.
+#' @return Invisibly, the ignored names.
+#' @keywords internal
+warn_unknown_tokens <- function(path, data) {
+  own <- template_tokens(path)$token
+  builtin <- unlist(lapply(
+    list_templates(), function(t) template_tokens(t)$token
+  ))
+  names_in <- setdiff(names(data), c("", NA))
+  unknown <- setdiff(names_in, c(own, builtin))
+  if (length(unknown) == 0) {
+    return(invisible(character(0)))
+  }
+  hint <- function(name) {
+    distance <- drop(utils::adist(name, own))
+    closest <- which.min(distance)
+    if (distance[closest] <= max(2, floor(nchar(name) / 4))) {
+      paste0(" Did you mean \"", own[closest], "\"?")
+    } else {
+      ""
+    }
+  }
+  lines <- vapply(unknown, function(name) {
+    paste0(
+      "\"", name, "\" was ignored: it is not a token of this template ",
+      "(see template_tokens()).", hint(name)
+    )
+  }, character(1))
+  warning(paste(lines, collapse = "\n"), call. = FALSE)
+  invisible(unknown)
+}
+
 #' Read a template's optional-token defaults
 #'
 #' Internal. A template declares a token as optional with a `//` comment
@@ -169,7 +261,10 @@ validate_template_data <- function(path, data) {
 #' @param path Character. Path to a .typ file. Its
 #'   `theme.typ`/`components.typ`/assets must already be alongside it, so
 #'   Typst's relative `#import` paths resolve correctly.
-#' @param data Named list of whisker substitution values.
+#' @param data Named list of whisker substitution values. A name that is not
+#'   a token of `path` or of any built-in template is ignored with a warning
+#'   (naming the closest token, if there is one), which catches misspelled
+#'   optional tokens.
 #' @param output Character. Path to write the compiled PDF to.
 #' @param font_dir Character or `NULL`. A directory of font files (`.ttf`/
 #'   `.otf`) to make available to Typst for this compile, passed through
@@ -192,6 +287,7 @@ validate_template_data <- function(path, data) {
 #' }
 #' @export
 compile_typst <- function(path, data, output, font_dir = NULL) {
+  warn_unknown_tokens(path, data)
   data <- fill_token_defaults(path, data)
   validate_template_data(path, data)
 

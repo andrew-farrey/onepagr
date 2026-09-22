@@ -32,13 +32,23 @@ Initial release.
   token, `compile_typst()` and `render_onepager()` use the default
   instead of raising a missing-token error, and
   `extract_required_tokens()` no longer lists it.
-* Every section heading and box label in the built-in templates is an
-  optional token that defaults to the text it shipped with: `heading_*`
-  for section headings, `label_*` for text-box labels, and `banner_label`
-  for the word in an alert banner. Reword one by adding it to `data`;
-  default output is unchanged. A template's source lists its tokens (see
-  the theming vignette, Part 5). A default may refer to other tokens, as in
+* All the reader-facing text in the built-in templates is tokenized, so
+  changing it is a change to your `data` list, not to the template: section
+  headings, box labels, captions, paragraphs, bullets, bar-chart row labels,
+  the metadata strip and footer labels, and chart and map alt text. Each
+  token is optional and defaults to the text the template shipped with, so
+  default output is unchanged. Names follow a prefix pattern (`heading_*`,
+  `label_*`, `stat_*`, `bar_*`, `text_*`, `alt_*`, and a few others; see the
+  theming vignette, Part 5). A default may refer to other tokens, as in
   `Results (N = {{{n_total}}})`, and those stay required.
+* A name in `data` that no template uses is ignored with a warning instead
+  of silently, and the warning suggests the closest token when there is
+  one (`"heading_glnce" was ignored ... Did you mean "heading_glance"?`).
+  A name that belongs to a different built-in template stays quiet, so one
+  data list can be shared across templates.
+* `template_tokens()` lists every token a built-in template, or an exported
+  copy of one, takes: which are required, and the default of each optional
+  one.
 * The shared footer's logo lockup takes a height and a vertical nudge for
   each logo (`logo-a-height`, `logo-height`, `logo-b-height` and
   `logo-a-dy`, `logo-dy`, `logo-b-dy`, defaulting to 32pt and 0pt), for

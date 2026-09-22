@@ -11,7 +11,10 @@ compile_typst(path, data, output, font_dir = NULL)
 \code{theme.typ}/\code{components.typ}/assets must already be alongside it, so
 Typst's relative \verb{#import} paths resolve correctly.}
 
-\item{data}{Named list of whisker substitution values.}
+\item{data}{Named list of whisker substitution values. A name that is not
+a token of \code{path} or of any built-in template is ignored with a warning
+(naming the closest token, if there is one), which catches misspelled
+optional tokens.}
 
 \item{output}{Character. Path to write the compiled PDF to.}
 

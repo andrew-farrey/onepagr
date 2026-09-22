@@ -8,7 +8,7 @@
 // Same rules as onepager_template.typ: pure Typst (no Quarto/pandoc
 // wrapper), whisker-tokenized ({{{token}}} triple-brace, never {{token}}
 // -- double-brace HTML-escapes and will corrupt any token containing
-// "&"), static prose NOT tokenized. See onepager_template.typ's header
+// "&"), reader-facing text tokenized as optional tokens with defaults. See onepager_template.typ's header
 // comment for the fuller rationale on both of those, not repeated here.
 //
 // SAMPLE CONTENT NOTICE: every organization/program/dataset name and
@@ -46,6 +46,53 @@
 // optional-token: heading_magnitude = MAGNITUDE OF CHANGE BY DOMAIN
 // optional-token: heading_implications = IMPLICATIONS
 // optional-token: heading_disclaimer = DISCLAIMER
+// Optional data: the reader-facing text. Each one defaults to the text
+// shown here. Prefixes: strip_label_ and footer_label_ (metadata strip and
+// footer labels), stat_ (captions on numbers), bar_ (bar-row labels),
+// text_ (paragraphs, bullets and notes), alt_ (chart and map alt text),
+// chips_ (a list of short items separated by |), figure_path and
+// map_title0. A default may refer to data tokens, as {{{n_total}}} does.
+// optional-token: strip_label_data = DATA
+// optional-token: strip_label_design = METRIC
+// optional-token: strip_label_geography = COVERAGE
+// optional-token: text_headline = {{{n_decedents}}} sample metric value, {{{strip_period}}}
+// optional-token: text_headline_note = Tracking {{{n_ems_total}}} total observations across the period below. Trend shown against {{{n_eligible_decedents}}} eligible units in the sample region.
+// optional-token: stat_period_1 = Period 1
+// optional-token: stat_period_2 = Period 2
+// optional-token: stat_period_3 = Period 3
+// optional-token: stat_period_4 = Period 4 (current)
+// optional-token: text_share_note = Values shown are the sample metric's share of {{{n_eligible_decedents}}} eligible units per period, {{{strip_period}}}. Not cumulative -- each period is measured independently.
+// optional-token: text_changed_1 = The sample metric moved from {{{pct_linked_male_width}}}% in Period 1 to {{{pct_linked_nonappalachian_width}}}% by Period 4, the most recent period tracked. That shift coincides with a documented process change partway through the tracked window -- see Key Dates below for the specific timing.
+// optional-token: text_changed_2 = A change of this size, sustained across more than one period rather than appearing in a single period alone, is unlikely to reflect measurement noise on its own. Confirming that requires the same kind of denominator and comparison-group discipline used throughout this template family -- see the disclaimer for this snapshot's specific caveats.
+// optional-token: text_driver_1 = Top sample driver category: Category 1
+// optional-token: text_driver_2 = Second driver: Category 2
+// optional-token: text_driver_3 = Third driver: Category 3
+// optional-token: text_ranked_note = Ranked by contribution to the overall shift; see the ranked breakdown below for the full per-category comparison.
+// optional-token: label_top_drivers = TOP DRIVERS OF THE PERIOD-OVER-PERIOD CHANGE
+// optional-token: bar_driver_1 = Category 1
+// optional-token: bar_driver_2 = Category 2
+// optional-token: bar_driver_3 = Category 3
+// optional-token: text_date_1 = Window opens; baseline period begins
+// optional-token: text_date_3 = Current period; most recent value shown above
+// optional-token: stat_current_value = Current period value
+// optional-token: stat_prior_value = _Prior_ period value
+// optional-token: text_mean_median = Mean per-period value: *{{{mean_prior_enc}}}* #sym.dot.c Median: *{{{median_prior_enc}}}*
+// optional-token: stat_documented = documented
+// optional-token: stat_observations = observations
+// optional-token: stat_none = none
+// optional-token: stat_without = without
+// optional-token: text_overall = Overall: *{{{pct_decedent_nax}}}* of tracked units had #sym.gt.eq 1 documented observation
+// optional-token: text_per_category_intro = Bars show the per-category change between the current and prior tracked period, per 100 sample units.
+// optional-token: figure_path = assets/structured_field_diff_onepager.png
+// optional-token: alt_per_category_chart = Bar chart comparing per-category values between the current and prior tracked period across sample categories, split into two facet groups.
+// optional-token: text_magnitude_intro = Additional domain-specific terms per record, current vs. prior period, {{{strip_period}}}.
+// optional-token: bar_domain_1 = Context
+// optional-token: bar_domain_2 = History
+// optional-token: bar_domain_3 = Category A
+// optional-token: footer_label_sources = Data sources:
+// optional-token: footer_label_period = Period:
+// optional-token: footer_label_contact = Contact:
+// optional-token: footer_contact_joiner = at
 
 // Template-specific tuning values -- unlike theme.typ's systemic tokens,
 // these are specific to how THIS template's content happens to lay out,
@@ -151,9 +198,9 @@
 ]
 #block(fill: theme.brand-midnight, inset: (x: sp(theme, 20pt), y: sp(theme, 6pt)), width: 100%, above: 0pt)[
   #text(fill: white, size: fs(theme, 8pt))[
-    *DATA* {{{strip_data}}}  #h(1.5em)
-    *METRIC* {{{strip_design}}}  #h(1.5em)
-    *COVERAGE* {{{strip_geography}}}
+    *{{{strip_label_data}}}* {{{strip_data}}}  #h(1.5em)
+    *{{{strip_label_design}}}* {{{strip_design}}}  #h(1.5em)
+    *{{{strip_label_geography}}}* {{{strip_geography}}}
   ]
 ]
 
@@ -171,9 +218,9 @@
       #text(size: fs(theme, 40pt), weight: "bold", fill: theme.brand-blue)[{{{pct_linked}}}]
     ],
     [
-      #text(size: fs(theme, 10pt), weight: "bold")[{{{n_decedents}}} sample metric value, {{{strip_period}}}]
+      #text(size: fs(theme, 10pt), weight: "bold")[{{{text_headline}}}]
       #v(theme.space-xs)
-      #text(size: fs(theme, 8pt), fill: theme.text-secondary)[Tracking {{{n_ems_total}}} total observations across the period below. Trend shown against {{{n_eligible_decedents}}} eligible units in the sample region.]
+      #text(size: fs(theme, 8pt), fill: theme.text-secondary)[{{{text_headline_note}}}]
     ]
   )
 ]
@@ -191,15 +238,15 @@
   #grid(columns: (1fr, 1fr, 1fr, 1fr), column-gutter: sp(theme, 6pt), align: horizon,
     fill: theme-grad.card-bg-grad, inset: sp(theme, 8pt),
     stroke: (x, ..) => (top: theme.stroke-accent + theme.brand-blue, rest: theme.stroke-border + theme.box-border),
-    stat-card(theme, [{{{pct_linked_male_width}}}%], [Period 1]),
-    stat-card(theme, [{{{pct_linked_female_width}}}%], [Period 2]),
-    stat-card(theme, [{{{pct_linked_appalachian_width}}}%], [Period 3], color: theme.brand-accent),
-    stat-card(theme, [{{{pct_linked_nonappalachian_width}}}%], [Period 4 (current)], color: theme.brand-midnight),
+    stat-card(theme, [{{{pct_linked_male_width}}}%], [{{{stat_period_1}}}]),
+    stat-card(theme, [{{{pct_linked_female_width}}}%], [{{{stat_period_2}}}]),
+    stat-card(theme, [{{{pct_linked_appalachian_width}}}%], [{{{stat_period_3}}}], color: theme.brand-accent),
+    stat-card(theme, [{{{pct_linked_nonappalachian_width}}}%], [{{{stat_period_4}}}], color: theme.brand-midnight),
   )
 ]
 
 #v(theme.space-sm)
-#text(size: fs(theme, 7.5pt), fill: theme.text-muted)[Values shown are the sample metric's share of {{{n_eligible_decedents}}} eligible units per period, {{{strip_period}}}. Not cumulative -- each period is measured independently.]
+#text(size: fs(theme, 7.5pt), fill: theme.text-muted)[{{{text_share_note}}}]
 
 // ============================================================
 // WHAT CHANGED / WHY IT MATTERS -- two-column narrative idiom reused
@@ -220,19 +267,19 @@
 
 #grid(columns: (55fr, 45fr), column-gutter: sp(theme, 16pt),
   [
-    #text(size: fs(theme, 8.5pt))[The sample metric moved from {{{pct_linked_male_width}}}% in Period 1 to {{{pct_linked_nonappalachian_width}}}% by Period 4, the most recent period tracked. That shift coincides with a documented process change partway through the tracked window -- see Key Dates below for the specific timing.]
+    #text(size: fs(theme, 8.5pt))[{{{text_changed_1}}}]
     #v(sp(theme, 6pt))
-    #text(size: fs(theme, 8.5pt))[A change of this size, sustained across more than one period rather than appearing in a single period alone, is unlikely to reflect measurement noise on its own. Confirming that requires the same kind of denominator and comparison-group discipline used throughout this template family -- see the disclaimer for this snapshot's specific caveats.]
+    #text(size: fs(theme, 8.5pt))[{{{text_changed_2}}}]
   ],
   [
     #text(size: fs(theme, 8.5pt))[
-      - Top sample driver category: Category 1
-      - Second driver: Category 2
-      - Third driver: Category 3
+      - {{{text_driver_1}}}
+      - {{{text_driver_2}}}
+      - {{{text_driver_3}}}
     ]
     #v(layout.narrative-callout-gap)
     #rect(fill: theme-grad.callout-bg-grad, stroke: 1pt + theme.box-border, inset: (x: sp(theme, 8pt), y: sp(theme, 5pt)), width: 100%)[
-      #text(size: fs(theme, 7.5pt), fill: theme.lessons-text)[Ranked by contribution to the overall shift; see the ranked breakdown below for the full per-category comparison.]
+      #text(size: fs(theme, 7.5pt), fill: theme.lessons-text)[{{{text_ranked_note}}}]
     ]
   ]
 )
@@ -244,11 +291,11 @@
 // ============================================================
 #v(theme.space-sm)
 #rect(fill: theme-grad.card-bg-grad, stroke: (top: theme.stroke-accent + theme.brand-midnight, rest: theme.stroke-border + theme.box-border), inset: sp(theme, 7pt), width: 100%)[
-  #text(size: fs(theme, 8pt), weight: "bold", tracking: fd(theme, 0.5pt))[TOP DRIVERS OF THE PERIOD-OVER-PERIOD CHANGE]
+  #text(size: fs(theme, 8pt), weight: "bold", tracking: fd(theme, 0.5pt))[{{{label_top_drivers}}}]
   #v(theme.space-xs)
-  #bar-row(theme, [Category 1], {{{pct_linked_white_width}}}, "{{{n_white}}}", label-width: 80pt)
-  #bar-row(theme, [Category 2], {{{pct_linked_black_width}}}, "{{{n_black}}}", label-width: 80pt)
-  #bar-row(theme, [Category 3], {{{pct_linked_other_width}}}, "{{{n_other}}}", label-width: 80pt, muted: true)
+  #bar-row(theme, [{{{bar_driver_1}}}], {{{pct_linked_white_width}}}, "{{{n_white}}}", label-width: 80pt)
+  #bar-row(theme, [{{{bar_driver_2}}}], {{{pct_linked_black_width}}}, "{{{n_black}}}", label-width: 80pt)
+  #bar-row(theme, [{{{bar_driver_3}}}], {{{pct_linked_other_width}}}, "{{{n_other}}}", label-width: 80pt, muted: true)
 ]
 
 // ============================================================
@@ -268,11 +315,11 @@
     inset: (x, y) => if calc.rem(x, 2) == 0 { sp(theme, 10pt) } else { sp(theme, 0pt) },
     fill: (x, ..) => if x == 2 { theme-grad.brand-blue-grad } else if calc.rem(x, 2) == 0 { theme-grad.callout-bg-grad } else { none },
     stroke: (x, ..) => if x == 2 { 1pt + theme.brand-midnight } else if calc.rem(x, 2) == 0 { 1pt + theme.box-border } else { none },
-    [#align(center)[#text(size: 1.15em)[*{{tl1_yr}}*] \ #v(theme.space-xs) #text(size: fs(theme, 8.5pt))[Window opens; baseline period begins]]],
+    [#align(center)[#text(size: 1.15em)[*{{{tl1_yr}}}*] \ #v(theme.space-xs) #text(size: fs(theme, 8.5pt))[{{{text_date_1}}}]]],
     text(size: fs(theme, 20pt), weight: "bold", fill: theme.brand-blue)[#sym.arrow.r],
-    [#align(center)[#text(fill: white)[#text(size: 1.15em)[*{{tl2_yr}}*] \ #v(theme.space-xs) #text(size: fs(theme, 8.5pt))[{{tl2_label}}]]]],
+    [#align(center)[#text(fill: white)[#text(size: 1.15em)[*{{{tl2_yr}}}*] \ #v(theme.space-xs) #text(size: fs(theme, 8.5pt))[{{{tl2_label}}}]]]],
     text(size: fs(theme, 20pt), weight: "bold", fill: theme.brand-blue)[#sym.arrow.r],
-    [#align(center)[#text(size: 1.15em)[*{{tl3_yr}}*] \ #v(theme.space-xs) #text(size: fs(theme, 8.5pt))[Current period; most recent value shown above]]],
+    [#align(center)[#text(size: 1.15em)[*{{{tl3_yr}}}*] \ #v(theme.space-xs) #text(size: fs(theme, 8.5pt))[{{{text_date_3}}}]]],
   )
 ]
 
@@ -294,12 +341,12 @@
       == {{{heading_submetric_a}}}
       #v(theme.space-md)
       #grid(columns: (1fr, 1fr),
-        [#text(size: fs(theme, 24pt), weight: "bold", fill: theme.brand-blue)[{{{pct_any_prior_enc}}}] \ #text(size: fs(theme, 8pt), fill: theme.text-secondary)[Current period value]],
-        align(right)[#text(size: fs(theme, 24pt), weight: "bold", fill: theme.brand-accent)[{{{pct_od_prior_enc}}}] \ #text(size: fs(theme, 8pt), fill: theme.text-secondary)[_Prior_ period value]],
+        [#text(size: fs(theme, 24pt), weight: "bold", fill: theme.brand-blue)[{{{pct_any_prior_enc}}}] \ #text(size: fs(theme, 8pt), fill: theme.text-secondary)[{{{stat_current_value}}}]],
+        align(right)[#text(size: fs(theme, 24pt), weight: "bold", fill: theme.brand-accent)[{{{pct_od_prior_enc}}}] \ #text(size: fs(theme, 8pt), fill: theme.text-secondary)[{{{stat_prior_value}}}]],
       )
       #v(sp(theme, 12pt))
       #rect(fill: theme-grad.callout-bg-grad, stroke: 1pt + theme.box-border, inset: sp(theme, 6pt), width: 100%)[
-        #text(size: fs(theme, 8.5pt))[Mean per-period value: *{{{mean_prior_enc}}}* #sym.dot.c Median: *{{{median_prior_enc}}}*]
+        #text(size: fs(theme, 8.5pt))[{{{text_mean_median}}}]
       ]
     ],
     [
@@ -307,16 +354,16 @@
       #v(theme.space-md)
       #grid(columns: ({{{pct_naloxone_width}}}%, {{{pct_no_naloxone_width}}}%),
         box(fill: theme-grad.brand-blue-grad, stroke: 0.75pt + black, inset: sp(theme, 6pt), height: fd(theme, 38pt), width: 100%)[#align(horizon)[
-          #text(fill: white, size: fs(theme, 8pt), weight: "bold")[{{{pct_naloxone}}} documented] \
-          #text(fill: white, size: fs(theme, 7pt))[{{{n_naloxone_enc}}} observations]
+          #text(fill: white, size: fs(theme, 8pt), weight: "bold")[{{{pct_naloxone}}} {{{stat_documented}}}] \
+          #text(fill: white, size: fs(theme, 7pt))[{{{n_naloxone_enc}}} {{{stat_observations}}}]
         ]],
         box(fill: theme-grad.brand-sky-grad, stroke: 0.75pt + black, inset: sp(theme, 6pt), height: fd(theme, 38pt), width: 100%)[#align(horizon)[
-          #text(fill: theme.brand-midnight, size: fs(theme, 8pt), weight: "bold")[{{{pct_no_naloxone}}} none] \
-          #text(fill: theme.brand-midnight, size: fs(theme, 7pt))[{{{n_no_naloxone_enc}}} without]
+          #text(fill: theme.brand-midnight, size: fs(theme, 8pt), weight: "bold")[{{{pct_no_naloxone}}} {{{stat_none}}}] \
+          #text(fill: theme.brand-midnight, size: fs(theme, 7pt))[{{{n_no_naloxone_enc}}} {{{stat_without}}}]
         ]],
       )
       #v(sp(theme, 12pt))
-      #text(size: fs(theme, 8.5pt))[Overall: *{{{pct_decedent_nax}}}* of tracked units had #sym.gt.eq 1 documented observation]
+      #text(size: fs(theme, 8.5pt))[{{{text_overall}}}]
     ],
   )
 ]
@@ -325,11 +372,11 @@
 #rect(fill: theme-grad.card-bg-grad, stroke: (top: theme.stroke-accent + theme.brand-midnight, rest: theme.stroke-border + theme.box-border), inset: sp(theme, 7pt), width: 100%)[
   == {{{heading_per_category}}}
   #v(theme.space-xs)
-  #text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[Bars show the per-category change between the current and prior tracked period, per 100 sample units.]
+  #text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[{{{text_per_category_intro}}}]
   #v(theme.space-sm)
   #figure(
-    box(stroke: 1pt + black, width: 100%)[#image("assets/structured_field_diff_onepager.png", width: 100%)],
-    alt: "Bar chart comparing per-category values between the current and prior tracked period across sample categories, split into two facet groups.",
+    box(stroke: 1pt + black, width: 100%)[#image("{{{figure_path}}}", width: 100%)],
+    alt: "{{{alt_per_category_chart}}}",
   )
 ]
 
@@ -337,11 +384,11 @@
 #rect(fill: theme-grad.card-bg-grad, stroke: (top: theme.stroke-accent + theme.brand-midnight, rest: theme.stroke-border + theme.box-border), inset: sp(theme, 7pt), width: 100%)[
   == {{{heading_magnitude}}}
   #v(theme.space-xs)
-  #text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[Additional domain-specific terms per record, current vs. prior period, {{{strip_period}}}.]
+  #text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[{{{text_magnitude_intro}}}]
   #v(theme.space-sm)
-  #domain-bar(theme, [Context], {{{domain_diff_scene}}})
-  #domain-bar(theme, [History], {{{domain_diff_history}}})
-  #domain-bar(theme, [Category A], {{{domain_diff_drug}}})
+  #domain-bar(theme, [{{{bar_domain_1}}}], {{{domain_diff_scene}}})
+  #domain-bar(theme, [{{{bar_domain_2}}}], {{{domain_diff_history}}})
+  #domain-bar(theme, [{{{bar_domain_3}}}], {{{domain_diff_drug}}})
 ]
 
 #v(theme.space-xs)
@@ -370,7 +417,7 @@
 ]
 
 #v(theme.space-xs)
-#text(size: fs(theme, 7pt), fill: theme.text-muted)[*Data sources:* {{{footnote_sources}}} #h(0.5em)|#h(0.5em) *Period:* {{{strip_period}}} #h(0.5em)|#h(0.5em) *Contact:* {{{org_full}}} at #link("mailto:" + contact-email)[#contact-email]]
+#text(size: fs(theme, 7pt), fill: theme.text-muted)[*{{{footer_label_sources}}}* {{{footnote_sources}}} #h(0.5em)|#h(0.5em) *{{{footer_label_period}}}* {{{strip_period}}} #h(0.5em)|#h(0.5em) *{{{footer_label_contact}}}* {{{org_full}}} {{{footer_contact_joiner}}} #link("mailto:" + contact-email)[#contact-email]]
 ] // close body #pad(x: theme.content-pad-x)
 #place(bottom + center, float: true)[#footer]
 

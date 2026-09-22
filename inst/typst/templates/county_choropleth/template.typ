@@ -38,6 +38,47 @@
 // optional-token: heading_svi_measures = WHAT SVI MEASURES
 // optional-token: heading_components = COMPONENT FACTORS BEHIND THE SVI SCORE
 // optional-token: heading_disclaimer = DISCLAIMER
+// Optional data: the reader-facing text. Each one defaults to the text
+// shown here. Prefixes: strip_label_ and footer_label_ (metadata strip and
+// footer labels), stat_ (captions on numbers), bar_ (bar-row labels),
+// text_ (paragraphs, bullets and notes), alt_ (chart and map alt text),
+// chips_ (a list of short items separated by |), figure_path and
+// map_title0. A default may refer to data tokens, as {{{n_total}}} does.
+// optional-token: strip_label_data = DATA
+// optional-token: strip_label_period = PERIOD
+// optional-token: strip_label_design = DESIGN
+// optional-token: strip_label_geography = GEOGRAPHY
+// optional-token: heading_glance = {{{strip_geography}}} at a Glance - {{{strip_period}}}
+// optional-token: stat_death_count = Count of resident drug overdose deaths, {{{strip_period}}}
+// optional-token: stat_death_rate = Statewide crude death rate, per 100,000 residents
+// optional-token: stat_high_svi = Counties in the top third for Social Vulnerability
+// optional-token: alt_map0 = County map, with each county labeled by name. Each county is shaded by a 3-by-3 bivariate color grid combining its overall Social Vulnerability Index tertile with its crude drug overdose death rate tertile. Dark green marks counties in the highest tertile for both measures; light gray marks counties in the lowest tertile for both.
+// optional-token: text_how_to_read_1 = Each county is shaded by two ranks at once: Social Vulnerability Index (SVI, left #sym.arrow.r right) and overdose death rate (bottom #sym.arrow.r top), each split into thirds across all counties.
+// optional-token: text_how_to_read_2 = *Dark green* #sym.dash.en top third on #emph[both]. *Orange* #sym.dash.en high SVI, lower death rate. *Blue* #sym.dash.en high death rate, lower SVI. *Light gray* #sym.dash.en low on both.
+// optional-token: text_how_to_read_3 = The color coding indicates where the two measures co-occur geographically -- not that one causes the other.
+// optional-token: map_title0 = Social Vulnerability Index (SVI)
+// optional-token: text_understanding_1 = Elevated drug overdose fatality rates do not occur in isolation; they are concentrated in communities where social and economic conditions create compounded risk. The SVI, developed by the Centers for Disease Control and Prevention, draws on census data to quantify four dimensions of community vulnerability: socioeconomic status, household characteristics, racial and ethnic minority status, and housing type and transportation. Higher SVI scores indicate communities with greater vulnerability.
+// optional-token: text_understanding_2 = The maps in this series use a bivariate choropleth design to display two variables at once: drug overdose death rate and social vulnerability. Dark green indicates counties high on both measures; orange or blue indicates counties high on one measure but low on the other; gray indicates counties low on both. This approach reveals not just where overdose burden is concentrated, but whether and how that concentration aligns with social vulnerability.
+// optional-token: text_understanding_3 = Each of the individual maps, on this page and on the reverse, examines a different vulnerability indicator -- the composite SVI and four individual component measures -- to show how the geographic relationship between overdose burden and social disadvantage shifts across measures.
+// optional-token: text_svi_measures_intro = The SVI composite score combines county rankings across four CDC-defined themes, each based on multiple Census variables.
+// optional-token: label_svi_theme_1 = SOCIOECONOMIC STATUS
+// optional-token: label_svi_theme_2 = HOUSEHOLD CHARACTERISTICS
+// optional-token: label_svi_theme_3 = RACIAL AND ETHNIC MINORITY STATUS
+// optional-token: label_svi_theme_4 = HOUSING TYPE AND TRANSPORTATION
+// optional-token: text_svi_footnote = \*SVI is the Centers for Disease Control and Prevention and Agency for Toxic Substances and Disease Registry's (CDC/ATSDR's) composite Social Vulnerability Index (sum of all four theme rankings), {{{data_vintage}}}. Overdose deaths are resident deaths with an underlying cause of death consistent with the standard CDC/National Center for Health Statistics (NCHS) drug-poisoning definition (ICD-10 codes X40#sym.dash.en 44, X60#sym.dash.en 64, X85, Y10#sym.dash.en 14), {{{strip_period}}}, crude rate per 100,000 residents (not age-adjusted).
+// optional-token: text_components_intro = The composite SVI score above is built from many measures. The four maps below isolate individual components most directly tied to health-care access and economic strain, each paired with the same overdose death rate as the map above -- to help visualize which specific factors are driving a county's overall vulnerability.
+// optional-token: alt_map1 = County map, bivariate choropleth of unemployment rate against overdose death rate, using the same 3-by-3 color grid as the headline map.
+// optional-token: alt_map2 = County map, bivariate choropleth of the percentage of the population without health insurance against overdose death rate, using the same 3-by-3 color grid as the headline map.
+// optional-token: alt_map3 = County map, bivariate choropleth of the percentage of persons below 150 percent of the poverty line against overdose death rate, using the same 3-by-3 color grid as the headline map.
+// optional-token: alt_map4 = County map, bivariate choropleth of the percentage of housing units that are cost-burdened against overdose death rate, using the same 3-by-3 color grid as the headline map.
+// optional-token: footer_label_sources = Data sources:
+// optional-token: footer_label_period = Period:
+// optional-token: footer_label_contact = Contact:
+// optional-token: footer_contact_joiner = at
+// optional-token: chips_svi_theme_1 = Below 150% poverty|Unemployed|Housing cost burden|No high school diploma|No health insurance
+// optional-token: chips_svi_theme_2 = Aged 65+|Aged 17 and younger|Civilian with a disability|Single-parent households|Limited English proficiency
+// optional-token: chips_svi_theme_3 = Hispanic or Latino|Black|Asian|American Indian/Alaska Native|Native Hawaiian/Pacific Islander|Two or more races|Other races
+// optional-token: chips_svi_theme_4 = Multi-unit structures|Mobile homes|Crowding|No vehicle access|Group quarters
 
 // Route contact_email through a variable rather than splicing
 // {{{contact_email}}} directly into markup body wherever it's displayed.
@@ -151,10 +192,10 @@
 ]
 #block(fill: theme.brand-midnight, inset: (x: sp(theme, 20pt), y: sp(theme, 6pt)), width: 100%, above: 0pt)[
   #text(fill: white, size: fs(theme, 8pt))[
-    *DATA* {{{strip_data}}}  #h(1.5em)
-    *PERIOD* {{{strip_period}}}  #h(1.5em)
-    *DESIGN* {{{strip_design}}}  #h(1.5em)
-    *GEOGRAPHY* {{{strip_geography}}}
+    *{{{strip_label_data}}}* {{{strip_data}}}  #h(1.5em)
+    *{{{strip_label_period}}}* {{{strip_period}}}  #h(1.5em)
+    *{{{strip_label_design}}}* {{{strip_design}}}  #h(1.5em)
+    *{{{strip_label_geography}}}* {{{strip_geography}}}
   ]
 ]
 
@@ -164,7 +205,7 @@
 // ============================================================
 // AT A GLANCE
 // ============================================================
-= {{{strip_geography}}} at a Glance - {{{strip_period}}}
+= {{{heading_glance}}}
 #v(theme.space-sm)
 
 #block(breakable: false)[
@@ -172,9 +213,9 @@
     columns: (1fr, 1fr, 1fr), column-gutter: sp(theme, 6pt),
     fill: theme-grad.card-bg-grad, inset: sp(theme, 6pt),
     stroke: (x, ..) => (top: theme.stroke-accent + (theme.brand-blue, theme.brand-accent, theme.brand-midnight).at(x), rest: theme.stroke-border + theme.box-border),
-    stat-card(theme, [{{{n_statewide_od_deaths}}}], [Count of resident drug overdose deaths, {{{strip_period}}}]),
-    stat-card(theme, [{{{statewide_od_rate}}}], [Statewide crude death rate, per 100,000 residents], color: theme.brand-accent),
-    stat-card(theme, [{{{n_high_svi_counties}}}], [Counties in the top third for Social Vulnerability], color: theme.brand-midnight),
+    stat-card(theme, [{{{n_statewide_od_deaths}}}], [{{{stat_death_count}}}]),
+    stat-card(theme, [{{{statewide_od_rate}}}], [{{{stat_death_rate}}}], color: theme.brand-accent),
+    stat-card(theme, [{{{n_high_svi_counties}}}], [{{{stat_high_svi}}}], color: theme.brand-midnight),
   )
 ]
 
@@ -277,22 +318,22 @@
       box(stroke: map-border-weight + theme.map-border-color, width: 100%, height: headline-map-height)[
         #align(center + horizon)[#image("{{{map0_path}}}", height: 100%, fit: "contain")]
       ],
-      alt: "Kentucky county map, with each county labeled by name. Each county is shaded by a 3-by-3 bivariate color grid combining its overall Social Vulnerability Index tertile with its crude drug overdose death rate tertile. Dark green marks counties in the highest tertile for both measures; light gray marks counties in the lowest tertile for both.",
+      alt: "{{{alt_map0}}}",
     )
   ],
   [
     // This box holds text, so its height uses fd and grows with the type;
     // the map box beside it stays a fixed size.
     #text-box(theme, theme-grad, [{{{label_how_to_read}}}], height: fd(theme, headline-map-height))[
-      Each county is shaded by two ranks at once: Social Vulnerability Index (SVI, left #sym.arrow.r right) and overdose death rate (bottom #sym.arrow.r top), each split into thirds across all 120 counties.
+      {{{text_how_to_read_1}}}
       #v(theme.space-xs)
       // Verified directly against biscale::bi_pal("BlueOr", dim=3), not
       // eyeballed: bi_class 3-1 (x=SVI high, y=death rate low) = orange
       // #dd6a29; bi_class 1-3 (x=SVI low, y=death rate high) = blue
       // #169dd0. An earlier version of this callout had these swapped.
-      *Dark green* #sym.dash.en top third on #emph[both]. *Orange* #sym.dash.en high SVI, lower death rate. *Blue* #sym.dash.en high death rate, lower SVI. *Light gray* #sym.dash.en low on both.
+      {{{text_how_to_read_2}}}
       #v(theme.space-xs)
-      The color coding indicates where the two measures co-occur geographically -- not that one causes the other.
+      {{{text_how_to_read_3}}}
     ]
   ]
 )
@@ -305,23 +346,23 @@
 // true of this dataset, not a generic fact about what SVI is -- that
 // generic explanation lives in the UNDERSTANDING THIS ANALYSIS narrative
 // just below instead, so this caption isn't redundant with it.
-#text(size: fs(theme, 8.5pt), fill: theme.text-secondary)[*Social Vulnerability Index (SVI).* {{{map0_caption}}}]
+#text(size: fs(theme, 8.5pt), fill: theme.text-secondary)[*{{{map_title0}}}.* {{{map0_caption}}}]
 
 #v(theme.space-md)
 = {{{heading_understanding}}}
 #v(theme.space-sm)
-#text(size: fs(theme, 8.5pt))[Elevated drug overdose fatality rates do not occur in isolation; they are concentrated in communities where social and economic conditions create compounded risk. The SVI, developed by the Centers for Disease Control and Prevention, draws on census data to quantify four dimensions of community vulnerability: socioeconomic status, household characteristics, racial and ethnic minority status, and housing type and transportation. Higher SVI scores indicate communities with greater vulnerability.]
+#text(size: fs(theme, 8.5pt))[{{{text_understanding_1}}}]
 
 #v(theme.space-sm)
-#text(size: fs(theme, 8.5pt))[The maps in this series use a bivariate choropleth design to display two variables at once: drug overdose death rate and social vulnerability. Dark green indicates counties high on both measures; orange or blue indicates counties high on one measure but low on the other; gray indicates counties low on both. This approach reveals not just where overdose burden is concentrated, but whether and how that concentration aligns with social vulnerability.]
+#text(size: fs(theme, 8.5pt))[{{{text_understanding_2}}}]
 
 #v(theme.space-sm)
-#text(size: fs(theme, 8.5pt))[Each of the individual maps, on this page and on the reverse, examines a different vulnerability indicator -- the composite SVI and four individual component measures -- to show how the geographic relationship between overdose burden and social disadvantage shifts across measures.]
+#text(size: fs(theme, 8.5pt))[{{{text_understanding_3}}}]
 
 #v(theme.space-md)
 = {{{heading_svi_measures}}}
 #v(theme.space-xs)
-#text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[The SVI composite score combines county rankings across four CDC-defined themes, each based on multiple Census variables.]
+#text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[{{{text_svi_measures_intro}}}]
 #v(theme.space-xs)
 
 // A compact row layout, not CDC's own tall-left-bar diagram (see
@@ -332,9 +373,10 @@
 // legend already uses orange and green for a completely different
 // meaning (SVI-vs-death-rate quadrants), and reusing those colors here
 // for an unrelated 4-way category would read as if they were connected.
-// This whole section is hardcoded (not tokenized) since it describes
-// CDC's official SVI theme structure -- true for any dataset built on
-// this template, not specific to one state's analysis.
+// The theme names and their chips describe CDC's official SVI structure,
+// so the defaults suit any dataset built on this template. They are still
+// optional tokens (chips_svi_theme_N, items separated by |) for a project
+// that uses a different index.
 #let svi-chip(label) = box(
   fill: white, stroke: 0.5pt + theme.border-color, radius: 2pt,
   outset: (y: 0.5pt), inset: (x: sp(theme, 4pt), y: sp(theme, 1pt)),
@@ -371,14 +413,14 @@
     align: (left + horizon, left + horizon),
     stroke: (_, y) => if y < 3 { (bottom: 0.5pt + theme.border-color) } else { none },
     inset: (bottom: sp(theme, 2pt)),
-    svi-theme-label(svi-ramp.at(0), [SOCIOECONOMIC STATUS]),
-    svi-theme-items(([Below 150% poverty], [Unemployed], [Housing cost burden], [No high school diploma], [No health insurance])),
-    svi-theme-label(svi-ramp.at(1), [HOUSEHOLD CHARACTERISTICS]),
-    svi-theme-items(([Aged 65+], [Aged 17 and younger], [Civilian with a disability], [Single-parent households], [Limited English proficiency])),
-    svi-theme-label(svi-ramp.at(2), [RACIAL AND ETHNIC MINORITY STATUS]),
-    svi-theme-items(([Hispanic or Latino], [Black], [Asian], [American Indian/Alaska Native], [Native Hawaiian/Pacific Islander], [Two or more races], [Other races])),
-    svi-theme-label(svi-ramp.at(3), [HOUSING TYPE AND TRANSPORTATION]),
-    svi-theme-items(([Multi-unit structures], [Mobile homes], [Crowding], [No vehicle access], [Group quarters])),
+    svi-theme-label(svi-ramp.at(0), [{{{label_svi_theme_1}}}]),
+    svi-theme-items("{{{chips_svi_theme_1}}}".split("|")),
+    svi-theme-label(svi-ramp.at(1), [{{{label_svi_theme_2}}}]),
+    svi-theme-items("{{{chips_svi_theme_2}}}".split("|")),
+    svi-theme-label(svi-ramp.at(2), [{{{label_svi_theme_3}}}]),
+    svi-theme-items("{{{chips_svi_theme_3}}}".split("|")),
+    svi-theme-label(svi-ramp.at(3), [{{{label_svi_theme_4}}}]),
+    svi-theme-items("{{{chips_svi_theme_4}}}".split("|")),
   )
 ]
 
@@ -389,7 +431,7 @@
 // disclaimer_text's "\$" -- needs the literal "\*" escape. Any future
 // literal asterisk (a footnote marker, multiplication, etc.) anywhere in
 // this package's templates needs the same treatment.
-#text(size: fs(theme, 7pt), fill: theme.text-muted)[\*SVI is the Centers for Disease Control and Prevention and Agency for Toxic Substances and Disease Registry's (CDC/ATSDR's) composite Social Vulnerability Index (sum of all four theme rankings), {{{data_vintage}}}. Overdose deaths are Kentucky resident deaths with an underlying cause of death consistent with the standard CDC/National Center for Health Statistics (NCHS) drug-poisoning definition (ICD-10 codes X40#sym.dash.en 44, X60#sym.dash.en 64, X85, Y10#sym.dash.en 14), {{{strip_period}}}, crude rate per 100,000 residents (not age-adjusted).]
+#text(size: fs(theme, 7pt), fill: theme.text-muted)[{{{text_svi_footnote}}}]
 
 ] // close page-1 body
 #place(bottom + center, float: true)[#footer]
@@ -402,7 +444,7 @@
 // ============================================================
 = {{{heading_components}}}
 #v(theme.space-xs)
-#text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[The composite SVI score above is built from many measures. The four maps below isolate individual components most directly tied to health-care access and economic strain, each paired with the same overdose death rate as the map above -- to help visualize which specific factors are driving a county's overall vulnerability.]
+#text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[{{{text_components_intro}}}]
 #v(theme.space-sm)
 
 // map1_caption..map4_caption are tokens, NOT hardcoded template prose
@@ -430,7 +472,7 @@
       box(stroke: map-border-weight + theme.map-border-color, width: 100%, height: component-map-height)[
         #align(center + horizon)[#image("{{{map1_path}}}", height: 100%, fit: "contain")]
       ],
-      alt: "Kentucky county map, bivariate choropleth of unemployment rate against overdose death rate, using the same 3-by-3 color grid as the headline map.",
+      alt: "{{{alt_map1}}}",
     )
     #text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[#text(size: fs(theme, 8.5pt), weight: "medium")[*{{{map_title1}}}.*] {{{map1_caption}}}]
   ],
@@ -439,7 +481,7 @@
       box(stroke: map-border-weight + theme.map-border-color, width: 100%, height: component-map-height)[
         #align(center + horizon)[#image("{{{map2_path}}}", height: 100%, fit: "contain")]
       ],
-      alt: "Kentucky county map, bivariate choropleth of the percentage of the population without health insurance against overdose death rate, using the same 3-by-3 color grid as the headline map.",
+      alt: "{{{alt_map2}}}",
     )
     #text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[#text(size: fs(theme, 8.5pt), weight: "medium")[*{{{map_title2}}}.*] {{{map2_caption}}}]
   ],
@@ -448,7 +490,7 @@
       box(stroke: map-border-weight + theme.map-border-color, width: 100%, height: component-map-height)[
         #align(center + horizon)[#image("{{{map3_path}}}", height: 100%, fit: "contain")]
       ],
-      alt: "Kentucky county map, bivariate choropleth of the percentage of persons below 150 percent of the poverty line against overdose death rate, using the same 3-by-3 color grid as the headline map.",
+      alt: "{{{alt_map3}}}",
     )
     #text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[#text(size: fs(theme, 8.5pt), weight: "medium")[*{{{map_title3}}}.*] {{{map3_caption}}}]
   ],
@@ -457,7 +499,7 @@
       box(stroke: map-border-weight + theme.map-border-color, width: 100%, height: component-map-height)[
         #align(center + horizon)[#image("{{{map4_path}}}", height: 100%, fit: "contain")]
       ],
-      alt: "Kentucky county map, bivariate choropleth of the percentage of housing units that are cost-burdened against overdose death rate, using the same 3-by-3 color grid as the headline map.",
+      alt: "{{{alt_map4}}}",
     )
     #text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[#text(size: fs(theme, 8.5pt), weight: "medium")[*{{{map_title4}}}.*] {{{map4_caption}}}]
   ],
@@ -478,7 +520,7 @@
 ]
 
 #v(theme.space-xs)
-#text(size: fs(theme, 7pt), fill: theme.text-muted)[*Data sources:* {{{footnote_sources}}} #h(0.5em)|#h(0.5em) *Period:* {{{strip_period}}} #h(0.5em)|#h(0.5em) *Contact:* {{{org_full}}} at #link("mailto:" + contact-email)[#contact-email]]
+#text(size: fs(theme, 7pt), fill: theme.text-muted)[*{{{footer_label_sources}}}* {{{footnote_sources}}} #h(0.5em)|#h(0.5em) *{{{footer_label_period}}}* {{{strip_period}}} #h(0.5em)|#h(0.5em) *{{{footer_label_contact}}}* {{{org_full}}} {{{footer_contact_joiner}}} #link("mailto:" + contact-email)[#contact-email]]
 ] // close body #pad(x: theme.content-pad-x)
 #place(bottom + center, float: true)[#footer]
 

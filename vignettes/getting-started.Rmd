@@ -79,7 +79,7 @@ data <- list(
   strip_geography = "Sample Region",
   n_decedents = "5,267", n_ems_total = "24,906", pct_linked = "84%",
   n_prior_ems = "21,021", n_eligible_decedents = "6,260",
-  n_unlinked_decedents = "993", n_coroner_counties = "120",
+  n_unlinked_decedents = "993",
   pct_linked_male_width = "64.6", n_male = "3,400",
   pct_linked_female_width = "35.4", n_female = "1,867",
   pct_linked_appalachian_width = "31.2", n_appalachian = "1,643",
@@ -197,6 +197,16 @@ spot. You can check what a template needs ahead of time:
 ```{r}
 onepagr::list_templates()
 ```
+
+```{r}
+# Every token a template takes: required ones first, then optional ones
+# with their default text.
+head(onepagr::template_tokens("overdose_spike_alert"), 8)
+```
+
+The optional tokens are the template's own wording (headings, captions,
+paragraphs, labels). Set any of them in `data` to reword it; see
+`vignette("theming")`, Part 5.
 
 ```{r, eval = FALSE}
 # Path to a built-in template's source, if you want to read its {{{token}}} usage directly

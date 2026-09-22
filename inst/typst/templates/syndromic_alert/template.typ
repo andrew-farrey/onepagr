@@ -34,6 +34,17 @@
 // optional-token: label_geo_breakdown = FACILITY / GEOGRAPHIC BREAKDOWN
 // optional-token: label_actions = RECOMMENDED ACTIONS
 // optional-token: label_resources = RESOURCES
+// Optional data: the reader-facing text. Each one defaults to the text
+// shown here. Prefixes: strip_label_ and footer_label_ (metadata strip and
+// footer labels), stat_ (captions on numbers), bar_ (bar-row labels),
+// text_ (paragraphs, bullets and notes), alt_ (chart and map alt text),
+// chips_ (a list of short items separated by |), figure_path and
+// map_title0. A default may refer to data tokens, as {{{n_total}}} does.
+// optional-token: stat_observed = observed, vs. expected {{{n_expected}}}
+// optional-token: banner_issued = issued
+// optional-token: footer_label_sources = Data sources:
+// optional-token: footer_label_contact = Contact:
+// optional-token: footer_contact_joiner = at
 
 // Route contact_email through a variable rather than splicing
 // {{{contact_email}}} directly into markup body wherever it's displayed.
@@ -100,7 +111,7 @@
 
 #block(breakable: false, fill: severity.bg, stroke: (left: theme.stroke-accent-left + severity.color, rest: theme.stroke-border + theme.box-border), radius: theme.radius-card, inset: (x: sp(theme, 10pt), y: sp(theme, 8pt)), width: 100%)[
   #text(size: fs(theme, 11pt), weight: "bold", fill: severity.text)[⚠ {{{banner_label}}}] #h(1em)
-  #text(size: fs(theme, 9pt), fill: severity.text)[{{{alert_condition}}} #sym.dot.c {{{alert_facility_region}}} #sym.dot.c issued {{{alert_issued_at}}}]
+  #text(size: fs(theme, 9pt), fill: severity.text)[{{{alert_condition}}} #sym.dot.c {{{alert_facility_region}}} #sym.dot.c {{{banner_issued}}} {{{alert_issued_at}}}]
 ]
 
 #v(theme.space-md)
@@ -114,7 +125,7 @@
     stroke: (x, ..) => (top: theme.stroke-accent + severity.color, rest: theme.stroke-border + theme.box-border),
     [
       #text(size: fs(theme, 28pt), weight: "bold", fill: severity.text)[{{{n_observed}}}] \
-      #text(size: fs(theme, 8.5pt), fill: theme.text-secondary)[observed, vs. expected {{{n_expected}}}]
+      #text(size: fs(theme, 8.5pt), fill: theme.text-secondary)[{{{stat_observed}}}]
     ],
     [
       #text(size: fs(theme, 14pt), weight: "bold", fill: theme.brand-midnight)[{{{test_statistic_label}}}] \
@@ -213,7 +224,7 @@
 ]
 
 #v(theme.space-sm)
-#text(size: fs(theme, 7pt), fill: theme.text-muted)[*Data sources:* {{{footnote_sources}}} #h(0.5em)|#h(0.5em) *Contact:* {{{org_full}}} at #link("mailto:" + contact-email)[#contact-email]]
+#text(size: fs(theme, 7pt), fill: theme.text-muted)[*{{{footer_label_sources}}}* {{{footnote_sources}}} #h(0.5em)|#h(0.5em) *{{{footer_label_contact}}}* {{{org_full}}} {{{footer_contact_joiner}}} #link("mailto:" + contact-email)[#contact-email]]
 ] // close body #pad(x: theme.content-pad-x)
 
 ] // close #apply-base-styles body

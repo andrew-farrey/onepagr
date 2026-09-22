@@ -343,15 +343,18 @@ test_that("the fixed-page templates render at exactly 2 pages under every theme"
   }
 })
 
-test_that("every heading and label token rewords its text, in every template", {
+test_that("every text token rewords its text, in every template", {
   skip_if_not(quarto::quarto_available())
   skip_if_not(requireNamespace("pdftools", quietly = TRUE))
+  # Everything template_tokens() documents as reader-facing text that shows
+  # up in the PDF's text layer. alt_* is checked separately, below.
+  visible <- paste0(
+    "^(heading|label|banner|stat|bar|text|chips|strip_label|footer|",
+    "map_title0)"
+  )
   for (template in list_templates()) {
-    tokens <- grep(
-      "^(heading|label|banner)_",
-      names(extract_token_defaults(resolve_template(template))),
-      value = TRUE
-    )
+    all_tokens <- template_tokens(template)
+    tokens <- grep(visible, all_tokens$token[!all_tokens$required], value = TRUE)
     expect_gt(length(tokens), 0)
     marker <- function(tok) paste0("Zz", gsub("_", "", tok))
     extra <- stats::setNames(lapply(tokens, marker), tokens)

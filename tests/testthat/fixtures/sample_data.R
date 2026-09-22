@@ -35,7 +35,6 @@ sample_data <- list(
   n_prior_ems = "21,021",
   n_eligible_decedents = "6,260",
   n_unlinked_decedents = "993",
-  n_coroner_counties = "120",
   pct_linked_male_width = "64.6", n_male = "3,400",
   pct_linked_female_width = "35.4", n_female = "1,867",
   pct_linked_appalachian_width = "31.2", n_appalachian = "1,643",
@@ -70,6 +69,5 @@ sample_data <- list(
   pct_gt365d_width = "47.2", n_gt365d = "948",
   lessons_learned_text = "This sample program's experience demonstrates how both centralized and decentralized data systems can improve case tracking through record linkage. Linked encounter records provide an ongoing, population-level archive, documenting recent activity, intervention details, and timing since the last known related event, which fills documentation gaps regardless of the source system's own structure. Among cases with a prior qualifying encounter, 20.8% had a contact within 30 days of the reference event, underscoring the linkage source's role as both a surveillance data source and a frontline touchpoint.",
   disclaimer_text = "These findings are based on preliminary sample data for illustration only. Numbers do not represent any real program, agency, or population. This is placeholder content demonstrating the onepagr template structure.",
-  footnote_sources = "Sample System A . Sample System B . Sample System C",
-  contact = "Primary Sample Organization at contact\\@example.org"
+  footnote_sources = "Sample System A . Sample System B . Sample System C"
 )
