@@ -115,6 +115,14 @@ can hand it to an AI coding assistant (or a collaborator) to build out
 further, which is part of the point of how onepagr is structured. Set
 `keep_typst = FALSE` to skip that and get only the PDF.
 
+Don't want to hand-type a `data` list at all? `template_data()` returns a
+complete, working one for any built-in template, every value already a
+real example rather than a blank to guess the shape of:
+
+```r
+data <- template_data("overdose_spike_alert")
+```
+
 See `?render_onepager` for every argument, or run
 `vignette("getting-started", package = "onepagr")` for a fuller
 walkthrough. For a realistic, worked example that starts from real

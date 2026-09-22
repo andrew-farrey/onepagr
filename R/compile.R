@@ -96,6 +96,83 @@ template_tokens <- function(template) {
   )
 }
 
+#' Build a starter data list for a template
+#'
+#' Returns a named list ready to pass to [render_onepager()] as `data`:
+#' every token [template_tokens()] lists for `template`, each already set
+#' to a real value, not a blank you have to guess the shape of -- an
+#' optional token's own shipped default, or (for a required token, which
+#' has no default) the matching value from that template's
+#' [example_data()]. Starting from this instead of an empty list means
+#' every value you haven't changed yet is already correctly formatted (a
+#' percentage as `"84%"`, a color as a real theme value, and so on),
+#' which is the actual point: reading [template_tokens()]'s token names
+#' alone tells you what to set, not what a working value for it looks
+#' like.
+#'
+#' Which entries came from a required token, as opposed to an optional
+#' one, is recorded in the result's `"required"` attribute
+#' (`attr(x, "required")`) rather than in the list itself, so the result
+#' stays a plain data list: pass it straight to `render_onepager()`,
+#' overwrite fields directly, or merge your own values in with
+#' [utils::modifyList()].
+#'
+#' @param template Character. A built-in template name (see
+#'   [list_templates()]). Unlike [template_tokens()], this does not take
+#'   a path to a hand-edited [export_template()] copy, since there is no
+#'   known example value for a token that copy might add.
+#' @param tokens Character. Which tokens to include: `"both"` (default,
+#'   everything `render_onepager()` would read), `"required"` (only the
+#'   values you must actually supply), or `"optional"` (only the
+#'   reworded-text and type/spacing tokens, each left at its default).
+#' @return Named list of character values, with a `"required"` attribute
+#'   naming the entries that came from a required token.
+#' @examples
+#' data <- template_data("cohort_summary")
+#' attr(data, "required")
+#'
+#' # Change just the numbers you have; every heading and label keeps its
+#' # default wording.
+#' data$n_decedents <- "6,000"
+#' \dontrun{
+#' render_onepager(data, "cohort_summary", output = "report.pdf")
+#' }
+#' @export
+template_data <- function(
+  template, tokens = c("both", "required", "optional")
+) {
+  tokens <- match.arg(tokens)
+  info <- template_tokens(template)
+  required_names <- info$token[info$required]
+  optional_names <- info$token[!info$required]
+  optional_defaults <- stats::setNames(
+    as.list(info$default[!info$required]), optional_names
+  )
+
+  want_required <- tokens %in% c("both", "required")
+  want_optional <- tokens %in% c("both", "optional")
+
+  out <- list()
+  if (want_required && length(required_names) > 0) {
+    example <- example_data(template)
+    missing <- setdiff(required_names, names(example))
+    if (length(missing) > 0) {
+      stop(
+        "example_data(\"", template, "\") is missing a value for: ",
+        paste(missing, collapse = ", "), ". This is a package bug --",
+        " please report it.",
+        call. = FALSE
+      )
+    }
+    out <- c(out, example[required_names])
+  }
+  if (want_optional && length(optional_names) > 0) {
+    out <- c(out, optional_defaults)
+  }
+  attr(out, "required") <- if (want_required) required_names else character(0)
+  out
+}
+
 #' Warn about data names no template uses
 #'
 #' Internal. A name in `data` that is not a token of this template, or of any
