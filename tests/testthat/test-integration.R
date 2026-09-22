@@ -356,18 +356,31 @@ test_that("every text token rewords its text, in every template", {
     all_tokens <- template_tokens(template)
     tokens <- grep(visible, all_tokens$token[!all_tokens$required], value = TRUE)
     expect_gt(length(tokens), 0)
-    marker <- function(tok) paste0("Zz", gsub("_", "", tok))
+    # A marker is several short words, not one long run-together token: a
+    # heading that is the only content on its line and has no word to
+    # stretch can get justified via letter-spacing instead of word-spacing
+    # (the same par.justify hazard this package already works around for
+    # real headings -- see CLAUDE.md), which broke this check on macOS and
+    # Windows CI runners for a single-token marker, though never for the
+    # multi-word text real templates actually ship. Whitespace is
+    # normalized on both sides so justify's own extra word-spacing doesn't
+    # cause a false mismatch either.
+    marker <- function(tok) paste("Zz", gsub("_", " ", tok))
+    normalize_space <- function(x) gsub("\\s+", " ", x)
     extra <- stats::setNames(lapply(tokens, marker), tokens)
     # syndromic_alert's cluster box is off in the fixture; switch it on so
     # its label is rendered and can be checked.
     if ("label_cluster" %in% tokens) {
       extra <- c(extra, list(show_cluster = "true", cluster_text = "Cluster"))
     }
-    text <- paste(
+    text <- normalize_space(paste(
       pdftools::pdf_text(scaled_render(template, extra)), collapse = " "
-    )
+    ))
     for (tok in tokens) {
-      expect_match(text, marker(tok), fixed = TRUE, info = paste(template, tok))
+      expect_match(
+        text, normalize_space(marker(tok)), fixed = TRUE,
+        info = paste(template, tok)
+      )
     }
   }
 })
