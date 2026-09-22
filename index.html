@@ -203,6 +203,14 @@
 <h2 id="accessibility">Accessibility<a class="anchor" aria-label="anchor" href="#accessibility"></a>
 </h2>
 <p>Every built-in template and theme has been verified with <a href="https://pac.pdf-accessibility.org/en" class="external-link">PAC</a> (PDF Accessibility Checker) against both the PDF/UA and WCAG tabs, not just Typst’s own <code>--pdf-standard ua-1</code> compile-time check. If you write your own theme or template, re-run that check yourself. A color or layout choice that passes for one template’s usage isn’t automatically safe for another (see the package’s own development notes on why large-text-safe colors aren’t automatically small-text-safe).</p>
+<p>If you run PAC yourself, its “AI-assisted” tab (a heuristic advisory, not a conformance check) may flag two findings on the built-in templates that are already investigated and are not accessibility defects:</p>
+<ul>
+<li>
+<strong>“H/P element detected, but no corresponding structural element exists,” on the header/footer logos.</strong> A false positive: each logo is a raster image with the organization’s name already carried as its alt text, and the heuristic appears to independently read that same name from the image’s pixels, expecting matching text that correctly doesn’t exist.</li>
+<li>
+<strong>“Table element detected, but no table structure exists,” on a template’s bar-chart rows.</strong> Technically correct: those rows use Typst’s <code>#grid()</code>, not <code>#table()</code>, so there is no <code>/Table</code> tag. Left as-is for now, since real table semantics need Typst primitives this version documents as preliminary and possibly removed.</li>
+</ul>
+<p>Neither affects the PDF/UA or WCAG tabs, which is the actual conformance bar every built-in template is held to and where “100% passing” refers to.</p>
 </div>
 <div class="section level2">
 <h2 id="development">Development<a class="anchor" aria-label="anchor" href="#development"></a>

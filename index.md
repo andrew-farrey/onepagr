@@ -252,6 +252,26 @@ passes for one template’s usage isn’t automatically safe for another
 (see the package’s own development notes on why large-text-safe colors
 aren’t automatically small-text-safe).
 
+If you run PAC yourself, its “AI-assisted” tab (a heuristic advisory,
+not a conformance check) may flag two findings on the built-in templates
+that are already investigated and are not accessibility defects:
+
+- **“H/P element detected, but no corresponding structural element
+  exists,” on the header/footer logos.** A false positive: each logo is
+  a raster image with the organization’s name already carried as its alt
+  text, and the heuristic appears to independently read that same name
+  from the image’s pixels, expecting matching text that correctly
+  doesn’t exist.
+- **“Table element detected, but no table structure exists,” on a
+  template’s bar-chart rows.** Technically correct: those rows use
+  Typst’s `#grid()`, not `#table()`, so there is no `/Table` tag. Left
+  as-is for now, since real table semantics need Typst primitives this
+  version documents as preliminary and possibly removed.
+
+Neither affects the PDF/UA or WCAG tabs, which is the actual conformance
+bar every built-in template is held to and where “100% passing” refers
+to.
+
 ## Development
 
 This package was developed with the assistance of AI coding tools
