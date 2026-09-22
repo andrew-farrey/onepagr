@@ -11,8 +11,8 @@ title: 'onepagr: Accessible One-Page Reports from Typst Templates'
 version: 0.1.0
 abstract: Generates polished, WCAG 2.2 AA and PDF/UA-1 accessible one-page (front-and-back)
   PDF reports from analysis output, using a small set of fixed Typst report templates
-  and a swappable design-token theme system. Ships built-in report templates and themes,
-  and lets a consuming project supply its own design tokens and Typst templates.
+  and a design-token theme system. Ships built-in report templates and themes, and
+  lets a consuming project replace them with its own design tokens and Typst templates.
 authors:
 - family-names: Farrey
   given-names: Andrew
@@ -32,6 +32,7 @@ preferred-citation:
   notes: R package version 0.1.0
 repository-code: https://github.com/andrew-farrey/onepagr
 url: https://github.com/andrew-farrey/onepagr
+date-released: '2026-09-22'
 contact:
 - family-names: Farrey
   given-names: Andrew
