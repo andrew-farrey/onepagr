@@ -2,7 +2,10 @@
 
 ## onepagr 0.1.0
 
-Initial release.
+Initial release. onepagr generates polished, WCAG 2.2 AA and PDF/UA-1
+accessible one-page (front-and-back) PDF reports from analysis output,
+using a small set of fixed Typst templates and a design-token theme
+system that a consuming project can restyle with its own branding.
 
 ### Core API
 
@@ -87,20 +90,19 @@ Initial release.
   [`render_onepager()`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md)
   expects.
 - [`example_data()`](https://andrew-farrey.github.io/onepagr/reference/example_data.md)
-  returns a built-in template’s full example data as a named list – the
-  same data this package’s own tests render, now the single, installed
-  source of truth
+  returns a built-in template’s full example data as a named list: the
+  same data this package’s own tests render, and the single, installed
+  source of truth that
   [`template_data()`](https://andrew-farrey.github.io/onepagr/reference/template_data.md)
-  and the test suite both draw from, rather than a hand-typed copy in
-  more than one place.
+  also draws from, so there’s no separate hand-typed copy to keep in
+  sync.
 - The shared footer’s logo lockup takes a height and a vertical nudge
   for each logo (`logo-a-height`, `logo-height`, `logo-b-height` and
   `logo-a-dy`, `logo-dy`, `logo-b-dy`, defaulting to 32pt and 0pt), for
   logos whose artwork differs in size or sits off-center in its canvas.
-  Every logo now sits in a cell as tall as the tallest logo shown (a
-  hidden partner’s height is ignored), so the dividers between logos
-  span the full lockup height (previously about 23pt in the two alert
-  templates).
+  Every logo sits in a cell as tall as the tallest logo shown (a hidden
+  partner’s height is ignored), so the dividers between logos span the
+  full lockup height.
 
 ### Templates
 
@@ -125,9 +127,9 @@ Five built-in templates, each a genuinely distinct informational shape:
 - `uk`: University of Kentucky / KIPRC branding.
 - `kdph`: Kentucky Department for Public Health colors and fonts,
   following the department’s 2026 Data Visualization Style Guidelines
-  (unofficial; not endorsed by KDPH). A theme’s `body-font` may now be a
-  fallback list, which this theme uses (Calibri, then Carlito, then
-  Liberation Sans).
+  (unofficial; not endorsed by KDPH). A theme’s `body-font` can be a
+  fallback list instead of a single name; `kdph` uses one (Calibri, then
+  Carlito, then Liberation Sans).
 
 Every theme has three type and spacing keys: `min-font-size` (a floor
 for text size), `font-scale`, and `space-scale`. All default to no
