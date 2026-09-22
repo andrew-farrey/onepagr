@@ -9,6 +9,8 @@
   : Check a theme's dictionary structure against onepagr's real contract
 - [`compile_typst()`](https://andrew-farrey.github.io/onepagr/reference/compile_typst.md)
   : Compile a .typ file with whisker-substituted data via Quarto/Typst
+- [`example_data()`](https://andrew-farrey.github.io/onepagr/reference/example_data.md)
+  : Example data for a built-in template
 - [`export_template()`](https://andrew-farrey.github.io/onepagr/reference/export_template.md)
   : Export a built-in template for customization
 - [`extract_required_tokens()`](https://andrew-farrey.github.io/onepagr/reference/extract_required_tokens.md)
@@ -31,6 +33,8 @@
   : Resolve a theme name or path to an installed .typ file
 - [`set_quarto_path()`](https://andrew-farrey.github.io/onepagr/reference/set_quarto_path.md)
   : Point onepagr (and Quarto) at a specific Quarto binary
+- [`template_data()`](https://andrew-farrey.github.io/onepagr/reference/template_data.md)
+  : Build a starter data list for a template
 - [`template_tokens()`](https://andrew-farrey.github.io/onepagr/reference/template_tokens.md)
   : List the tokens a template takes
 - [`validate_template_data()`](https://andrew-farrey.github.io/onepagr/reference/validate_template_data.md)

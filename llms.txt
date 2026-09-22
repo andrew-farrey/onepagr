@@ -118,6 +118,16 @@ it to an AI coding assistant (or a collaborator) to build out further,
 which is part of the point of how onepagr is structured. Set
 `keep_typst = FALSE` to skip that and get only the PDF.
 
+Don’t want to hand-type a `data` list at all?
+[`template_data()`](https://andrew-farrey.github.io/onepagr/reference/template_data.md)
+returns a complete, working one for any built-in template, every value
+already a real example rather than a blank to guess the shape of:
+
+``` r
+
+data <- template_data("overdose_spike_alert")
+```
+
 See
 [`?render_onepager`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md)
 for every argument, or run
@@ -328,6 +338,8 @@ Machine-readable citation metadata is also available in
   : Check a theme's dictionary structure against onepagr's real contract
 - [`compile_typst()`](https://andrew-farrey.github.io/onepagr/reference/compile_typst.md)
   : Compile a .typ file with whisker-substituted data via Quarto/Typst
+- [`example_data()`](https://andrew-farrey.github.io/onepagr/reference/example_data.md)
+  : Example data for a built-in template
 - [`export_template()`](https://andrew-farrey.github.io/onepagr/reference/export_template.md)
   : Export a built-in template for customization
 - [`extract_required_tokens()`](https://andrew-farrey.github.io/onepagr/reference/extract_required_tokens.md)
@@ -350,6 +362,8 @@ Machine-readable citation metadata is also available in
   : Resolve a theme name or path to an installed .typ file
 - [`set_quarto_path()`](https://andrew-farrey.github.io/onepagr/reference/set_quarto_path.md)
   : Point onepagr (and Quarto) at a specific Quarto binary
+- [`template_data()`](https://andrew-farrey.github.io/onepagr/reference/template_data.md)
+  : Build a starter data list for a template
 - [`template_tokens()`](https://andrew-farrey.github.io/onepagr/reference/template_tokens.md)
   : List the tokens a template takes
 - [`validate_template_data()`](https://andrew-farrey.github.io/onepagr/reference/validate_template_data.md)

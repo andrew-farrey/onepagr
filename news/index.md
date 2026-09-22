@@ -72,6 +72,27 @@ Initial release.
 - [`template_tokens()`](https://andrew-farrey.github.io/onepagr/reference/template_tokens.md)
   lists every token a built-in template, or an exported copy of one,
   takes: which are required, and the default of each optional one.
+- [`template_data()`](https://andrew-farrey.github.io/onepagr/reference/template_data.md)
+  returns a complete, working starter list for a built-in template:
+  every token
+  [`render_onepager()`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md)
+  would read, each already set to a real value, not a blank to guess the
+  shape of. A required token (which has no default of its own) gets the
+  matching value from the template’s
+  [`example_data()`](https://andrew-farrey.github.io/onepagr/reference/example_data.md);
+  an optional token gets its own shipped default. The `tokens` argument
+  narrows this to `"required"` or `"optional"` alone, and the result’s
+  `"required"` attribute names which entries came from which, so the
+  plain list itself stays exactly what
+  [`render_onepager()`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md)
+  expects.
+- [`example_data()`](https://andrew-farrey.github.io/onepagr/reference/example_data.md)
+  returns a built-in template’s full example data as a named list – the
+  same data this package’s own tests render, now the single, installed
+  source of truth
+  [`template_data()`](https://andrew-farrey.github.io/onepagr/reference/template_data.md)
+  and the test suite both draw from, rather than a hand-typed copy in
+  more than one place.
 - The shared footer’s logo lockup takes a height and a vertical nudge
   for each logo (`logo-a-height`, `logo-height`, `logo-b-height` and
   `logo-a-dy`, `logo-dy`, `logo-b-dy`, defaulting to 32pt and 0pt), for

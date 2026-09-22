@@ -37,73 +37,17 @@ same way, with the same save-for-later prompt.
 ## Render your first report
 
 Every template needs a named list of values, and which values depend on
-the template. `cohort_summary` (contrasting two groups at a point in
-time) needs the fewest, so it’s a good first example.
+the template.
+[`template_data()`](https://andrew-farrey.github.io/onepagr/reference/template_data.md)
+gives you a complete, working starting point for any built-in template:
+every value is already filled in, a real one, not a blank you have to
+guess the shape of.
 
 ``` r
 
 library(onepagr)
 
-data <- list(
-  doc_title = "SAMPLE COHORT SUMMARY",
-  doc_subtitle = "Sample Program . Sample Region",
-  org_full = "Sample Health Organization",
-  contact_url = "https://example.org/",
-  contact_email = "contact@example.org",
-  # Logo tokens are required by every template: these values point at
-  # onepagr's own bundled placeholder assets. See vignette("theming") to
-  # swap in your own branding instead.
-  logo_partner_a_path = "assets/partner-org-a-white.png",
-  logo_partner_a_alt = "Partner Organization A logo",
-  show_partner_a = "true",
-  logo_primary_path = "assets/primary-org-white.png",
-  logo_primary_alt = "Primary Organization logo",
-  logo_partner_b_path = "assets/partner-org-b-white.png",
-  logo_partner_b_alt = "Partner Organization B logo",
-  show_partner_b = "true",
-  header_texture_path = "assets/header-texture.png",
-  strip_data = "Sample System",
-  strip_period = "2024",
-  strip_design = "Retrospective Cohort",
-  strip_geography = "Sample Region",
-  n_decedents = "5,267", n_ems_total = "24,906", pct_linked = "84%",
-  n_prior_ems = "21,021", n_eligible_decedents = "6,260",
-  n_unlinked_decedents = "993",
-  pct_linked_male_width = "64.6", n_male = "3,400",
-  pct_linked_female_width = "35.4", n_female = "1,867",
-  pct_linked_appalachian_width = "31.2", n_appalachian = "1,643",
-  pct_linked_nonappalachian_width = "68.8", n_nonappalachian = "3,624",
-  pct_linked_age_lt25_width = "8", n_age_lt25 = "421",
-  pct_linked_age_25_34_width = "22", n_age_25_34 = "1,159",
-  pct_linked_age_35_44_width = "27", n_age_35_44 = "1,422",
-  pct_linked_age_45_54_width = "24", n_age_45_54 = "1,264",
-  pct_linked_age_55_64_width = "14", n_age_55_64 = "737",
-  pct_linked_age_65plus_width = "5", n_age_65plus = "264",
-  pct_linked_white_width = "86", n_white = "4,527",
-  pct_linked_black_width = "10.7", n_black = "574",
-  pct_linked_other_width = "1.3", n_other = "66",
-  wc_linked_median = "188", wc_unlinked_median = "121",
-  domain_diff_scene = "6.8", domain_diff_history = "5.8",
-  domain_diff_drug = "2.4", domain_diff_medication = "1.2",
-  domain_diff_mental = "0.8", n_prior_od_ems = "5,189",
-  tl1_yr = "2019", tl1_label = "Pilot phase",
-  tl2_yr = "2020-2022", tl2_label = "Infrastructure build-out",
-  tl3_yr = "2023-Present", tl3_label = "Operational",
-  pct_any_prior_enc = "76.9%", pct_od_prior_enc = "38.1%",
-  mean_prior_enc = "4", median_prior_enc = "2",
-  n_od_ems_denom = "5,189", pct_naloxone_width = "70.2",
-  pct_naloxone = "70.2%", pct_no_naloxone_width = "29.8",
-  pct_no_naloxone = "29.8%", n_naloxone_enc = "3,643",
-  n_no_naloxone_enc = "1,546", pct_decedent_nax = "30.8%",
-  timing_denom = "2,009", median_days = "330", timing_iqr = "53-941",
-  mean_days = "575.1", pct_30d_width = "20.8", n_30d = "417",
-  pct_90d_width = "29.8", n_90d = "598", pct_365d_width = "52.8",
-  n_365d = "1,061", pct_gt365d_width = "47.2", n_gt365d = "948",
-  lessons_learned_text = "Sample lessons-learned narrative text.",
-  disclaimer_text = "Sample disclaimer text for illustration only.",
-  footnote_sources = "Sample Data Source"
-)
-
+data <- template_data("cohort_summary")
 out <- tempfile(fileext = ".pdf")
 render_onepager(
   data, template = "cohort_summary", theme = "default", output = out
@@ -112,13 +56,79 @@ file.exists(out)
 #> [1] TRUE
 ```
 
-That’s the whole workflow: a named list in, a finished PDF out. A real
-project won’t hand-type every value like this vignette does for
-demonstration. You’d typically build this list from your analysis output
-using ordinary R ([`sprintf()`](https://rdrr.io/r/base/sprintf.html),
+That’s the whole workflow: a starter list, a finished PDF. `data` here
+is the package’s own example data (see
+[`example_data()`](https://andrew-farrey.github.io/onepagr/reference/example_data.md)),
+so this renders exactly the PDF shown below in “What you get” without
+changing a thing. A real project replaces the values it has real numbers
+for:
+
+``` r
+
+data$n_decedents <- "6,000"
+data$strip_period <- "2025"
+# Every heading, label and paragraph keeps its default wording unless
+# you set it too -- see vignette("theming"), Part 5.
+```
+
+`attr(data, "required")` names the entries
+[`template_data()`](https://andrew-farrey.github.io/onepagr/reference/template_data.md)
+had no default for – the ones a real project actually needs its own
+numbers for, as opposed to wording you can leave alone:
+
+``` r
+
+attr(data, "required")
+#>  [1] "contact_email"                   "logo_primary_path"              
+#>  [3] "logo_primary_alt"                "org_full"                       
+#>  [5] "contact_url"                     "doc_title"                      
+#>  [7] "doc_subtitle"                    "strip_data"                     
+#>  [9] "strip_period"                    "strip_design"                   
+#> [11] "strip_geography"                 "n_decedents"                    
+#> [13] "n_ems_total"                     "pct_linked"                     
+#> [15] "n_prior_ems"                     "n_prior_od_ems"                 
+#> [17] "pct_linked_male_width"           "n_male"                         
+#> [19] "pct_linked_female_width"         "n_female"                       
+#> [21] "pct_linked_appalachian_width"    "n_appalachian"                  
+#> [23] "pct_linked_nonappalachian_width" "n_nonappalachian"               
+#> [25] "pct_linked_white_width"          "n_white"                        
+#> [27] "pct_linked_black_width"          "n_black"                        
+#> [29] "pct_linked_other_width"          "n_other"                        
+#> [31] "pct_linked_age_lt25_width"       "n_age_lt25"                     
+#> [33] "pct_linked_age_25_34_width"      "n_age_25_34"                    
+#> [35] "pct_linked_age_35_44_width"      "n_age_35_44"                    
+#> [37] "pct_linked_age_45_54_width"      "n_age_45_54"                    
+#> [39] "pct_linked_age_55_64_width"      "n_age_55_64"                    
+#> [41] "pct_linked_age_65plus_width"     "n_age_65plus"                   
+#> [43] "tl1_yr"                          "tl1_label"                      
+#> [45] "tl2_yr"                          "tl2_label"                      
+#> [47] "tl3_yr"                          "tl3_label"                      
+#> [49] "pct_any_prior_enc"               "pct_od_prior_enc"               
+#> [51] "pct_naloxone_width"              "pct_no_naloxone_width"          
+#> [53] "pct_naloxone"                    "n_naloxone_enc"                 
+#> [55] "pct_no_naloxone"                 "n_no_naloxone_enc"              
+#> [57] "domain_diff_scene"               "domain_diff_history"            
+#> [59] "domain_diff_drug"                "domain_diff_medication"         
+#> [61] "domain_diff_mental"              "median_days"                    
+#> [63] "mean_days"                       "pct_30d_width"                  
+#> [65] "n_30d"                           "pct_90d_width"                  
+#> [67] "n_90d"                           "pct_365d_width"                 
+#> [69] "n_365d"                          "pct_gt365d_width"               
+#> [71] "n_gt365d"                        "lessons_learned_text"           
+#> [73] "disclaimer_text"                 "footnote_sources"               
+#> [75] "n_od_ems_denom"                  "timing_denom"                   
+#> [77] "n_eligible_decedents"            "n_unlinked_decedents"           
+#> [79] "wc_linked_median"                "wc_unlinked_median"             
+#> [81] "mean_prior_enc"                  "median_prior_enc"               
+#> [83] "pct_decedent_nax"                "timing_iqr"
+```
+
+You’d typically build those values from your analysis output using
+ordinary R ([`sprintf()`](https://rdrr.io/r/base/sprintf.html),
 [`scales::comma()`](https://scales.r-lib.org/reference/comma.html),
 [`paste()`](https://rdrr.io/r/base/paste.html)), the same way you’d
-assemble any other report’s numbers.
+assemble any other report’s numbers – not hand-type them the way this
+vignette’s example does.
 
 ## What you get
 
@@ -128,10 +138,10 @@ call above produces (front page; `cohort_summary` is a fixed two-page
 template, so a matching back page follows it in the real file):
 
     #> Warning in sprintf(filenames, pages, format): 2 arguments not used by format
-    #> '/home/runner/work/onepagr/onepagr/docs/articles/getting-started_files/figure-html/unnamed-chunk-4-1.png'
-    #> [1] "/home/runner/work/onepagr/onepagr/docs/articles/getting-started_files/figure-html/unnamed-chunk-4-1.png"
+    #> '/home/runner/work/onepagr/onepagr/docs/articles/getting-started_files/figure-html/unnamed-chunk-6-1.png'
+    #> [1] "/home/runner/work/onepagr/onepagr/docs/articles/getting-started_files/figure-html/unnamed-chunk-6-1.png"
 
-![](getting-started_files/figure-html/unnamed-chunk-4-1.png)
+![](getting-started_files/figure-html/unnamed-chunk-6-1.png)
 
 By default,
 [`render_onepager()`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md)
