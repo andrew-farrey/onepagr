@@ -68,7 +68,7 @@ data <- list(
   strip_geography = "Sample Region",
   n_decedents = "5,267", n_ems_total = "24,906", pct_linked = "84%",
   n_prior_ems = "21,021", n_eligible_decedents = "6,260",
-  n_unlinked_decedents = "993", n_coroner_counties = "120",
+  n_unlinked_decedents = "993",
   pct_linked_male_width = "64.6", n_male = "3,400",
   pct_linked_female_width = "35.4", n_female = "1,867",
   pct_linked_appalachian_width = "31.2", n_appalachian = "1,643",
@@ -198,6 +198,27 @@ onepagr::list_templates()
 #> [1] "cohort_summary"       "county_choropleth"    "overdose_spike_alert"
 #> [4] "syndromic_alert"      "trend_snapshot"
 ```
+
+``` r
+
+# Every token a template takes: required ones first, then optional ones
+# with their default text.
+head(onepagr::template_tokens("overdose_spike_alert"), 8)
+#>               token required default
+#> 1     contact_email     TRUE    <NA>
+#> 2 logo_primary_path     TRUE    <NA>
+#> 3  logo_primary_alt     TRUE    <NA>
+#> 4          org_full     TRUE    <NA>
+#> 5       contact_url     TRUE    <NA>
+#> 6    severity_level     TRUE    <NA>
+#> 7         doc_title     TRUE    <NA>
+#> 8      doc_subtitle     TRUE    <NA>
+```
+
+The optional tokens are the template’s own wording (headings, captions,
+paragraphs, labels). Set any of them in `data` to reword it; see
+[`vignette("theming")`](https://andrew-farrey.github.io/onepagr/articles/theming.md),
+Part 5.
 
 ``` r
 

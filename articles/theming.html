@@ -524,6 +524,174 @@ scaled render, look it over for text that runs past its box, and run PAC
 on it.</p>
 </div>
 <div class="section level2">
+<h2 id="part-5-rewording-headings-labels-and-text">Part 5: Rewording headings, labels and text<a class="anchor" aria-label="anchor" href="#part-5-rewording-headings-labels-and-text"></a>
+</h2>
+<p>Every piece of reader-facing text in a built-in template is an
+optional data token: section headings, box labels, captions, paragraphs,
+bullets, bar-chart row labels, the metadata strip and footer labels, and
+the alt text for charts and maps. Each one defaults to the text the
+template ships with, so you supply only the ones you want to change, and
+a template you leave alone renders exactly as before. You never need to
+edit Typst.</p>
+<p><code><a href="../reference/template_tokens.html">template_tokens()</a></code> lists everything a template takes.
+Required tokens (your numbers and names) come first, then the optional
+ones with their current text:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">tokens</span> <span class="op">&lt;-</span> <span class="fu">onepagr</span><span class="fu">::</span><span class="fu"><a href="../reference/template_tokens.html">template_tokens</a></span><span class="op">(</span><span class="st">"overdose_spike_alert"</span><span class="op">)</span></span>
+<span><span class="va">tokens</span><span class="op">[</span><span class="op">!</span><span class="va">tokens</span><span class="op">$</span><span class="va">required</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"token"</span>, <span class="st">"default"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;                    token</span></span>
+<span><span class="co">#&gt; 22         min_font_size</span></span>
+<span><span class="co">#&gt; 23            font_scale</span></span>
+<span><span class="co">#&gt; 24           space_scale</span></span>
+<span><span class="co">#&gt; 25          banner_label</span></span>
+<span><span class="co">#&gt; 26 heading_alert_details</span></span>
+<span><span class="co">#&gt; 27 label_whats_happening</span></span>
+<span><span class="co">#&gt; 28   label_geo_breakdown</span></span>
+<span><span class="co">#&gt; 29         label_actions</span></span>
+<span><span class="co">#&gt; 30       label_resources</span></span>
+<span><span class="co">#&gt; 31           stat_events</span></span>
+<span><span class="co">#&gt; 32           stat_spikes</span></span>
+<span><span class="co">#&gt; 33   text_threshold_note</span></span>
+<span><span class="co">#&gt; 34         banner_issued</span></span>
+<span><span class="co">#&gt; 35  footer_label_sources</span></span>
+<span><span class="co">#&gt; 36  footer_label_contact</span></span>
+<span><span class="co">#&gt; 37 footer_contact_joiner</span></span>
+<span><span class="co">#&gt; 38        show_partner_a</span></span>
+<span><span class="co">#&gt; 39   logo_partner_a_path</span></span>
+<span><span class="co">#&gt; 40    logo_partner_a_alt</span></span>
+<span><span class="co">#&gt; 41        show_partner_b</span></span>
+<span><span class="co">#&gt; 42   logo_partner_b_path</span></span>
+<span><span class="co">#&gt; 43    logo_partner_b_alt</span></span>
+<span><span class="co">#&gt; 44   header_texture_path</span></span>
+<span><span class="co">#&gt;                                                                                                                           default</span></span>
+<span><span class="co">#&gt; 22                                                                                                                               </span></span>
+<span><span class="co">#&gt; 23                                                                                                                               </span></span>
+<span><span class="co">#&gt; 24                                                                                                                               </span></span>
+<span><span class="co">#&gt; 25                                                                                                                    SPIKE ALERT</span></span>
+<span><span class="co">#&gt; 26                                                                                                                  ALERT DETAILS</span></span>
+<span><span class="co">#&gt; 27                                                                                                               WHAT'S HAPPENING</span></span>
+<span><span class="co">#&gt; 28                                                                                                           GEOGRAPHIC BREAKDOWN</span></span>
+<span><span class="co">#&gt; 29                                                                                                            RECOMMENDED ACTIONS</span></span>
+<span><span class="co">#&gt; 30                                                                                                       LOCAL RESPONSE RESOURCES</span></span>
+<span><span class="co">#&gt; 31                                                                                   overdoses in the last {{{window_days}}} days</span></span>
+<span><span class="co">#&gt; 32                                                                                spikes in the last {{{spike_window_days}}} days</span></span>
+<span><span class="co">#&gt; 33 Spike threshold: #sym.gt.eq {{{threshold}}} overdoses. {{{alert_area}}} met or exceeded this threshold, triggering this alert.</span></span>
+<span><span class="co">#&gt; 34                                                                                                                         issued</span></span>
+<span><span class="co">#&gt; 35                                                                                                                  Data sources:</span></span>
+<span><span class="co">#&gt; 36                                                                                                                       Contact:</span></span>
+<span><span class="co">#&gt; 37                                                                                                                             at</span></span>
+<span><span class="co">#&gt; 38                                                                                                                          false</span></span>
+<span><span class="co">#&gt; 39                                                                                                                               </span></span>
+<span><span class="co">#&gt; 40                                                                                                                               </span></span>
+<span><span class="co">#&gt; 41                                                                                                                          false</span></span>
+<span><span class="co">#&gt; 42                                                                                                                               </span></span>
+<span><span class="co">#&gt; 43                                                                                                                               </span></span>
+<span><span class="co">#&gt; 44                                                                                                      assets/header-texture.png</span></span></code></pre></div>
+<p>Optional tokens are named by what they set, so you can filter on the
+prefix:</p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr class="header">
+<th>Prefix</th>
+<th>Sets</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>heading_*</code></td>
+<td>Section headings</td>
+</tr>
+<tr class="even">
+<td>
+<code>label_*</code>, <code>banner_*</code>
+</td>
+<td>Box, group and alert-banner labels</td>
+</tr>
+<tr class="odd">
+<td><code>stat_*</code></td>
+<td>Captions under big numbers</td>
+</tr>
+<tr class="even">
+<td><code>bar_*</code></td>
+<td>Row labels in bar charts</td>
+</tr>
+<tr class="odd">
+<td><code>text_*</code></td>
+<td>Paragraphs, bullets and notes</td>
+</tr>
+<tr class="even">
+<td><code>alt_*</code></td>
+<td>Alt text for charts and maps</td>
+</tr>
+<tr class="odd">
+<td>
+<code>strip_label_*</code>, <code>footer_label_*</code>
+</td>
+<td>Labels in the metadata strip and footer</td>
+</tr>
+<tr class="even">
+<td><code>chips_*</code></td>
+<td>A short list of items, separated by <code>|</code>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cohort</span> <span class="op">&lt;-</span> <span class="fu">onepagr</span><span class="fu">::</span><span class="fu"><a href="../reference/template_tokens.html">template_tokens</a></span><span class="op">(</span><span class="st">"cohort_summary"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">cohort</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"^heading_"</span>, <span class="va">cohort</span><span class="op">$</span><span class="va">token</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"token"</span>, <span class="st">"default"</span><span class="op">)</span><span class="op">]</span>, <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                 token</span></span>
+<span><span class="co">#&gt; 88     heading_glance</span></span>
+<span><span class="co">#&gt; 89 heading_background</span></span>
+<span><span class="co">#&gt; 90  heading_data_adds</span></span>
+<span><span class="co">#&gt; 91    heading_capture</span></span>
+<span><span class="co">#&gt;                                                            default</span></span>
+<span><span class="co">#&gt; 88 SAMPLE COHORT AT A GLANCE #sym.dash.en {{{strip_period}}} CASES</span></span>
+<span><span class="co">#&gt; 89                                          BACKGROUND &amp; RATIONALE</span></span>
+<span><span class="co">#&gt; 90                                             WHAT THIS DATA ADDS</span></span>
+<span><span class="co">#&gt; 91                                     WHO IS CAPTURED BY LINKAGE?</span></span></code></pre></div>
+<p>Use them like any other value:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/render_onepager.html">render_onepager</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">data</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    heading_alert_details <span class="op">=</span> <span class="st">"WHAT WE KNOW"</span>,</span>
+<span>    label_actions <span class="op">=</span> <span class="st">"WHAT TO DO NEXT"</span>,</span>
+<span>    text_threshold_note <span class="op">=</span> <span class="st">"Alert level: {{{threshold}}} overdoses in 24 hours."</span></span>
+<span>  <span class="op">)</span><span class="op">)</span>,</span>
+<span>  template <span class="op">=</span> <span class="st">"overdose_spike_alert"</span>, theme <span class="op">=</span> <span class="st">"default"</span>,</span>
+<span>  output <span class="op">=</span> <span class="st">"reworded.pdf"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>A few things to know:</p>
+<ul>
+<li>A name that no template uses is ignored with a warning that suggests
+the closest token, such as
+<code>"heading_glnce" was ignored ... Did you mean "heading_glance"?</code>.
+A name that belongs to a different built-in template is left alone, so
+you can share one data list across templates.</li>
+<li>A value is set as Typst markup. <code>*bold*</code> and
+<code>_italic_</code> work. To show <code>@</code>, <code>$</code>,
+<code>*</code>, <code>_</code>, <code>#</code> or a backtick literally,
+put a backslash before it. Alt text (<code>alt_*</code>) is plain text,
+and should not contain a double quote.</li>
+<li>The number in a default is filled from your data. A default such as
+<code>Results (N = {{{n_total}}})</code> uses your <code>n_total</code>.
+Your own replacement is used exactly as written, so type any numbers
+into it yourself. The token in the default is still required, because
+the template needs it whether or not you keep the default text.</li>
+<li>Headings stay real headings in the PDF’s structure whatever text you
+give them, so screen readers and the document outline keep working.
+Update the <code>alt_*</code> text whenever you change what a chart or
+map shows.</li>
+<li>A longer heading or paragraph can wrap onto more lines and push a
+fixed-length template past its page count. Render and look after
+rewording.</li>
+<li>To change a template’s structure rather than its words, such as
+adding a section, use <code><a href="../reference/export_template.html">export_template()</a></code> and edit the
+Typst.</li>
+</ul>
+</div>
+<div class="section level2">
 <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a>
 </h2>
 <ul>

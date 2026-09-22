@@ -24,7 +24,10 @@ compile_typst(path, data, output, font_dir = NULL)
 
 - data:
 
-  Named list of whisker substitution values.
+  Named list of whisker substitution values. A name that is not a token
+  of `path` or of any built-in template is ignored with a warning
+  (naming the closest token, if there is one), which catches misspelled
+  optional tokens.
 
 - output:
 
@@ -51,7 +54,9 @@ Character, the `output` path, invisibly.
 A template can declare a token optional with a `//` comment line,
 `// optional-token: name = default`. When `data` lacks that token (or it
 is `NULL`, empty, or `NA`), the declared default is used instead of
-raising a missing-token error.
+raising a missing-token error. A default can refer to other tokens, as
+in `// optional-token: heading = Results (N = {{{n_total}}})`; it is
+rendered against `data` first, and those tokens stay required.
 
 ## Examples
 

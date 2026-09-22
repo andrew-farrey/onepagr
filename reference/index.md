@@ -31,5 +31,7 @@
   : Resolve a theme name or path to an installed .typ file
 - [`set_quarto_path()`](https://andrew-farrey.github.io/onepagr/reference/set_quarto_path.md)
   : Point onepagr (and Quarto) at a specific Quarto binary
+- [`template_tokens()`](https://andrew-farrey.github.io/onepagr/reference/template_tokens.md)
+  : List the tokens a template takes
 - [`validate_template_data()`](https://andrew-farrey.github.io/onepagr/reference/validate_template_data.md)
   : Validate whisker data against a template's required tokens

@@ -18,8 +18,8 @@ Public health teams and similar analysis groups often need to turn a
 piece of analysis into a one-page fact sheet, surveillance brief, or
 alert bulletin: something that can be printed front-and-back, shared as
 a PDF, or read on a phone. Doing that by hand in a slide deck or word
-processor is slow to reproduce and easy to get wrong on accessibility.
-onepagr turns a named list of values into a finished PDF with one
+processor is slow to reproduce and makes accessibility easy to get
+wrong. onepagr turns a named list of values into a finished PDF with one
 function call, using templates whose layout and accessibility patterns
 are already solved.
 
@@ -38,8 +38,8 @@ onepagr also needs [Quarto](https://quarto.org), which bundles
 output needs Typst 0.14.0 or newer**, the release that [added PDF/UA-1
 conformance and automatic tagged-PDF
 support](https://typst.app/docs/changelog/0.14.0/) in the first place.
-Older Typst simply cannot produce an accessible PDF, no matter what
-onepagr does. onepagr itself checks for Typst 0.15.1+ by default (a
+Older Typst versions simply cannot produce an accessible PDF, no matter
+what onepagr does. onepagr itself checks for Typst 0.15.1+ by default (a
 newer floor than the bare minimum, confirmed to be what’s actually
 bundled by recent Quarto releases). Check whether your system’s Typst is
 new enough, and get a clear message naming the actual version if it
@@ -350,6 +350,8 @@ Machine-readable citation metadata is also available in
   : Resolve a theme name or path to an installed .typ file
 - [`set_quarto_path()`](https://andrew-farrey.github.io/onepagr/reference/set_quarto_path.md)
   : Point onepagr (and Quarto) at a specific Quarto binary
+- [`template_tokens()`](https://andrew-farrey.github.io/onepagr/reference/template_tokens.md)
+  : List the tokens a template takes
 - [`validate_template_data()`](https://andrew-farrey.github.io/onepagr/reference/validate_template_data.md)
   : Validate whisker data against a template's required tokens
 

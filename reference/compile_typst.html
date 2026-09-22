@@ -73,7 +73,10 @@ Typst's relative <code>#import</code> paths resolve correctly.</p></dd>
 
 
 <dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>Named list of whisker substitution values.</p></dd>
+<dd><p>Named list of whisker substitution values. A name that is not
+a token of <code>path</code> or of any built-in template is ignored with a warning
+(naming the closest token, if there is one), which catches misspelled
+optional tokens.</p></dd>
 
 
 <dt id="arg-output">output<a class="anchor" aria-label="anchor" href="#arg-output"></a></dt>
@@ -101,7 +104,9 @@ fonts only).</p></dd>
     <p>A template can declare a token optional with a <code>//</code> comment line,
 <code>// optional-token: name = default</code>. When <code>data</code> lacks that token (or
 it is <code>NULL</code>, empty, or <code>NA</code>), the declared default is used instead of
-raising a missing-token error.</p>
+raising a missing-token error. A default can refer to other tokens, as
+in <code>// optional-token: heading = Results (N = {{{n_total}}})</code>; it is
+rendered against <code>data</code> first, and those tokens stay required.</p>
     </div>
 
     <div class="section level2">

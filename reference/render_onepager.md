@@ -42,6 +42,14 @@ render_onepager(
   `space_scale` (multipliers for text size and for spacing). Each one
   overrides the theme's own setting for this render when supplied.
 
+  Reader-facing text is optional too: headings, labels, captions,
+  paragraphs, bar labels and alt text are tokens (`heading_*`, `text_*`,
+  `alt_*` and so on) that each default to the template's own wording.
+  [`template_tokens()`](https://andrew-farrey.github.io/onepagr/reference/template_tokens.md)
+  lists what a template takes, with the defaults (see
+  [`vignette("theming")`](https://andrew-farrey.github.io/onepagr/articles/theming.md),
+  Part 5).
+
 - template:
 
   Character. A built-in template name (see

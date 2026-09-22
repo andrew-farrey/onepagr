@@ -86,7 +86,12 @@ the wrong severity styling or a mis-toggled section.</p>
 <p>Every template also reads three optional data values: <code>min_font_size</code>
 (in points; no text is set smaller than this), and <code>font_scale</code> and
 <code>space_scale</code> (multipliers for text size and for spacing). Each one
-overrides the theme's own setting for this render when supplied.</p></dd>
+overrides the theme's own setting for this render when supplied.</p>
+<p>Reader-facing text is optional too: headings, labels, captions,
+paragraphs, bar labels and alt text are tokens (<code>heading_*</code>, <code>text_*</code>,
+<code>alt_*</code> and so on) that each default to the template's own wording.
+<code><a href="template_tokens.html">template_tokens()</a></code> lists what a template takes, with the defaults
+(see <code><a href="../articles/theming.html">vignette("theming")</a></code>, Part 5).</p></dd>
 
 
 <dt id="arg-template">template<a class="anchor" aria-label="anchor" href="#arg-template"></a></dt>
