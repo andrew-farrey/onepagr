@@ -167,7 +167,17 @@ template_data <- function(
     out <- c(out, example[required_names])
   }
   if (want_optional && length(optional_names) > 0) {
-    out <- c(out, optional_defaults)
+    if (want_required) {
+      # A default can refer to a required token (e.g. a heading default of
+      # "Results (N = {{{n_total}}})"); resolve that here against the real
+      # required values already in `out`, the same resolution
+      # fill_token_defaults() performs at render time, so a value this
+      # function returns is always finished text, never leftover
+      # {{{...}}} markup a caller would have to notice and fix.
+      out <- fill_token_defaults(resolve_template(template), out)
+    } else {
+      out <- c(out, optional_defaults)
+    }
   }
   attr(out, "required") <- if (want_required) required_names else character(0)
   out

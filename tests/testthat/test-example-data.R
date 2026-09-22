@@ -55,6 +55,24 @@ test_that("template_data rejects an unrecognized tokens argument", {
   )
 })
 
+test_that("template_data's optional defaults carry no leftover {{{ markup", {
+  # A default can reference another token, e.g.
+  # `// optional-token: heading = Results (N = {{{n_total}}})`. That
+  # reference must be resolved against the real required values
+  # template_data() already collected, not handed back as raw text --
+  # otherwise a user who renders template_data()'s own output straight
+  # (exactly what its docs and @examples tell them to do) gets literal
+  # "{{{n_total}}}" in the PDF instead of a number.
+  for (t in list_templates()) {
+    data <- template_data(t)
+    unresolved <- vapply(
+      data, function(v) grepl("{{{", v, fixed = TRUE), logical(1)
+    )
+    bad <- paste(names(data)[unresolved], collapse = ", ")
+    expect_false(any(unresolved), info = paste(t, ":", bad))
+  }
+})
+
 test_that("template_data alone is enough to render every built-in template", {
   skip_if_not(quarto::quarto_available())
   out_dir <- tempfile()
@@ -77,5 +95,9 @@ test_that("template_data alone is enough to render every built-in template", {
     )
     expect_true(file.exists(out_pdf), info = t)
     expect_gt(file.info(out_pdf)$size, 5000, label = t)
+    if (requireNamespace("pdftools", quietly = TRUE)) {
+      text <- paste(pdftools::pdf_text(out_pdf), collapse = " ")
+      expect_false(grepl("{{{", text, fixed = TRUE), info = t)
+    }
   }
 })
