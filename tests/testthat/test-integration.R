@@ -313,7 +313,8 @@ scaled_render <- function(template, extra = list(), theme = "default") {
   maps <- file.path("fixtures", "maps", sprintf("map%d.png", 0:4))
   out <- tempfile(fileext = ".pdf")
   render_onepager(
-    c(data, extra), template = template, theme = theme, output = out,
+    utils::modifyList(data, extra), template = template, theme = theme,
+    output = out,
     keep_typst = FALSE,
     extra_assets = if (template == "county_choropleth") maps else character(0)
   )
@@ -338,6 +339,32 @@ test_that("the fixed-page templates render at exactly 2 pages under every theme"
         pdftools::pdf_info(pdf)$pages, 2,
         info = paste(theme, template)
       )
+    }
+  }
+})
+
+test_that("every heading and label token rewords its text, in every template", {
+  skip_if_not(quarto::quarto_available())
+  skip_if_not(requireNamespace("pdftools", quietly = TRUE))
+  for (template in list_templates()) {
+    tokens <- grep(
+      "^(heading|label|banner)_",
+      names(extract_token_defaults(resolve_template(template))),
+      value = TRUE
+    )
+    expect_gt(length(tokens), 0)
+    marker <- function(tok) paste0("Zz", gsub("_", "", tok))
+    extra <- stats::setNames(lapply(tokens, marker), tokens)
+    # syndromic_alert's cluster box is off in the fixture; switch it on so
+    # its label is rendered and can be checked.
+    if ("label_cluster" %in% tokens) {
+      extra <- c(extra, list(show_cluster = "true", cluster_text = "Cluster"))
+    }
+    text <- paste(
+      pdftools::pdf_text(scaled_render(template, extra)), collapse = " "
+    )
+    for (tok in tokens) {
+      expect_match(text, marker(tok), fixed = TRUE, info = paste(template, tok))
     }
   }
 })

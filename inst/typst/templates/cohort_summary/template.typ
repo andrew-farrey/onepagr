@@ -45,6 +45,24 @@
 // optional-token: space_scale =
 #let theme = apply-scales(theme, "{{{min_font_size}}}", "{{{font_scale}}}", "{{{space_scale}}}")
 
+// Optional data: section headings and box labels. Each defaults to the
+// text shown here, so a report needs to supply one only to reword it. A
+// value is set as Typst markup: put a backslash before @, $, * , _ , # or
+// a backtick to show it literally.
+// optional-token: heading_glance = SAMPLE COHORT AT A GLANCE #sym.dash.en {{{strip_period}}} CASES
+// optional-token: heading_background = BACKGROUND & RATIONALE
+// optional-token: heading_data_adds = WHAT THIS DATA ADDS
+// optional-token: heading_capture = WHO IS CAPTURED BY LINKAGE?
+// optional-token: heading_timeline = IMPLEMENTATION TIMELINE
+// optional-token: heading_key_findings = KEY FINDINGS
+// optional-token: heading_prior_history = PRIOR ENCOUNTER HISTORY AMONG LINKED CASES
+// optional-token: heading_intervention_docs = SAMPLE INTERVENTION DOCUMENTATION IN PRIOR QUALIFYING ENCOUNTERS (N = {{{n_od_ems_denom}}})
+// optional-token: heading_completeness = STRUCTURED FIELD COMPLETENESS: LINKED VS. UNLINKED RECORDS
+// optional-token: heading_richer_records = LONGER, RICHER RECORDS AMONG LINKED CASES
+// optional-token: heading_timing = TIMING FROM LAST PRIOR QUALIFYING ENCOUNTER TO REFERENCE DATE (AMONG CASES WITH A PRIOR QUALIFYING ENCOUNTER, N = {{{timing_denom}}})
+// optional-token: heading_lessons = LESSONS LEARNED & IMPLICATIONS
+// optional-token: heading_disclaimer = DISCLAIMER
+
 // Template-specific tuning values -- unlike theme.typ's systemic tokens,
 // these are specific to how THIS template's content happens to lay out,
 // not something a different brand theme needs to know about. See this
@@ -163,7 +181,7 @@
 // ============================================================
 // COHORT AT A GLANCE
 // ============================================================
-= SAMPLE COHORT AT A GLANCE #sym.dash.en {{{strip_period}}} CASES
+= {{{heading_glance}}}
 #v(theme.space-sm)
 
 #let stat-card-colors = (theme.brand-blue, theme.brand-blue, theme.brand-accent, theme.brand-midnight)
@@ -188,10 +206,10 @@
 #v(theme.space-md)
 #grid(columns: (55fr, 45fr), column-gutter: sp(theme, 16pt),
   [
-    = BACKGROUND & RATIONALE
+    = {{{heading_background}}}
   ],
   [
-    = WHAT THIS DATA ADDS
+    = {{{heading_data_adds}}}
   ]
 )
 #v(theme.space-sm)
@@ -229,7 +247,7 @@
 // WHO IS CAPTURED BY LINKAGE?
 // ============================================================
 #v(theme.space-md)
-= WHO IS CAPTURED BY LINKAGE?
+= {{{heading_capture}}}
 #v(theme.space-sm)
 
 #rect(fill: theme-grad.card-bg-grad, stroke: (top: theme.stroke-accent + theme.brand-midnight, rest: theme.stroke-border + theme.box-border), inset: sp(theme, 7pt), width: 100%)[
@@ -274,7 +292,7 @@
 // ============================================================
 #v(theme.space-md)
 #block(breakable: false)[
-  = IMPLEMENTATION TIMELINE
+  = {{{heading_timeline}}}
   #v(theme.space-sm)
 
   // Color emphasis escalates left to right (empty -> light -> dark) and
@@ -305,13 +323,13 @@
 // ============================================================
 // KEY FINDINGS (page 2)
 // ============================================================
-= KEY FINDINGS
+= {{{heading_key_findings}}}
 
 #block(breakable: false)[
   #grid(columns: (1fr, 1fr), column-gutter: sp(theme, 6pt),
     fill: theme-grad.card-bg-grad, inset: sp(theme, 7pt), stroke: (top: theme.stroke-accent + theme.brand-midnight, rest: theme.stroke-border + theme.box-border),
     [
-      == PRIOR ENCOUNTER HISTORY AMONG LINKED CASES
+      == {{{heading_prior_history}}}
       #v(theme.space-md)
       #grid(columns: (1fr, 1fr),
         [#text(size: fs(theme, 24pt), weight: "bold", fill: theme.brand-blue)[{{{pct_any_prior_enc}}}] \ #text(size: fs(theme, 8pt), fill: theme.text-secondary)[Had #sym.gt.eq 1 prior related encounter]],
@@ -323,7 +341,7 @@
       ]
     ],
     [
-      == SAMPLE INTERVENTION DOCUMENTATION IN PRIOR QUALIFYING ENCOUNTERS (N = {{{n_od_ems_denom}}})
+      == {{{heading_intervention_docs}}}
       #v(theme.space-md)
       #grid(columns: ({{{pct_naloxone_width}}}%, {{{pct_no_naloxone_width}}}%),
         box(fill: theme-grad.brand-blue-grad, stroke: 0.75pt + black, inset: sp(theme, 6pt), height: fd(theme, 38pt), width: 100%)[#align(horizon)[
@@ -343,7 +361,7 @@
 
 #v(theme.space-xs)
 #rect(fill: theme-grad.card-bg-grad, stroke: (top: theme.stroke-accent + theme.brand-midnight, rest: theme.stroke-border + theme.box-border), inset: sp(theme, 7pt), width: 100%)[
-  == STRUCTURED FIELD COMPLETENESS: LINKED VS. UNLINKED RECORDS
+  == {{{heading_completeness}}}
   #v(theme.space-xs)
   #text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[Linked cases' records more often have complete history and context since there are one or more linked encounter records from which to pull that information. Bars show the average size of that gap between linked and unlinked cases by category, per 100 cases.]
   #v(theme.space-sm)
@@ -355,7 +373,7 @@
 
 #v(theme.space-xs)
 #rect(fill: theme-grad.card-bg-grad, stroke: (top: theme.stroke-accent + theme.brand-midnight, rest: theme.stroke-border + theme.box-border), inset: sp(theme, 7pt), width: 100%)[
-  == LONGER, RICHER RECORDS AMONG LINKED CASES
+  == {{{heading_richer_records}}}
   #v(theme.space-xs)
   #text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[A linked encounter record gives reviewers more real-world detail to draw from -- about the case, the setting, and the context. The word-count comparison on page 1 measures overall record length; the bars below measure additional domain-specific terms per record, on average, compared to unlinked cases (main record; secondary record about the same), {{{strip_period}}}.]
   #v(theme.space-sm)
@@ -368,7 +386,7 @@
 
 #v(theme.space-xs)
 #rect(fill: theme-grad.card-bg-grad, stroke: (top: theme.stroke-accent + theme.brand-midnight, rest: theme.stroke-border + theme.box-border), inset: sp(theme, 7pt), width: 100%)[
-  == TIMING FROM LAST PRIOR QUALIFYING ENCOUNTER TO REFERENCE DATE (AMONG CASES WITH A PRIOR QUALIFYING ENCOUNTER, N = {{{timing_denom}}})
+  == {{{heading_timing}}}
   #v(theme.space-xs)
   #text(size: fs(theme, 16pt), weight: "bold", fill: theme.brand-blue)[{{{median_days}}}] #text(size:fs(theme, 8pt))[Median days (IQR: {{{timing_iqr}}})]  #h(1.5em)
   #text(size: fs(theme, 14pt), weight: "bold", fill: theme.brand-midnight)[{{{mean_days}}}] #text(size:fs(theme, 8pt))[Mean days]
@@ -390,7 +408,7 @@
   // preserves this box's specific color/tracking without affecting any
   // other == heading elsewhere.
   #show heading: set text(size: fs(theme, 8pt), weight: "bold", fill: theme.lessons-text, tracking: fd(theme, 0.5pt))
-  == LESSONS LEARNED & IMPLICATIONS
+  == {{{heading_lessons}}}
   #v(theme.space-xs)
   #text(size: fs(theme, 8.5pt), fill: theme.lessons-text)[{{{lessons_learned_text}}}]
 ]
@@ -400,7 +418,7 @@
   // Same fix as LESSONS LEARNED above -- identical plain-#text()-as-
   // section-label pattern.
   #show heading: set text(size: fs(theme, 8pt), weight: "bold", fill: theme.disclaimer-text, tracking: fd(theme, 0.5pt))
-  == DISCLAIMER
+  == {{{heading_disclaimer}}}
   #v(theme.space-xs)
   #text(size: fs(theme, 8pt), fill: theme.disclaimer-text)[{{{disclaimer_text}}}]
 ]

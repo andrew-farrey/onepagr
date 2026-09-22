@@ -188,6 +188,38 @@ test_that("extract_required_tokens leaves out tokens with a declared default", {
   expect_true(validate_template_data(tmp, list(doc_title = "x")))
 })
 
+test_that("extract_required_tokens counts tokens a default refers to", {
+  tmp <- tempfile(fileext = ".typ")
+  writeLines(
+    c(
+      "// optional-token: heading_x = Results (N = {{{n_total}}})",
+      "{{{heading_x}}} {{{doc_title}}}"
+    ),
+    tmp
+  )
+  on.exit(unlink(tmp))
+  expect_equal(extract_required_tokens(tmp), c("doc_title", "n_total"))
+})
+
+test_that("fill_token_defaults renders a default against the data", {
+  tmp <- tempfile(fileext = ".typ")
+  writeLines(
+    c(
+      "// optional-token: heading_x = Results (N = {{{n_total}}}) & more",
+      "// optional-token: heading_y = Plain",
+      "{{{heading_x}}} {{{heading_y}}} {{{n_total}}}"
+    ),
+    tmp
+  )
+  on.exit(unlink(tmp))
+  out <- fill_token_defaults(tmp, list(n_total = "12", heading_y = "Mine"))
+  expect_equal(out$heading_x, "Results (N = 12) & more")
+  expect_equal(out$heading_y, "Mine")
+  # A supplied value is taken literally, never rendered again.
+  out <- fill_token_defaults(tmp, list(n_total = "12", heading_x = "{{{n_total}}}"))
+  expect_equal(out$heading_x, "{{{n_total}}}")
+})
+
 test_that("compile_typst fills an omitted optional token from its default", {
   skip_if_not(quarto::quarto_available())
   dir <- tempfile()

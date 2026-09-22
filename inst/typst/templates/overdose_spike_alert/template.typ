@@ -28,6 +28,17 @@
 // optional-token: space_scale =
 #let theme = apply-scales(theme, "{{{min_font_size}}}", "{{{font_scale}}}", "{{{space_scale}}}")
 
+// Optional data: section headings and box labels. Each defaults to the
+// text shown here, so a report needs to supply one only to reword it. A
+// value is set as Typst markup: put a backslash before @, $, * , _ , # or
+// a backtick to show it literally.
+// optional-token: banner_label = SPIKE ALERT
+// optional-token: heading_alert_details = ALERT DETAILS
+// optional-token: label_whats_happening = WHAT'S HAPPENING
+// optional-token: label_geo_breakdown = GEOGRAPHIC BREAKDOWN
+// optional-token: label_actions = RECOMMENDED ACTIONS
+// optional-token: label_resources = LOCAL RESPONSE RESOURCES
+
 // Route contact_email through a variable rather than splicing
 // {{{contact_email}}} directly into markup body wherever it's displayed.
 // "\@"-escaping the token only fixes Typst's "@" label-syntax parsing
@@ -111,7 +122,7 @@
 // shape, so a separate strip band would be redundant.
 // ============================================================
 #block(breakable: false, fill: severity.bg, stroke: (left: theme.stroke-accent-left + severity.color, rest: theme.stroke-border + theme.box-border), radius: theme.radius-card, inset: (x: sp(theme, 10pt), y: sp(theme, 8pt)), width: 100%)[
-  #text(size: fs(theme, 11pt), weight: "bold", fill: severity.text)[⚠ SPIKE ALERT] #h(1em)
+  #text(size: fs(theme, 11pt), weight: "bold", fill: severity.text)[⚠ {{{banner_label}}}] #h(1em)
   #text(size: fs(theme, 9pt), fill: severity.text)[{{{alert_area}}} #sym.dot.c issued {{{alert_issued_at}}}]
 ]
 
@@ -148,13 +159,13 @@
 // ============================================================
 // ALERT DETAILS -- H1 heading required for PDF/UA-1 structure
 // ============================================================
-= ALERT DETAILS
+= {{{heading_alert_details}}}
 #v(theme.space-sm)
 
 // ============================================================
 // WHAT'S HAPPENING
 // ============================================================
-#text-box(theme, theme-grad, [WHAT'S HAPPENING], [{{{narrative_text}}}])
+#text-box(theme, theme-grad, [{{{label_whats_happening}}}], [{{{narrative_text}}}])
 
 #v(theme.space-sm)
 
@@ -165,7 +176,7 @@
 // directly in geo_breakdown_text for the proportional-bar visual
 // treatment, or plain text/bullets -- see design doc Section 6.
 // ============================================================
-#text-box(theme, theme-grad, [GEOGRAPHIC BREAKDOWN], [{{{geo_breakdown_text}}}])
+#text-box(theme, theme-grad, [{{{label_geo_breakdown}}}], [{{{geo_breakdown_text}}}])
 
 #v(theme.space-sm)
 
@@ -178,7 +189,7 @@
 // verified only to the 3:1 large-text threshold. See themes/default.typ
 // and themes/uk.typ's brand-accent-text comments for the full story
 // (this exact mistake shipped once and failed a real PAC WCAG check).
-#text-box(theme, theme-grad, [RECOMMENDED ACTIONS], [{{{actions_text}}}], color: theme.brand-accent-text)
+#text-box(theme, theme-grad, [{{{label_actions}}}], [{{{actions_text}}}], color: theme.brand-accent-text)
 
 // ============================================================
 // LOCAL RESPONSE RESOURCES -- optional, gated on show_resources. The R
@@ -189,7 +200,7 @@
 // ============================================================
 #if bool-token("show_resources", "{{{show_resources}}}") [
   #v(theme.space-sm)
-  #text-box(theme, theme-grad, [LOCAL RESPONSE RESOURCES], [{{{resources_text}}}])
+  #text-box(theme, theme-grad, [{{{label_resources}}}], [{{{resources_text}}}])
 ]
 
 #v(theme.space-sm)

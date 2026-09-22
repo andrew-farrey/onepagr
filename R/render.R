@@ -32,6 +32,11 @@
 #'   (in points; no text is set smaller than this), and `font_scale` and
 #'   `space_scale` (multipliers for text size and for spacing). Each one
 #'   overrides the theme's own setting for this render when supplied.
+#'
+#'   Section headings and box labels are optional too: `heading_*`,
+#'   `label_*` and `banner_label` tokens reword them, each defaulting to
+#'   the template's own text. A template's source lists the ones it takes
+#'   (see `vignette("theming")`).
 #' @param template Character. A built-in template name (see [list_templates()]).
 #' @param theme Character. A built-in theme name, or a path to a custom
 #'   theme .typ file (see [resolve_theme()]). Default `"default"`.

@@ -40,7 +40,9 @@ manifest.
 A template can declare a token optional with a \verb{//} comment line,
 \verb{// optional-token: name = default}. When \code{data} lacks that token (or
 it is \code{NULL}, empty, or \code{NA}), the declared default is used instead of
-raising a missing-token error.
+raising a missing-token error. A default can refer to other tokens, as
+in \verb{// optional-token: heading = Results (N = \{\{\{n_total\}\}\})}; it is
+rendered against \code{data} first, and those tokens stay required.
 }
 \examples{
 \dontrun{

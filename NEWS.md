@@ -32,6 +32,13 @@ Initial release.
   token, `compile_typst()` and `render_onepager()` use the default
   instead of raising a missing-token error, and
   `extract_required_tokens()` no longer lists it.
+* Every section heading and box label in the built-in templates is an
+  optional token that defaults to the text it shipped with: `heading_*`
+  for section headings, `label_*` for text-box labels, and `banner_label`
+  for the word in an alert banner. Reword one by adding it to `data`;
+  default output is unchanged. A template's source lists its tokens (see
+  the theming vignette, Part 5). A default may refer to other tokens, as in
+  `Results (N = {{{n_total}}})`, and those stay required.
 * The shared footer's logo lockup takes a height and a vertical nudge for
   each logo (`logo-a-height`, `logo-height`, `logo-b-height` and
   `logo-a-dy`, `logo-dy`, `logo-b-dy`, defaulting to 32pt and 0pt), for

@@ -31,6 +31,22 @@
 // optional-token: space_scale =
 #let theme = apply-scales(theme, "{{{min_font_size}}}", "{{{font_scale}}}", "{{{space_scale}}}")
 
+// Optional data: section headings and box labels. Each defaults to the
+// text shown here, so a report needs to supply one only to reword it. A
+// value is set as Typst markup: put a backslash before @, $, * , _ , # or
+// a backtick to show it literally.
+// optional-token: heading_trend = TREND ACROSS PERIOD
+// optional-token: heading_what_changed = WHAT CHANGED
+// optional-token: heading_why_matters = WHY IT MATTERS
+// optional-token: heading_key_dates = KEY DATES IN THE TRACKED WINDOW
+// optional-token: heading_detailed = DETAILED BREAKDOWN
+// optional-token: heading_submetric_a = SUB-METRIC A ACROSS THE TRACKED PERIOD
+// optional-token: heading_submetric_b = SUB-METRIC B DOCUMENTATION (N = {{{n_od_ems_denom}}})
+// optional-token: heading_per_category = PER-CATEGORY CHANGE, CURRENT VS. PRIOR PERIOD
+// optional-token: heading_magnitude = MAGNITUDE OF CHANGE BY DOMAIN
+// optional-token: heading_implications = IMPLICATIONS
+// optional-token: heading_disclaimer = DISCLAIMER
+
 // Template-specific tuning values -- unlike theme.typ's systemic tokens,
 // these are specific to how THIS template's content happens to lay out,
 // not something a different brand theme needs to know about. See this
@@ -163,7 +179,7 @@
 ]
 
 #v(theme.space-md)
-= TREND ACROSS PERIOD
+= {{{heading_trend}}}
 #v(theme.space-sm)
 
 // Four-period trend strip -- same "sequence of boxed cells" visual idiom
@@ -194,10 +210,10 @@
 #v(theme.space-md)
 #grid(columns: (55fr, 45fr), column-gutter: sp(theme, 16pt),
   [
-    = WHAT CHANGED
+    = {{{heading_what_changed}}}
   ],
   [
-    = WHY IT MATTERS
+    = {{{heading_why_matters}}}
   ]
 )
 #v(theme.space-sm)
@@ -245,7 +261,7 @@
 // ============================================================
 #v(theme.space-md)
 #block(breakable: false)[
-  = KEY DATES IN THE TRACKED WINDOW
+  = {{{heading_key_dates}}}
   #v(theme.space-sm)
 
   #grid(columns: (1fr, auto, 1fr, auto, 1fr), column-gutter: sp(theme, 6pt), align: horizon,
@@ -269,13 +285,13 @@
 // ============================================================
 // DETAILED BREAKDOWN (page 2)
 // ============================================================
-= DETAILED BREAKDOWN
+= {{{heading_detailed}}}
 
 #block(breakable: false)[
   #grid(columns: (1fr, 1fr), column-gutter: sp(theme, 6pt),
     fill: theme-grad.card-bg-grad, inset: sp(theme, 7pt), stroke: (top: theme.stroke-accent + theme.brand-midnight, rest: theme.stroke-border + theme.box-border),
     [
-      == SUB-METRIC A ACROSS THE TRACKED PERIOD
+      == {{{heading_submetric_a}}}
       #v(theme.space-md)
       #grid(columns: (1fr, 1fr),
         [#text(size: fs(theme, 24pt), weight: "bold", fill: theme.brand-blue)[{{{pct_any_prior_enc}}}] \ #text(size: fs(theme, 8pt), fill: theme.text-secondary)[Current period value]],
@@ -287,7 +303,7 @@
       ]
     ],
     [
-      == SUB-METRIC B DOCUMENTATION (N = {{{n_od_ems_denom}}})
+      == {{{heading_submetric_b}}}
       #v(theme.space-md)
       #grid(columns: ({{{pct_naloxone_width}}}%, {{{pct_no_naloxone_width}}}%),
         box(fill: theme-grad.brand-blue-grad, stroke: 0.75pt + black, inset: sp(theme, 6pt), height: fd(theme, 38pt), width: 100%)[#align(horizon)[
@@ -307,7 +323,7 @@
 
 #v(theme.space-xs)
 #rect(fill: theme-grad.card-bg-grad, stroke: (top: theme.stroke-accent + theme.brand-midnight, rest: theme.stroke-border + theme.box-border), inset: sp(theme, 7pt), width: 100%)[
-  == PER-CATEGORY CHANGE, CURRENT VS. PRIOR PERIOD
+  == {{{heading_per_category}}}
   #v(theme.space-xs)
   #text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[Bars show the per-category change between the current and prior tracked period, per 100 sample units.]
   #v(theme.space-sm)
@@ -319,7 +335,7 @@
 
 #v(theme.space-xs)
 #rect(fill: theme-grad.card-bg-grad, stroke: (top: theme.stroke-accent + theme.brand-midnight, rest: theme.stroke-border + theme.box-border), inset: sp(theme, 7pt), width: 100%)[
-  == MAGNITUDE OF CHANGE BY DOMAIN
+  == {{{heading_magnitude}}}
   #v(theme.space-xs)
   #text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[Additional domain-specific terms per record, current vs. prior period, {{{strip_period}}}.]
   #v(theme.space-sm)
@@ -338,7 +354,7 @@
   // this box's specific color/tracking without affecting any other ==
   // heading elsewhere.
   #show heading: set text(size: fs(theme, 8pt), weight: "bold", fill: theme.lessons-text, tracking: fd(theme, 0.5pt))
-  == IMPLICATIONS
+  == {{{heading_implications}}}
   #v(theme.space-xs)
   #text(size: fs(theme, 8.5pt), fill: theme.lessons-text)[{{{lessons_learned_text}}}]
 ]
@@ -348,7 +364,7 @@
   // Same fix as IMPLICATIONS above -- identical plain-#text()-as-
   // section-label pattern.
   #show heading: set text(size: fs(theme, 8pt), weight: "bold", fill: theme.disclaimer-text, tracking: fd(theme, 0.5pt))
-  == DISCLAIMER
+  == {{{heading_disclaimer}}}
   #v(theme.space-xs)
   #text(size: fs(theme, 8pt), fill: theme.disclaimer-text)[{{{disclaimer_text}}}]
 ]

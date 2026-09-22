@@ -28,6 +28,17 @@
 // optional-token: space_scale =
 #let theme = apply-scales(theme, "{{{min_font_size}}}", "{{{font_scale}}}", "{{{space_scale}}}")
 
+// Optional data: section headings and box labels. Each defaults to the
+// text shown here, so a report needs to supply one only to reword it. A
+// value is set as Typst markup: put a backslash before @, $, * , _ , # or
+// a backtick to show it literally.
+// optional-token: heading_svi_map = SOCIAL VULNERABILITY INDEX AND OVERDOSE DEATH RATES, BY COUNTY
+// optional-token: label_how_to_read = HOW TO READ THIS MAP
+// optional-token: heading_understanding = UNDERSTANDING THIS ANALYSIS
+// optional-token: heading_svi_measures = WHAT SVI MEASURES
+// optional-token: heading_components = COMPONENT FACTORS BEHIND THE SVI SCORE
+// optional-token: heading_disclaimer = DISCLAIMER
+
 // Route contact_email through a variable rather than splicing
 // {{{contact_email}}} directly into markup body wherever it's displayed.
 // Typst's markup parser treats a bare "@" as the start of label-reference
@@ -171,7 +182,7 @@
 // HEADLINE MAP: SVI vs. OVERDOSE DEATH RATE
 // ============================================================
 #v(theme.space-md)
-= SOCIAL VULNERABILITY INDEX AND OVERDOSE DEATH RATES, BY COUNTY
+= {{{heading_svi_map}}}
 #v(theme.space-sm)
 
 // Front-page real estate: the headline map is this page's dominant
@@ -272,7 +283,7 @@
   [
     // This box holds text, so its height uses fd and grows with the type;
     // the map box beside it stays a fixed size.
-    #text-box(theme, theme-grad, [HOW TO READ THIS MAP], height: fd(theme, headline-map-height))[
+    #text-box(theme, theme-grad, [{{{label_how_to_read}}}], height: fd(theme, headline-map-height))[
       Each county is shaded by two ranks at once: Social Vulnerability Index (SVI, left #sym.arrow.r right) and overdose death rate (bottom #sym.arrow.r top), each split into thirds across all 120 counties.
       #v(theme.space-xs)
       // Verified directly against biscale::bi_pal("BlueOr", dim=3), not
@@ -297,7 +308,7 @@
 #text(size: fs(theme, 8.5pt), fill: theme.text-secondary)[*Social Vulnerability Index (SVI).* {{{map0_caption}}}]
 
 #v(theme.space-md)
-= UNDERSTANDING THIS ANALYSIS
+= {{{heading_understanding}}}
 #v(theme.space-sm)
 #text(size: fs(theme, 8.5pt))[Elevated drug overdose fatality rates do not occur in isolation; they are concentrated in communities where social and economic conditions create compounded risk. The SVI, developed by the Centers for Disease Control and Prevention, draws on census data to quantify four dimensions of community vulnerability: socioeconomic status, household characteristics, racial and ethnic minority status, and housing type and transportation. Higher SVI scores indicate communities with greater vulnerability.]
 
@@ -308,7 +319,7 @@
 #text(size: fs(theme, 8.5pt))[Each of the individual maps, on this page and on the reverse, examines a different vulnerability indicator -- the composite SVI and four individual component measures -- to show how the geographic relationship between overdose burden and social disadvantage shifts across measures.]
 
 #v(theme.space-md)
-= WHAT SVI MEASURES
+= {{{heading_svi_measures}}}
 #v(theme.space-xs)
 #text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[The SVI composite score combines county rankings across four CDC-defined themes, each based on multiple Census variables.]
 #v(theme.space-xs)
@@ -389,7 +400,7 @@
 // ============================================================
 // COMPONENT FACTORS (page 2)
 // ============================================================
-= COMPONENT FACTORS BEHIND THE SVI SCORE
+= {{{heading_components}}}
 #v(theme.space-xs)
 #text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[The composite SVI score above is built from many measures. The four maps below isolate individual components most directly tied to health-care access and economic strain, each paired with the same overdose death rate as the map above -- to help visualize which specific factors are driving a county's overall vulnerability.]
 #v(theme.space-sm)
@@ -461,7 +472,7 @@
   // that merely looks bold. See components.typ's apply-base-styles
   // comment for why this distinction matters for PDF/UA conformance.
   #show heading: set text(size: fs(theme, 8pt), weight: "bold", fill: theme.disclaimer-text, tracking: fd(theme, 0.5pt))
-  == DISCLAIMER
+  == {{{heading_disclaimer}}}
   #v(theme.space-xs)
   #text(size: fs(theme, 8pt), fill: theme.disclaimer-text)[{{{disclaimer_text}}}]
 ]

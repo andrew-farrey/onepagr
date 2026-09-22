@@ -7,9 +7,7 @@
 extract_required_tokens(path)
 }
 \arguments{
-\item{path}{Character. Path to a .typ file.
-A token with a declared default (see the optional-token marker in
-\code{\link[=compile_typst]{compile_typst()}}) is not required, so it is left out of the result.}
+\item{path}{Character. Path to a .typ file.}
 }
 \value{
 Character vector of unique token names, in first-appearance order.
@@ -32,6 +30,10 @@ a comment marker in Typst (division is a single \code{/}), so this is safe
 for any Typst source: the one caveat is a literal \verb{//} inside a
 string constant in the template's own code (not data, which arrives
 via tokens), which onepagr's built-in templates never do.
+
+A token with a declared default (see the optional-token marker in
+\code{\link[=compile_typst]{compile_typst()}}) is not required, so it is left out of the result.
+A default can refer to other tokens (\code{{{{token}}}}); those are required.
 }
 \examples{
 path <- resolve_template("cohort_summary")

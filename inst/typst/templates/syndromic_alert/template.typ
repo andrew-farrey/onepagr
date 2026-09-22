@@ -22,6 +22,19 @@
 // optional-token: space_scale =
 #let theme = apply-scales(theme, "{{{min_font_size}}}", "{{{font_scale}}}", "{{{space_scale}}}")
 
+// Optional data: section headings and box labels. Each defaults to the
+// text shown here, so a report needs to supply one only to reword it. A
+// value is set as Typst markup: put a backslash before @, $, * , _ , # or
+// a backtick to show it literally.
+// optional-token: banner_label = ALERT
+// optional-token: heading_trend = TREND LEADING TO ALERT
+// optional-token: heading_alert_details = ALERT DETAILS
+// optional-token: label_whats_happening = WHAT'S HAPPENING
+// optional-token: label_cluster = CLUSTER DETECTION
+// optional-token: label_geo_breakdown = FACILITY / GEOGRAPHIC BREAKDOWN
+// optional-token: label_actions = RECOMMENDED ACTIONS
+// optional-token: label_resources = RESOURCES
+
 // Route contact_email through a variable rather than splicing
 // {{{contact_email}}} directly into markup body wherever it's displayed.
 // "\@"-escaping the token only fixes Typst's "@" label-syntax parsing
@@ -86,7 +99,7 @@
 #v(theme.space-md)
 
 #block(breakable: false, fill: severity.bg, stroke: (left: theme.stroke-accent-left + severity.color, rest: theme.stroke-border + theme.box-border), radius: theme.radius-card, inset: (x: sp(theme, 10pt), y: sp(theme, 8pt)), width: 100%)[
-  #text(size: fs(theme, 11pt), weight: "bold", fill: severity.text)[⚠ ALERT] #h(1em)
+  #text(size: fs(theme, 11pt), weight: "bold", fill: severity.text)[⚠ {{{banner_label}}}] #h(1em)
   #text(size: fs(theme, 9pt), fill: severity.text)[{{{alert_condition}}} #sym.dot.c {{{alert_facility_region}}} #sym.dot.c issued {{{alert_issued_at}}}]
 ]
 
@@ -119,7 +132,7 @@
 // text -- the number of periods (5) is fixed by the grid, but what each
 // period represents (days, weeks, months) is the caller's choice.
 // ============================================================
-= TREND LEADING TO ALERT
+= {{{heading_trend}}}
 #v(theme.space-sm)
 #block(breakable: false)[
   #grid(columns: (1fr, 1fr, 1fr, 1fr, 1fr), column-gutter: sp(theme, 4pt), align: horizon,
@@ -167,10 +180,10 @@
 // document's accessibility outline instead of being siblings of it. See
 // overdose_spike_alert/template.typ's identical heading.
 // ============================================================
-= ALERT DETAILS
+= {{{heading_alert_details}}}
 #v(theme.space-sm)
 
-#text-box(theme, theme-grad, [WHAT'S HAPPENING], [{{{narrative_text}}}])
+#text-box(theme, theme-grad, [{{{label_whats_happening}}}], [{{{narrative_text}}}])
 
 #v(theme.space-sm)
 
@@ -181,22 +194,22 @@
   // brand-accent-text, not brand-accent -- see
   // overdose_spike_alert/template.typ's identical comment on this exact
   // fix.
-  #text-box(theme, theme-grad, [CLUSTER DETECTION], [{{{cluster_text}}}], color: theme.brand-accent-text)
+  #text-box(theme, theme-grad, [{{{label_cluster}}}], [{{{cluster_text}}}], color: theme.brand-accent-text)
   #v(theme.space-sm)
 ]
 
-#text-box(theme, theme-grad, [FACILITY / GEOGRAPHIC BREAKDOWN], [{{{geo_breakdown_text}}}])
+#text-box(theme, theme-grad, [{{{label_geo_breakdown}}}], [{{{geo_breakdown_text}}}])
 
 #v(theme.space-sm)
 
 // brand-accent-text, not brand-accent -- see
 // overdose_spike_alert/template.typ's identical comment on this exact
 // fix.
-#text-box(theme, theme-grad, [RECOMMENDED ACTIONS], [{{{actions_text}}}], color: theme.brand-accent-text)
+#text-box(theme, theme-grad, [{{{label_actions}}}], [{{{actions_text}}}], color: theme.brand-accent-text)
 
 #if bool-token("show_resources", "{{{show_resources}}}") [
   #v(theme.space-sm)
-  #text-box(theme, theme-grad, [RESOURCES], [{{{resources_text}}}])
+  #text-box(theme, theme-grad, [{{{label_resources}}}], [{{{resources_text}}}])
 ]
 
 #v(theme.space-sm)

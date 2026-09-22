@@ -17,10 +17,11 @@
 #' string constant in the template's own code (not data, which arrives
 #' via tokens), which onepagr's built-in templates never do.
 #'
-#' @param path Character. Path to a .typ file.
 #' A token with a declared default (see the optional-token marker in
 #' [compile_typst()]) is not required, so it is left out of the result.
+#' A default can refer to other tokens (`{{{token}}}`); those are required.
 #'
+#' @param path Character. Path to a .typ file.
 #' @return Character vector of unique token names, in first-appearance order.
 #' @examples
 #' path <- resolve_template("cohort_summary")
@@ -34,7 +35,15 @@ extract_required_tokens <- function(path) {
     text, gregexpr("\\{\\{\\{\\s*([a-zA-Z0-9_.]+)\\s*\\}\\}\\}", text)
   )[[1]]
   tokens <- gsub("^\\{\\{\\{\\s*|\\s*\\}\\}\\}$", "", matches)
-  setdiff(unique(tokens), names(extract_token_defaults(path)))
+  defaults <- extract_token_defaults(path)
+  # A default may itself refer to other tokens, e.g. a heading default of
+  # "Results (N = {{{n_total}}})": those stay required.
+  token_pattern <- "\\{\\{\\{\\s*([a-zA-Z0-9_.]+)\\s*\\}\\}\\}"
+  referenced <- unlist(regmatches(
+    unlist(defaults), gregexpr(token_pattern, unlist(defaults))
+  ))
+  referenced <- gsub("^\\{\\{\\{\\s*|\\s*\\}\\}\\}$", "", referenced)
+  setdiff(unique(c(tokens, referenced)), names(defaults))
 }
 
 #' Read a template's optional-token defaults
@@ -59,6 +68,31 @@ extract_token_defaults <- function(path) {
     lapply(found, function(f) f[[3]]),
     vapply(found, function(f) f[[2]], character(1))
   )
+}
+
+#' Fill a template's omitted optional tokens with their defaults
+#'
+#' Internal. For every optional token that `data` lacks (or holds as
+#' `NULL`, empty, or `NA`), sets the declared default. A default is
+#' rendered against `data` first, so it can refer to other tokens: a
+#' section heading's default can carry a sample size, as in
+#' `Results (N = {{{n_total}}})`. A value the caller supplies is used
+#' as given and never rendered again.
+#'
+#' @param path Character. Path to a .typ file.
+#' @param data Named list of whisker substitution values.
+#' @return `data` with the omitted optional tokens filled in.
+#' @keywords internal
+fill_token_defaults <- function(path, data) {
+  defaults <- extract_token_defaults(path)
+  omitted <- names(defaults)[vapply(names(defaults), function(tok) {
+    value <- data[[tok]]
+    length(value) == 0 || is.na(value)[1]
+  }, logical(1))]
+  for (tok in omitted) {
+    data[[tok]] <- whisker::whisker.render(defaults[[tok]], data)
+  }
+  data
 }
 
 #' Read a template's designed page count
@@ -128,7 +162,9 @@ validate_template_data <- function(path, data) {
 #' A template can declare a token optional with a `//` comment line,
 #' `// optional-token: name = default`. When `data` lacks that token (or
 #' it is `NULL`, empty, or `NA`), the declared default is used instead of
-#' raising a missing-token error.
+#' raising a missing-token error. A default can refer to other tokens, as
+#' in `// optional-token: heading = Results (N = {{{n_total}}})`; it is
+#' rendered against `data` first, and those tokens stay required.
 #'
 #' @param path Character. Path to a .typ file. Its
 #'   `theme.typ`/`components.typ`/assets must already be alongside it, so
@@ -156,13 +192,7 @@ validate_template_data <- function(path, data) {
 #' }
 #' @export
 compile_typst <- function(path, data, output, font_dir = NULL) {
-  defaults <- extract_token_defaults(path)
-  for (tok in names(defaults)) {
-    value <- data[[tok]]
-    if (length(value) == 0 || is.na(value)[1]) {
-      data[[tok]] <- defaults[[tok]]
-    }
-  }
+  data <- fill_token_defaults(path, data)
   validate_template_data(path, data)
 
   quarto_bin <- quarto::quarto_path()

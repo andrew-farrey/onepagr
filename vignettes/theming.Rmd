@@ -349,6 +349,54 @@ in the alert templates. Map images, logos, and the header texture are
 fixed-size and do not. After a floored or scaled render, look it over for
 text that runs past its box, and run PAC on it.
 
+## Part 5: Section headings and box labels
+
+Every section heading and box label in a built-in template is an optional
+data token, so rewording one is a change to your `data` list, not to the
+template. Each token defaults to the text the template ships with, so you
+supply only the ones you want to change.
+
+The names follow a pattern: `heading_*` for section headings, `label_*` for
+the labels on text boxes, and `banner_label` for the word in an alert banner
+(the warning symbol beside it stays). Each template's own source lists the
+tokens it accepts, each with its default text:
+
+```{r}
+tokens <- grep(
+  "optional-token: (heading|label|banner)_",
+  readLines(onepagr::resolve_template("overdose_spike_alert")),
+  value = TRUE
+)
+sub("^// optional-token: ", "", tokens)
+```
+
+Swap in any other template name to see its tokens. Use them like any other
+value:
+
+```{r, eval = FALSE}
+render_onepager(
+  c(data, list(
+    heading_alert_details = "WHAT WE KNOW",
+    label_actions = "WHAT TO DO NEXT"
+  )),
+  template = "overdose_spike_alert", theme = "default",
+  output = "reworded.pdf"
+)
+```
+
+A few things to know:
+
+* A value is set as Typst markup. To show `@`, `$`, `*`, `_`, `#` or a
+  backtick literally, put a backslash before it.
+* Headings stay real headings in the PDF's structure whatever text you give
+  them, so screen readers and the document outline keep working.
+* A few defaults include a value from your data, such as a sample size
+  (`N = 118`). If you reword one of those headings, add the number to your
+  text yourself. The value is still required in `data`, because the template
+  needs it whether or not the default heading is used.
+* A longer heading can wrap to a second line, which may push a two-page
+  template onto a third page. Render and look after rewording.
+
 ## See also
 
 - `vignette("getting-started", package = "onepagr")` for the basic
