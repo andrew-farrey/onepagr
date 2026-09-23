@@ -40,13 +40,13 @@ Same template, same data, only `theme` changed between the three calls
 above (`default`, `uk`, `kdph`, left to right):
 
 ![trend_snapshot rendered with the default, brand-neutral
-theme.](../reference/figures/example-trend-snapshot-theme-default.png)![The
+theme.](../../../_temp/Library/onepagr/help/figures/example-trend-snapshot-theme-default.png)![The
 same trend_snapshot report rendered with the uk theme instead, showing
 only colors and typography
-changed.](../reference/figures/example-trend-snapshot-theme-uk.png)![The
+changed.](../../../_temp/Library/onepagr/help/figures/example-trend-snapshot-theme-uk.png)![The
 same trend_snapshot report rendered with the kdph theme: navy header,
 indigo bars, and Calibri
-type.](../reference/figures/example-trend-snapshot-theme-kdph.png)
+type.](../../../_temp/Library/onepagr/help/figures/example-trend-snapshot-theme-kdph.png)
 
 The `kdph` theme is an unofficial implementation of the Kentucky
 Department for Public Health’s 2026 Data Visualization Style Guidelines.
