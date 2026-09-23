@@ -143,6 +143,7 @@ test_that("check_theme errors clearly when Quarto is not found", {
 })
 
 test_that("check_theme errors clearly when typst eval isn't supported", {
+  skip_if_not(quarto::quarto_available())
   testthat::local_mocked_bindings(
     typst_eval_supported = function(quarto_bin) FALSE
   )

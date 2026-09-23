@@ -48,10 +48,13 @@ Same template, same data, only `theme` changed between the three calls
 above (`default`, `uk`, `kdph`, left to right):
 
 ```{r, echo = FALSE, fig.show = "hold", out.width = "32%", fig.alt = c("trend_snapshot rendered with the default, brand-neutral theme.", "The same trend_snapshot report rendered with the uk theme instead, showing only colors and typography changed.", "The same trend_snapshot report rendered with the kdph theme: navy header, indigo bars, and Calibri type.")}
-knitr::include_graphics(c(
-  "../man/figures/example-trend-snapshot-theme-default.png",
-  "../man/figures/example-trend-snapshot-theme-uk.png",
-  "../man/figures/example-trend-snapshot-theme-kdph.png"
+knitr::include_graphics(file.path(
+  system.file("help", "figures", package = "onepagr"),
+  c(
+    "example-trend-snapshot-theme-default.png",
+    "example-trend-snapshot-theme-uk.png",
+    "example-trend-snapshot-theme-kdph.png"
+  )
 ))
 ```
 

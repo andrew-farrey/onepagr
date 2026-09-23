@@ -113,6 +113,7 @@ test_that("compile_typst errors clearly when Quarto isn't found", {
 })
 
 test_that("compile_typst rejects a font_dir that does not exist", {
+  skip_if_not(quarto::quarto_available())
   tmp_dir <- tempfile()
   dir.create(tmp_dir)
   on.exit(unlink(tmp_dir, recursive = TRUE))
