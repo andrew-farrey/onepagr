@@ -3,6 +3,7 @@
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/andrew-farrey/onepagr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/andrew-farrey/onepagr/actions/workflows/R-CMD-check.yaml)
 [![Codecov test coverage](https://codecov.io/gh/andrew-farrey/onepagr/branch/master/graph/badge.svg)](https://app.codecov.io/gh/andrew-farrey/onepagr/branch/master)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23032485.svg)](https://doi.org/10.5281/zenodo.23032485)
 <!-- badges: end -->
 
 Generate polished, accessible one-page (front-and-back) PDF reports from

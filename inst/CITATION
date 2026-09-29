@@ -12,5 +12,8 @@ bibentry(
   # state CRAN's own incoming-feasibility check reads this file in
   # (confirmed directly via a real `R CMD check --as-cran` run against
   # the built tarball, not assumed).
-  note    = sprintf("R package version %s", meta$Version)
+  note    = sprintf("R package version %s", meta$Version),
+  # The Zenodo *concept* DOI, which always resolves to the latest archived
+  # version -- not the version-specific DOI for any one release.
+  doi     = "10.5281/zenodo.23032485"
 )
