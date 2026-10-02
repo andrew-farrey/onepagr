@@ -2,7 +2,7 @@
 
 ## Authors
 
-- **Andrew Farrey**. Author, maintainer.
+- **Andrew Farrey**. Author, maintainer, copyright holder.
   [](https://orcid.org/0000-0003-4279-0998)  
   University of Kentucky / KIPRC
 
