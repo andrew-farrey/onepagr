@@ -5,8 +5,7 @@ This is a new submission (onepagr 0.1.0).
 ## Test environments
 
 * Local: Windows 11, R 4.6.1 (release)
-* win-builder: Windows Server 2022, R Under development (2026-09-21 r90579 ucrt)
-  and R release (4.6.1, 2026-09-22 ucrt)
+* win-builder: Windows Server 2022, R Under development (2026-09-30 r90605 ucrt)
 * GitHub Actions (on every push): macOS (R release), Windows (R release),
   Ubuntu (R devel, R release, R oldrel-1)
 
@@ -16,10 +15,13 @@ This is a new submission (onepagr 0.1.0).
 
 * This is a new submission.
 
-* Possibly misspelled words in DESCRIPTION: "Typst", "UA", "WCAG". These are
-  correct. Typst is the open-source typesetting system the package compiles
-  its templates with, PDF/UA is the ISO 14289 accessible-PDF standard, and
-  WCAG is the W3C Web Content Accessibility Guidelines.
+* Possibly misspelled words in DESCRIPTION: "UA", "WCAG". These are correct
+  acronyms, each spelled out in full where first used in the Description:
+  WCAG is the W3C Web Content Accessibility Guidelines, and PDF/UA is the
+  Portable Document Format Universal Accessibility standard (ISO 14289-1).
+
+* There are no published references describing the methods in this package,
+  so the Description field has no reference citations.
 
 ## External software
 
