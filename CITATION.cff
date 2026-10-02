@@ -7,12 +7,15 @@ cff-version: 1.2.0
 message: 'To cite package "onepagr" in publications use:'
 type: software
 license: MIT
-title: 'onepagr: Accessible One-Page Reports from Typst Templates'
+title: "onepagr: Accessible One-Page Reports from 'Typst' Templates"
 version: 0.1.0
-abstract: Generates polished, WCAG 2.2 AA and PDF/UA-1 accessible one-page (front-and-back)
-  PDF reports from analysis output, using a small set of fixed Typst report templates
-  and a design-token theme system. Ships built-in report templates and themes, and
-  lets a consuming project replace them with its own design tokens and Typst templates.
+abstract: Generates polished, accessible one-page (front-and-back) Portable Document Format
+  (PDF) reports from analysis output, conforming to the Web Content Accessibility
+  Guidelines (WCAG) 2.2 level AA and the Portable Document Format Universal
+  Accessibility standard (PDF/UA-1, ISO 14289-1). Uses a small set of fixed 'Typst'
+  report templates and a design-token theme system. Ships built-in report templates
+  and themes, and lets a consuming project replace them with its own design tokens and
+  'Typst' templates.
 authors:
 - family-names: Farrey
   given-names: Andrew
@@ -21,7 +24,7 @@ authors:
   orcid: https://orcid.org/0000-0003-4279-0998
 preferred-citation:
   type: manual
-  title: 'onepagr: Accessible One-Page Reports from Typst Templates'
+  title: "onepagr: Accessible One-Page Reports from 'Typst' Templates"
   authors:
   - family-names: Farrey
     given-names: Andrew

@@ -2,7 +2,7 @@ citHeader("To cite onepagr in publications, methods sections, or reports, use:")
 
 bibentry(
   bibtype = "Manual",
-  title   = "onepagr: Accessible One-Page Reports from Typst Templates",
+  title   = "onepagr: Accessible One-Page Reports from 'Typst' Templates",
   author  = person("Andrew", "Farrey", email = "afarrey11@outlook.com"),
   year    = format(Sys.Date(), "%Y"),
   # meta$Version (supplied by citation() when it sources this file, read

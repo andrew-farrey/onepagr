@@ -1,5 +1,5 @@
 Package: onepagr
-Title: Accessible One-Page Reports from Typst Templates
+Title: Accessible One-Page Reports from 'Typst' Templates
 Version: 0.1.0
 Authors@R: c(person("Andrew", "Farrey", email = "afarrey11@outlook.com",
     role = c("aut", "cre", "cph"),
@@ -7,12 +7,14 @@ Authors@R: c(person("Andrew", "Farrey", email = "afarrey11@outlook.com",
         ORCID = "0000-0003-4279-0998")),
     person("Microsoft Corporation", role = c("ctb", "cph"),
     comment = "Fluent System Icons glyph in the hex logo; see inst/COPYRIGHTS"))
-Description: Generates polished, WCAG 2.2 AA and PDF/UA-1 accessible
-    one-page (front-and-back) PDF reports from analysis output, using a
-    small set of fixed Typst report templates and a design-token theme
-    system. Ships built-in report templates and themes, and lets a
-    consuming project replace them with its own design tokens and Typst
-    templates.
+Description: Generates polished, accessible one-page (front-and-back) Portable
+    Document Format (PDF) reports from analysis output, conforming to the
+    Web Content Accessibility Guidelines (WCAG) 2.2 level AA and the
+    Portable Document Format Universal Accessibility standard (PDF/UA-1,
+    ISO 14289-1). Uses a small set of fixed 'Typst' report templates and a
+    design-token theme system. Ships built-in report templates and themes,
+    and lets a consuming project replace them with its own design tokens
+    and 'Typst' templates.
 SystemRequirements: Quarto (<https://quarto.org>), which bundles Typst 0.15.1
     or newer
 License: MIT + file LICENSE
