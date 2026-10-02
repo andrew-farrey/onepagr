@@ -135,7 +135,9 @@ template_tokens <- function(template) {
 #' # default wording.
 #' data$n_decedents <- "6,000"
 #' \dontrun{
-#' render_onepager(data, "cohort_summary", output = "report.pdf")
+#' render_onepager(
+#'   data, "cohort_summary", output = file.path(tempdir(), "report.pdf")
+#' )
 #' }
 #' @export
 template_data <- function(
