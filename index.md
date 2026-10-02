@@ -25,7 +25,7 @@ are already solved.
 
 ## Installation
 
-onepagr is not yet on CRAN. Install the development version from GitHub:
+Install the development version from GitHub:
 
 ``` r
 
