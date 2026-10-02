@@ -201,8 +201,9 @@ alert.](reference/figures/example-syndromic-alert.png)
 
 onepagr ships three built-in themes, which can be selected by name:
 `default` (a brand-neutral palette built on Bootstrap’s own color
-variables), `uk` (University of Kentucky / KIPRC branding), and `kdph`
-(Kentucky Department for Public Health colors and fonts, following the
+variables), `uk` (University of Kentucky and the Kentucky Injury
+Prevention and Research Center (KIPRC) branding), and `kdph` (Kentucky
+Department for Public Health colors and fonts, following the
 department’s 2026 Data Visualization Style Guidelines; unofficial and
 not endorsed by KDPH).
 

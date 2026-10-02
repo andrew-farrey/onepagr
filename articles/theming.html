@@ -307,11 +307,11 @@ literal lowercase string, not an R logical; see
 <code><a href="../reference/render_onepager.html">?render_onepager</a></code>) that default to <code>"false"</code>, so
 a single health department reporting under its own name passes only the
 primary logo and gets one logo with no dangling divider. A two-agency
-partnership switches on one partner, and a KIPRC-style
-three-organization lockup switches on both. The primary logo is never
-optional. If you switch a partner on, you must also supply its path and
-alt text: onepagr stops with an error rather than render a blank or
-unlabeled logo.</p>
+partnership switches on one partner, and a three-organization lockup,
+like the one the Kentucky Injury Prevention and Research Center (KIPRC)
+uses, switches on both. The primary logo is never optional. If you
+switch a partner on, you must also supply its path and alt text: onepagr
+stops with an error rather than render a blank or unlabeled logo.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># A single health department: one logo, nothing to switch off.</span></span>
 <span><span class="va">data</span><span class="op">$</span><span class="va">logo_primary_path</span> <span class="op">&lt;-</span> <span class="st">"county-health-dept-logo.png"</span></span>

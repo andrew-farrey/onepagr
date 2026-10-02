@@ -176,9 +176,10 @@ logical; see
 that default to `"false"`, so a single health department reporting under
 its own name passes only the primary logo and gets one logo with no
 dangling divider. A two-agency partnership switches on one partner, and
-a KIPRC-style three-organization lockup switches on both. The primary
-logo is never optional. If you switch a partner on, you must also supply
-its path and alt text: onepagr stops with an error rather than render a
+a three-organization lockup, like the one the Kentucky Injury Prevention
+and Research Center (KIPRC) uses, switches on both. The primary logo is
+never optional. If you switch a partner on, you must also supply its
+path and alt text: onepagr stops with an error rather than render a
 blank or unlabeled logo.
 
 ``` r

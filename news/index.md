@@ -124,7 +124,8 @@ Five built-in templates, each a genuinely distinct informational shape:
 
 - `default`: a brand-neutral palette built on Bootstrap 5.3’s own color
   variables.
-- `uk`: University of Kentucky / KIPRC branding.
+- `uk`: University of Kentucky and Kentucky Injury Prevention and
+  Research Center (KIPRC) branding.
 - `kdph`: Kentucky Department for Public Health colors and fonts,
   following the department’s 2026 Data Visualization Style Guidelines
   (unofficial; not endorsed by KDPH). A theme’s `body-font` can be a
