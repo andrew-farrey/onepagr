@@ -23,6 +23,17 @@ wrong. onepagr turns a named list of values into a finished PDF with one
 function call, using templates whose layout and accessibility patterns
 are already solved.
 
+## Background
+
+onepagr generalizes the design of two production one-pagers developed in
+2026 at the Kentucky Injury Prevention and Research Center (KIPRC), a
+center in the University of Kentucky College of Public Health and a bona
+fide agent of the Kentucky Department for Public Health (KDPH) for
+injury-related funding opportunities: an EMS-DOFSS record-linkage
+summary and a Social Vulnerability Index by overdose-mortality county
+choropleth. The shared Typst components, theme tokens, and accessibility
+patterns from those products became this package.
+
 ## Installation
 
 Install the development version from GitHub:
@@ -201,9 +212,8 @@ alert.](reference/figures/example-syndromic-alert.png)
 
 onepagr ships three built-in themes, which can be selected by name:
 `default` (a brand-neutral palette built on Bootstrap’s own color
-variables), `uk` (University of Kentucky and the Kentucky Injury
-Prevention and Research Center (KIPRC) branding), and `kdph` (Kentucky
-Department for Public Health colors and fonts, following the
+variables), `uk` (University of Kentucky and KIPRC branding), and `kdph`
+(Kentucky Department for Public Health colors and fonts, following the
 department’s 2026 Data Visualization Style Guidelines; unofficial and
 not endorsed by KDPH).
 
