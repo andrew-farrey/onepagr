@@ -37,9 +37,10 @@ record-linkage summary, and a Social Vulnerability Index by overdose-mortality
 county choropleth map series. Both were developed in 2026 by the Kentucky
 Injury Prevention and Research Center (KIPRC) at the University of Kentucky
 College of Public Health, as a bona fide agent of the Kentucky Department for
-Public Health (KDPH) for injury-related funding opportunities. The shared
-Typst components, theme tokens, and accessibility patterns from those
-products were further developed into this package.
+Public Health (KDPH), in support of the Centers for Disease Control and
+Prevention's Overdose Data to Action in States grant. The shared Typst
+components, theme tokens, and accessibility patterns from those products
+were further developed into this package.
 
 ## Installation
 
