@@ -29,9 +29,9 @@ onepagr generalizes the design of two production one-pagers: an
 Emergency Medical Services (EMS) and Drug Overdose Fatality Surveillance
 System (DOFSS) record-linkage summary, and a Social Vulnerability Index
 by overdose-mortality county choropleth map series. Both were developed
-in 2026 at the Kentucky Injury Prevention and Research Center (KIPRC), a
-center in the University of Kentucky College of Public Health, as a bona
-fide agent of the Kentucky Department for Public Health (KDPH) for
+in 2026 by the Kentucky Injury Prevention and Research Center (KIPRC) at
+the University of Kentucky College of Public Health, as a bona fide
+agent of the Kentucky Department for Public Health (KDPH) for
 injury-related funding opportunities. The shared Typst components, theme
 tokens, and accessibility patterns from those products were further
 developed into this package.
