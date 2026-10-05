@@ -31,14 +31,14 @@ are already solved.
 
 ## Background
 
-onepagr generalizes the design of two production one-pagers developed in
-2026 at the Kentucky Injury Prevention and Research Center (KIPRC), a
-center in the University of Kentucky College of Public Health and a bona
-fide agent of the Kentucky Department for Public Health (KDPH) for
-injury-related funding opportunities: an EMS-DOFSS record-linkage summary
-and a Social Vulnerability Index by overdose-mortality county choropleth.
+onepagr generalizes the design of two production one-pagers: an EMS-DOFSS
+record-linkage summary and a Social Vulnerability Index by overdose-mortality
+county choropleth map series. Both were developed in 2026 at the Kentucky
+Injury Prevention and Research Center (KIPRC), a center in the University of
+Kentucky College of Public Health, as the bona fide agent of the Kentucky
+Department for Public Health (KDPH) for injury-related funding opportunities.
 The shared Typst components, theme tokens, and accessibility patterns from
-those products became this package.
+those products were further developed into this package.
 
 ## Installation
 
