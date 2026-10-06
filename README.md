@@ -40,8 +40,9 @@ Center (KIPRC) at the University of Kentucky College of Public Health, as a
 bona fide agent of the Kentucky Department for Public Health (KDPH), in
 support of the Centers for Disease Control and Prevention's
 [Overdose Data to Action in States](https://www.cdc.gov/overdose-prevention/php/od2a/state.html)
-grant. The shared Typst components, theme tokens, and accessibility patterns
-from those products were further developed into this package.
+grant. The layouts, shared Typst components, theme tokens, and accessibility
+patterns behind both were designed by the package author and generalized into
+this package.
 
 ## Installation
 
