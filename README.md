@@ -31,14 +31,14 @@ are already solved.
 
 ## Background
 
-onepagr generalizes the design of two production one-pagers: an Emergency
-Medical Services (EMS) and Drug Overdose Fatality Surveillance System (DOFSS)
-record-linkage summary, and a Social Vulnerability Index by overdose-mortality
-county choropleth map series. Both were developed in 2026 by the Kentucky
-Injury Prevention and Research Center (KIPRC) at the University of Kentucky
-College of Public Health, as a bona fide agent of the Kentucky Department for
-Public Health (KDPH), in support of the Centers for Disease Control and
-Prevention's
+onepagr generalizes the design of two production one-pagers: an
+[Emergency Medical Services (EMS) and Drug Overdose Fatality Surveillance System (DOFSS) record-linkage summary](https://kiprc.uky.edu/sites/default/files/2026-09/ems-dofss-one-pager-acc_v5-1.pdf),
+and a
+[Social Vulnerability Index by overdose-mortality county choropleth map series](https://kiprc.uky.edu/sites/default/files/2026-09/kentucky_overdose_svi_acc.pdf).
+Both were developed in 2026 by the Kentucky Injury Prevention and Research
+Center (KIPRC) at the University of Kentucky College of Public Health, as a
+bona fide agent of the Kentucky Department for Public Health (KDPH), in
+support of the Centers for Disease Control and Prevention's
 [Overdose Data to Action in States](https://www.cdc.gov/overdose-prevention/php/od2a/state.html)
 grant. The shared Typst components, theme tokens, and accessibility patterns
 from those products were further developed into this package.
