@@ -137,6 +137,32 @@ onepagr_theme_schema <- function() {
   )
 }
 
+#' The Typst expression `check_theme()` evaluates against a theme file
+#'
+#' Internal. Imports `theme` and `theme-grad` from `fname` (resolved
+#' against the `--root` the caller passes) and returns each dictionary's
+#' keys paired with their Typst type names, plus the nested `radius-card`
+#' dictionary the same way (or `none` when it isn't a dictionary).
+#'
+#' @param fname Character. The theme file's name, relative to the root.
+#' @return Character, a single Typst code-mode expression.
+#' @noRd
+theme_eval_expr <- function(fname) {
+  paste0(
+    "{",
+    "import \"/", fname, "\": theme, theme-grad;",
+    "let tn(v) = repr(type(v));",
+    "(",
+    "theme: theme.pairs().map(((k, v)) => (k, tn(v))),",
+    "theme-grad: theme-grad.pairs().map(((k, v)) => (k, tn(v))),",
+    "radius-card: if \"radius-card\" in theme and tn(theme.radius-card) == ",
+    "\"dictionary\" { theme.radius-card.pairs().map(((k, v)) => (k, tn(v))) }",
+    " else { none },",
+    ")",
+    "}"
+  )
+}
+
 #' Introspect a theme `.typ` file's real Typst-evaluated key/type structure
 #'
 #' Internal. Runs `typst eval` (via Quarto's bundled Typst) against a
@@ -158,14 +184,7 @@ onepagr_theme_schema <- function() {
 #'   `theme$radius-card` isn't a dictionary or `radius-card` is missing).
 #' @keywords internal
 introspect_theme_typ <- function(path) {
-  quarto_bin <- quarto::quarto_path()
-  if (is.null(quarto_bin)) {
-    stop(
-      "Quarto was not found. Run onepagr::check_quarto() for details, or ",
-      "onepagr::install_quarto() to install it.",
-      call. = FALSE
-    )
-  }
+  quarto_bin <- quarto_bin_or_stop()
   if (!typst_eval_supported(quarto_bin)) {
     stop(
       "check_theme() needs a Typst build that supports typst eval, ",
@@ -178,20 +197,7 @@ introspect_theme_typ <- function(path) {
   }
 
   root <- dirname(path)
-  fname <- basename(path)
-  expr <- paste0(
-    "{",
-    "import \"/", fname, "\": theme, theme-grad;",
-    "let tn(v) = repr(type(v));",
-    "(",
-    "theme: theme.pairs().map(((k, v)) => (k, tn(v))),",
-    "theme-grad: theme-grad.pairs().map(((k, v)) => (k, tn(v))),",
-    "radius-card: if \"radius-card\" in theme and tn(theme.radius-card) == ",
-    "\"dictionary\" { theme.radius-card.pairs().map(((k, v)) => (k, tn(v))) }",
-    " else { none },",
-    ")",
-    "}"
-  )
+  expr <- theme_eval_expr(basename(path))
 
   out <- suppressWarnings(system2(
     quarto_bin,
@@ -288,6 +294,99 @@ check_theme_dict <- function(actual_matrix, expected_types) {
   )
 }
 
+#' An empty type-mismatch table, in the shape `check_theme()` returns
+#'
+#' Internal.
+#'
+#' @return A zero-row data frame with `key`, `expected`, `actual` columns.
+#' @noRd
+empty_type_mismatches <- function() {
+  data.frame(
+    key = character(0), expected = character(0), actual = character(0)
+  )
+}
+
+#' The `check_theme()` result for a theme file that failed to evaluate
+#'
+#' Internal.
+#'
+#' @param path Character. The resolved theme file.
+#' @param error Character. Typst's own error text.
+#' @return A list shaped like `check_theme()`'s result, with `ok = FALSE`.
+#' @noRd
+failed_theme_result <- function(path, error) {
+  list(
+    ok = FALSE, path = path, error = error,
+    missing = character(0), missing_grad = character(0),
+    type_mismatches = empty_type_mismatches(),
+    type_mismatches_grad = empty_type_mismatches(),
+    radius_card_missing = character(0),
+    radius_card_type_mismatches = empty_type_mismatches(),
+    unknown = character(0)
+  )
+}
+
+#' Describe wrong-type keys as "key (expected X, got Y)" strings
+#'
+#' Internal.
+#'
+#' @param df Data frame with `key`, `expected`, `actual` columns.
+#' @return Character vector, one string per row.
+#' @noRd
+describe_type_mismatches <- function(df) {
+  sprintf("%s (expected %s, got %s)", df$key, df$expected, df$actual)
+}
+
+#' One-line descriptions of everything wrong in a `check_theme()` result
+#'
+#' Internal.
+#'
+#' @param result A `check_theme()` result list.
+#' @return Character vector, one entry per kind of problem found; empty if
+#'   there are none.
+#' @noRd
+theme_problems <- function(result) {
+  keys <- function(label, x) {
+    if (length(x) > 0) paste0(label, "(s): ", paste(x, collapse = ", "))
+  }
+  wrong <- function(label, df) {
+    if (nrow(df) > 0) {
+      paste0(
+        label, "(s): ", paste(describe_type_mismatches(df), collapse = "; ")
+      )
+    }
+  }
+  c(
+    keys("missing theme key", result$missing),
+    keys("missing theme-grad key", result$missing_grad),
+    wrong("wrong-type theme key", result$type_mismatches),
+    wrong("wrong-type theme-grad key", result$type_mismatches_grad),
+    keys("missing radius-card sub-key", result$radius_card_missing),
+    wrong("wrong-type radius-card sub-key", result$radius_card_type_mismatches)
+  )
+}
+
+#' Check the nested `radius-card` dictionary, when there is one to check
+#'
+#' Internal. Only checked when `theme` defines `radius-card` and it
+#' evaluated to a dictionary; otherwise nothing is reported for it here
+#' (a missing `radius-card` key is already reported by the `theme` check).
+#'
+#' @param radius_card Key/type matrix from [introspect_theme_typ()], or
+#'   `NULL`.
+#' @param theme_check The [check_theme_dict()] result for `theme`.
+#' @param expected_types Named character vector, expected types by key.
+#' @return A list with `missing` (character vector) and `mismatches` (data
+#'   frame).
+#' @noRd
+check_radius_card <- function(radius_card, theme_check, expected_types) {
+  if ("radius-card" %in% theme_check$missing || is.null(radius_card)) {
+    return(list(missing = character(0), mismatches = empty_type_mismatches()))
+  }
+  rc <- check_theme_dict(radius_card, expected_types)
+  list(missing = rc$missing, mismatches = rc$mismatches)
+}
+
 #' Check a theme's dictionary structure against onepagr's real contract
 #'
 #' Validates a theme `.typ` file's `theme` and `theme-grad` exports by
@@ -346,97 +445,35 @@ check_theme <- function(theme = "default", theme_path = NULL) {
   schema <- onepagr_theme_schema()
   info <- introspect_theme_typ(path)
 
-  empty_mismatches <- data.frame(
-    key = character(0), expected = character(0), actual = character(0)
-  )
-
   if (!is.null(info$error)) {
-    message("Theme \"", path, "\" failed to evaluate:\n", info$error)
-    return(invisible(list(
-      ok = FALSE, path = path, error = info$error,
-      missing = character(0), missing_grad = character(0),
-      type_mismatches = empty_mismatches,
-      type_mismatches_grad = empty_mismatches,
-      radius_card_missing = character(0),
-      radius_card_type_mismatches = empty_mismatches,
-      unknown = character(0)
-    )))
+    message("Theme \"", path, "\" failed to evaluate:
+", info$error)
+    return(invisible(failed_theme_result(path, info$error)))
   }
 
   theme_check <- check_theme_dict(info$theme, schema$theme)
   grad_check <- check_theme_dict(info$theme_grad, schema$theme_grad)
 
-  radius_missing <- character(0)
-  radius_mismatches <- empty_mismatches
-  radius_card_present_and_dict <- !("radius-card" %in% theme_check$missing) &&
-    !is.null(info$radius_card)
-  if (radius_card_present_and_dict) {
-    rc <- check_theme_dict(info$radius_card, schema$radius_card)
-    radius_missing <- rc$missing
-    radius_mismatches <- rc$mismatches
-  }
-
-  ok <- length(theme_check$missing) == 0 && length(grad_check$missing) == 0 &&
-    nrow(theme_check$mismatches) == 0 && nrow(grad_check$mismatches) == 0 &&
-    length(radius_missing) == 0 && nrow(radius_mismatches) == 0
+  rc <- check_radius_card(info$radius_card, theme_check, schema$radius_card)
 
   result <- list(
-    ok = ok, path = path, error = NULL,
+    ok = FALSE, path = path, error = NULL,
     missing = theme_check$missing, missing_grad = grad_check$missing,
     type_mismatches = theme_check$mismatches,
     type_mismatches_grad = grad_check$mismatches,
-    radius_card_missing = radius_missing,
-    radius_card_type_mismatches = radius_mismatches,
+    radius_card_missing = rc$missing,
+    radius_card_type_mismatches = rc$mismatches,
     unknown = theme_check$unknown
   )
+  problems <- theme_problems(result)
+  result$ok <- length(problems) == 0
 
-  describe_mismatches <- function(df) {
-    sprintf("%s (expected %s, got %s)", df$key, df$expected, df$actual)
-  }
-  if (!ok) {
-    problems <- c(
-      if (length(result$missing) > 0) {
-        paste0("missing theme key(s): ", paste(result$missing, collapse = ", "))
-      },
-      if (length(result$missing_grad) > 0) {
-        paste0(
-          "missing theme-grad key(s): ",
-          paste(result$missing_grad, collapse = ", ")
-        )
-      },
-      if (nrow(result$type_mismatches) > 0) {
-        paste0(
-          "wrong-type theme key(s): ",
-          paste(describe_mismatches(result$type_mismatches), collapse = "; ")
-        )
-      },
-      if (nrow(result$type_mismatches_grad) > 0) {
-        paste0(
-          "wrong-type theme-grad key(s): ",
-          paste(
-            describe_mismatches(result$type_mismatches_grad), collapse = "; "
-          )
-        )
-      },
-      if (length(result$radius_card_missing) > 0) {
-        paste0(
-          "missing radius-card sub-key(s): ",
-          paste(result$radius_card_missing, collapse = ", ")
-        )
-      },
-      if (nrow(result$radius_card_type_mismatches) > 0) {
-        paste0(
-          "wrong-type radius-card sub-key(s): ",
-          paste(
-            describe_mismatches(result$radius_card_type_mismatches),
-            collapse = "; "
-          )
-        )
-      }
-    )
+  if (!result$ok) {
     message(
-      "Theme \"", path, "\" has ", length(problems), " problem(s):\n- ",
-      paste(problems, collapse = "\n- ")
+      "Theme \"", path, "\" has ", length(problems), " problem(s):
+- ",
+      paste(problems, collapse = "
+- ")
     )
   }
   if (length(result$unknown) > 0) {

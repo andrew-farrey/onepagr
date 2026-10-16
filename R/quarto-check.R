@@ -342,3 +342,22 @@ update_renviron_line <- function(key, value, renviron_path) {
   writeLines(lines, renviron_path)
   invisible(renviron_path)
 }
+
+#' Path to the Quarto binary, or an informative error
+#'
+#' Internal. The one place the "Quarto was not found" error is defined, for
+#' every function that has to shell out to Quarto.
+#'
+#' @return Character, the path to the Quarto binary.
+#' @noRd
+quarto_bin_or_stop <- function() {
+  quarto_bin <- quarto::quarto_path()
+  if (is.null(quarto_bin)) {
+    stop(
+      "Quarto was not found. Run onepagr::check_quarto() for details, or ",
+      "onepagr::install_quarto() to install it.",
+      call. = FALSE
+    )
+  }
+  quarto_bin
+}
