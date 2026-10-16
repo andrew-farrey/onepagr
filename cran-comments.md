@@ -5,7 +5,7 @@ This is a new submission (onepagr 0.1.0).
 ## Test environments
 
 * Local: Windows 11, R 4.6.1 (release)
-* win-builder: Windows Server 2022, R Under development (2026-09-30 r90605 ucrt)
+* win-builder: Windows Server 2022, R Under development (2026-10-13 r90668 ucrt)
 * GitHub Actions (on every push): macOS (R release), Windows (R release),
   Ubuntu (R devel, R release, R oldrel-1)
 
