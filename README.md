@@ -269,7 +269,8 @@ ADA, Section 508, or any other law or regulation, and automated checkers
 cannot confirm every success criterion. The content you supply (alt text,
 reading order, document language, plain-language quality) and any custom
 theme or template need their own review, so run the checkers on what you
-actually produce.
+actually produce. See `vignette("accessibility-checks")` for a checklist
+of the conditions that need a person.
 
 ## Development
 

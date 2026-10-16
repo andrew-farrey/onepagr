@@ -1,0 +1,127 @@
+---
+title: "Accessibility: what is checked, and what you check"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Accessibility: what is checked, and what you check}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+onepagr's built-in templates are checked with automated tools: PAC, veraPDF
+(PDF/UA-1 profile), and Typst's own `--pdf-standard ua-1` compile, plus
+computed WCAG contrast ratios. Automated tools can only decide part of what
+accessibility requires. This vignette explains where that line falls and
+gives a short checklist for the part that needs a person.
+
+It describes what was checked. It is not a statement of legal compliance
+with the ADA, Section 508, or any other law or regulation.
+
+## What automation can and cannot decide
+
+The PDF Association's [Matterhorn
+Protocol](https://pdfa.org/resource/the-matterhorn-protocol/) (version
+1.1) is the common testing model for PDF/UA-1. It breaks the standard into
+31 checkpoints and 136 failure conditions. Of those, 87 can be decided by
+software alone, 47 usually need human judgment, and 2 have no specific test.
+Each condition is marked `M` (machine) or `H` (human) in the protocol.
+
+So when veraPDF and PAC report no failures, that covers the machine-testable
+conditions. It says nothing about whether alt text is meaningful, whether
+the reading order makes sense, or whether a bold label should have been a
+heading. PAC's AI-assisted tab tries to catch some of these, but it is a
+heuristic advisory, not a conformance check.
+
+The built-in templates are built so that the human-judgment items below come
+out right on the sample content. Your own content changes some of them, and
+a custom theme or template changes others, so the checklist applies to what
+you actually produce.
+
+## Checklist for the human-judgment conditions
+
+Condition numbers are the Matterhorn Protocol's, so you can look up the
+exact wording.
+
+**Structure and reading order**
+
+- *Reading order* (09-001). Open the PDF in PAC and view the logical
+  structure and the screen reader preview. Confirm the order matches how a
+  sighted reader would read both pages, including callout boxes and any
+  side-by-side layouts.
+- *Tags fit their content* (01-001, 01-002, 01-006, 09-002, 09-003). Look for
+  real content left as an artifact, decoration tagged as content, and
+  elements whose tag does not match what is inside them.
+- *Headings* (14-001, 14-004, 14-005). Every visually bold section label
+  should be a real heading, and levels should not skip. A label written as
+  styled text looks like a heading but is tagged as a paragraph, and the
+  automated PDF/UA and WCAG checks pass it anyway.
+
+**Graphics and meaning**
+
+- *Alt text* (13-001 to 13-008). Every chart, map, and logo that carries
+  meaning needs alt text that conveys what a sighted reader gets from it,
+  not "chart" or a file name. Purely decorative images should be artifacts.
+- *Color alone* (04-001). If severity, category, or status is shown only by
+  color, such as red versus green or a bivariate map, a text or shape cue
+  must carry the same meaning. Contrast ratios cover legibility, not this.
+
+**Tables and lists**
+
+- *Tables* (15-001 to 15-005). Content with real rows and columns should be
+  structured as a table, and content that is not tabular should not be. The
+  built-in bar-row groups use a grid, not a table, and PAC's AI-assisted
+  tab notes this. Decide whether that is acceptable for your readers.
+- *Lists* (16-001 to 16-003). Anything that is a list should be tagged as
+  one.
+
+**Page furniture and notes**
+
+- *Headers and footers* (18-001, 18-002). Repeating page furniture should be
+  marked as artifacts. The built-in footer also carries real content, such
+  as sources and contact details, so it is tagged as content on purpose.
+- *Notes* (19-001, 19-002). Footnote-like text should be tagged as a note.
+  Typst 0.15.1 cannot produce a note tag, so the footer's sources line is a
+  paragraph. This is a toolchain gap, not something a template can fix.
+
+**Document-level**
+
+- *Title* (06-004). The `dc:title` should identify the document, not just
+  exist. The templates take it from your `doc_title`.
+- *Language* (11-007). Confirm the declared language is correct, and that
+  passages in another language are marked.
+- *Fonts* (31-010). If a theme loads fonts through `font_dir`, confirm the
+  font license allows embedding. Software can read the embedding flag, but
+  that may not match the actual license.
+
+A few conditions in the protocol do not apply to these templates at all, for
+example math, forms, media, scripts, and article threads.
+
+## Listening to the result
+
+The most informative single test is to run a screen reader over a rendered
+PDF. NVDA is free on Windows and reads PDFs in Adobe Reader or Foxit.
+VoiceOver does the same on macOS. It exposes reading order, missing labels,
+and odd announcements in a way no checker does. Doing it once per template
+with one theme is a reasonable bar.
+
+Two quick supporting checks:
+
+- Copy text out of the PDF and paste it somewhere. Scrambled order here is a
+  cheap warning that the reading order is wrong.
+- Use the keyboard alone to reach every link.
+
+## Customizing
+
+If you write your own theme or template, re-run PAC and veraPDF on the
+result, and walk the checklist above again. A color or layout choice that
+passes in one template is not automatically safe in another. See
+`vignette("theming")` for the contrast rules the built-in themes follow.
+
+## Source
+
+The condition numbers and the 87, 47, and 2 split come from the PDF
+Association's Matterhorn Protocol 1.1 (2021), licensed CC-BY-4.0:
+<https://pdfa.org/resource/the-matterhorn-protocol/>.
