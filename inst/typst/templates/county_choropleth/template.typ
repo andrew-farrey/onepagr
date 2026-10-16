@@ -186,7 +186,7 @@
     image("{{{logo_primary_path}}}", height: 28pt, alt: "{{{logo_primary_alt}}}"),
     [
       #text(fill: white, size: fs(theme, 12pt), weight: "bold")[{{{doc_title}}}] \
-      #text(fill: white.transparentize(15%), size: fs(theme, 9pt))[{{{doc_subtitle}}}]
+      #text(fill: white, size: fs(theme, 9pt))[{{{doc_subtitle}}}]
     ]
   )
 ]
