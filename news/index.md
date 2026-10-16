@@ -2,6 +2,12 @@
 
 ## onepagr 0.1.1
 
+- The header subtitle in all five templates is now solid white instead
+  of white at 85% opacity. With the `default` theme the translucent text
+  measured 3.93:1 against the lightest end of the header gradient, under
+  the 4.5:1 that WCAG 2.2 AA requires for text this size. It now
+  measures 4.95:1 there, the same margin as the title, and the `uk` and
+  `kdph` themes are unchanged in outcome (7.53:1 and 10.60:1).
 - New vignette,
   [`vignette("accessibility-checks")`](https://andrew-farrey.github.io/onepagr/articles/accessibility-checks.md):
   what PAC, veraPDF, and Typst’s own `ua-1` compile check, which
