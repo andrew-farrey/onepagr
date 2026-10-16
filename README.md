@@ -259,6 +259,18 @@ Neither affects the PDF/UA or WCAG tabs, which is the actual
 conformance bar every built-in template is held to and where "100%
 passing" refers to.
 
+**Scope of these claims.** Every built-in template, rendered with each
+built-in theme from the bundled example data, has been checked with PAC
+(PDF/UA and WCAG tabs), with [veraPDF](https://verapdf.org/) (the PDF/UA-1
+profile, version 1.30.2), and with Typst's own `--pdf-standard ua-1`
+compile. Text contrast ratios were computed for each color pairing. That
+is the whole claim. onepagr does not certify legal compliance with the
+ADA, Section 508, or any other law or regulation, and automated checkers
+cannot confirm every success criterion. The content you supply (alt text,
+reading order, document language, plain-language quality) and any custom
+theme or template need their own review, so run the checkers on what you
+actually produce.
+
 ## Development
 
 This package was developed with the assistance of AI coding tools
