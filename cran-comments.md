@@ -39,6 +39,14 @@ in `SystemRequirements`. It is not installed on CRAN's check machines, so:
   them only with the network download mocked. The vignettes evaluate their
   rendering chunks only when Quarto is present.
 
+## URLs
+
+* The `accessibility-checks` vignette links to two pages on pdfa.org (the PDF
+  Association's Matterhorn Protocol 1.1: the landing page and the direct PDF).
+  That server returns HTTP 403 to non-browser clients such as `curl`, so an
+  automated URL check may report them as unreachable. Both load normally in a
+  web browser, and the PDF is the document the vignette cites.
+
 ## Downstream dependencies
 
 There are none (new package).

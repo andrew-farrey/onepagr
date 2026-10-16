@@ -123,5 +123,8 @@ passes in one template is not automatically safe in another. See
 ## Source
 
 The condition numbers and the 87, 47, and 2 split come from the PDF
-Association's Matterhorn Protocol 1.1 (2021), licensed CC-BY-4.0:
-<https://pdfa.org/resource/the-matterhorn-protocol/>.
+Association's Matterhorn Protocol 1.1 (2021), licensed CC-BY-4.0. The
+[landing page](https://pdfa.org/resource/the-matterhorn-protocol/) has the
+description and version history, and the
+[PDF itself](https://pdfa.org/download-area/publications/Matterhorn-Protocol-1-1.pdf)
+is a direct download.
