@@ -6,11 +6,12 @@
 # (450 px per page); one-page templates are shown at full width. The theme
 # comparison images are page 1 of trend_snapshot in each built-in theme.
 
-suppressMessages({
-  devtools::load_all(".", quiet = TRUE)
-  library(pdftools)
-  library(magick)
-})
+for (pkg in c("devtools", "pdftools", "magick")) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    stop("This script needs the ", pkg, " package: install.packages(\"", pkg, "\")")
+  }
+}
+suppressMessages(devtools::load_all(".", quiet = TRUE))
 
 out_dir <- "man/figures"
 work <- file.path(tempdir(), "gallery")
@@ -30,19 +31,21 @@ page_png <- function(pdf, page, width_px) {
   dpi <- width_px / 8.5  # US Letter, 8.5 in wide
   stem <- tools::file_path_sans_ext(basename(pdf))
   f <- file.path(work, sprintf("%s_p%d_%d.png", stem, page, width_px))
-  pdf_convert(pdf, pages = page, format = "png", dpi = dpi, filenames = f, verbose = FALSE)
-  image_read(f)
+  pdftools::pdf_convert(
+    pdf, pages = page, format = "png", dpi = dpi, filenames = f, verbose = FALSE
+  )
+  magick::image_read(f)
 }
 
 save_gallery <- function(img, name) {
-  img <- image_quantize(img, max = 256, colorspace = "sRGB", dither = TRUE)
-  image_write(img, file.path(out_dir, name), format = "png8")
+  img <- magick::image_quantize(img, max = 256, colorspace = "sRGB", dither = TRUE)
+  magick::image_write(img, file.path(out_dir, name), format = "png8")
 }
 
 two_page <- function(template, name, theme = "default") {
   pdf <- render(template, theme)
   pages <- c(page_png(pdf, 1, 450), page_png(pdf, 2, 450))
-  save_gallery(image_append(pages), name)
+  save_gallery(magick::image_append(pages), name)
 }
 one_page <- function(template, name, theme = "default") {
   save_gallery(page_png(render(template, theme), 1, 900), name)
@@ -58,7 +61,7 @@ for (th in c("default", "uk", "kdph")) {
 }
 
 for (f in list.files(out_dir, "^example-.*\\.png$", full.names = TRUE)) {
-  info <- image_info(image_read(f))
+  info <- magick::image_info(magick::image_read(f))
   cat(sprintf(
     "%-46s %4d x %4d  %4.0f KB\n",
     basename(f), info$width, info$height, file.size(f) / 1024
