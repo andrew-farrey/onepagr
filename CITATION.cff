@@ -8,9 +8,9 @@ message: 'To cite package "onepagr" in publications use:'
 type: software
 license: MIT
 title: "onepagr: Accessible One-Page Reports from 'Typst' Templates"
-version: 0.1.0
+version: 0.1.1
 abstract: Generates polished, accessible one-page (front-and-back) Portable Document Format
-  (PDF) reports from analysis output, conforming to the Web Content Accessibility
+  (PDF) reports from analysis output, designed to meet the Web Content Accessibility
   Guidelines (WCAG) 2.2 level AA and the Portable Document Format Universal
   Accessibility standard (PDF/UA-1, ISO 14289-1). Uses a small set of fixed 'Typst'
   report templates and a design-token theme system. Ships built-in report templates
@@ -32,10 +32,10 @@ preferred-citation:
     affiliation: University of Kentucky, Kentucky Injury Prevention and Research Center
     orcid: https://orcid.org/0000-0003-4279-0998
   year: '2026'
-  notes: R package version 0.1.0
+  notes: R package version 0.1.1
 repository-code: https://github.com/andrew-farrey/onepagr
 url: https://github.com/andrew-farrey/onepagr
-date-released: '2026-09-22'
+date-released: '2026-10-15'
 contact:
 - family-names: Farrey
   given-names: Andrew
