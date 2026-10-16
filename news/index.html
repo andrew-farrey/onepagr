@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">onepagr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,15 @@
       <small>Source: <a href="https://github.com/andrew-farrey/onepagr/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.1" id="onepagr-011">onepagr 0.1.1<a class="anchor" aria-label="anchor" href="#onepagr-011"></a></h2>
+<ul><li>New vignette, <code><a href="../articles/accessibility-checks.html">vignette("accessibility-checks")</a></code>: what PAC, veraPDF, and Typst’s own <code>ua-1</code> compile check, which PDF/UA-1 conditions still need a person (cross-referenced to the PDF Association’s Matterhorn Protocol 1.1), and a checklist for them.</li>
+<li>The README now states the scope of the accessibility claims: which checkers were run, that PAC was run by hand, and that onepagr does not certify legal compliance with any law or regulation. Every built-in template and theme was also checked with veraPDF (PDF/UA-1 profile).</li>
+<li>The <code>DESCRIPTION</code> now says the templates are designed to meet WCAG 2.2 level AA and PDF/UA-1, and quotes ‘Typst’ and spells out both acronyms.</li>
+<li>The bundled header texture is replaced with an original generated pattern, and the bundled Fluent icon in the hex logo is credited in <code>inst/COPYRIGHTS</code>. The copyright holder role is added to <code>Authors@R</code>.</li>
+<li>The <code><a href="../reference/template_data.html">template_data()</a></code> example writes to <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code>.</li>
+<li>The README gains a Background section on where the templates came from, and the gallery images are regenerated from the current templates and themes.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="onepagr-010">onepagr 0.1.0<a class="anchor" aria-label="anchor" href="#onepagr-010"></a></h2>
 <p>Initial release. onepagr generates polished, WCAG 2.2 AA and PDF/UA-1 accessible one-page (front-and-back) PDF reports from analysis output, using a small set of fixed Typst templates and a design-token theme system that a consuming project can restyle with its own branding.</p>

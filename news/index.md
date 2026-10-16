@@ -1,5 +1,29 @@
 # Changelog
 
+## onepagr 0.1.1
+
+- New vignette,
+  [`vignette("accessibility-checks")`](https://andrew-farrey.github.io/onepagr/articles/accessibility-checks.md):
+  what PAC, veraPDF, and Typst’s own `ua-1` compile check, which
+  PDF/UA-1 conditions still need a person (cross-referenced to the PDF
+  Association’s Matterhorn Protocol 1.1), and a checklist for them.
+- The README now states the scope of the accessibility claims: which
+  checkers were run, that PAC was run by hand, and that onepagr does not
+  certify legal compliance with any law or regulation. Every built-in
+  template and theme was also checked with veraPDF (PDF/UA-1 profile).
+- The `DESCRIPTION` now says the templates are designed to meet WCAG 2.2
+  level AA and PDF/UA-1, and quotes ‘Typst’ and spells out both
+  acronyms.
+- The bundled header texture is replaced with an original generated
+  pattern, and the bundled Fluent icon in the hex logo is credited in
+  `inst/COPYRIGHTS`. The copyright holder role is added to `Authors@R`.
+- The
+  [`template_data()`](https://andrew-farrey.github.io/onepagr/reference/template_data.md)
+  example writes to [`tempdir()`](https://rdrr.io/r/base/tempfile.html).
+- The README gains a Background section on where the templates came
+  from, and the gallery images are regenerated from the current
+  templates and themes.
+
 ## onepagr 0.1.0
 
 Initial release. onepagr generates polished, WCAG 2.2 AA and PDF/UA-1
