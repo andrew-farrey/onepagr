@@ -67,17 +67,18 @@
 
     
     
-<p>onepagr’s built-in templates are checked with automated tools: PAC,
-veraPDF (PDF/UA-1 profile), and Typst’s own
-<code>--pdf-standard ua-1</code> compile, plus computed WCAG contrast
-ratios. Automated tools can only decide part of what accessibility
-requires. This vignette explains where that line falls and gives a short
-checklist for the part that needs a person.</p>
+<p>onepagr’s built-in templates are checked with software checkers: PAC,
+run by hand on each rendered template, veraPDF (PDF/UA-1 profile) run
+from the command line, and Typst’s own <code>--pdf-standard ua-1</code>
+compile, plus computed WCAG contrast ratios. Software checkers can only
+decide part of what accessibility requires. This vignette explains where
+that line falls and gives a short checklist for the part that needs a
+person.</p>
 <p>It describes what was checked. It is not a statement of legal
 compliance with the ADA, Section 508, or any other law or
 regulation.</p>
 <div class="section level2">
-<h2 id="what-automation-can-and-cannot-decide">What automation can and cannot decide<a class="anchor" aria-label="anchor" href="#what-automation-can-and-cannot-decide"></a>
+<h2 id="what-software-checkers-can-and-cannot-decide">What software checkers can and cannot decide<a class="anchor" aria-label="anchor" href="#what-software-checkers-can-and-cannot-decide"></a>
 </h2>
 <p>The PDF Association’s <a href="https://pdfa.org/resource/the-matterhorn-protocol/" class="external-link">Matterhorn
 Protocol</a> (version 1.1) is the common testing model for PDF/UA-1. It
@@ -116,7 +117,7 @@ content, and elements whose tag does not match what is inside them.</li>
 <em>Headings</em> (14-001, 14-004, 14-005). Every visually bold
 section label should be a real heading, and levels should not skip. A
 label written as styled text looks like a heading but is tagged as a
-paragraph, and the automated PDF/UA and WCAG checks pass it anyway.</li>
+paragraph, and the PDF/UA and WCAG checks pass it anyway.</li>
 </ul>
 <p><strong>Graphics and meaning</strong></p>
 <ul>

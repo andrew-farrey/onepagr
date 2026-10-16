@@ -1,16 +1,16 @@
 # Accessibility: what is checked, and what you check
 
-onepagr’s built-in templates are checked with automated tools: PAC,
-veraPDF (PDF/UA-1 profile), and Typst’s own `--pdf-standard ua-1`
-compile, plus computed WCAG contrast ratios. Automated tools can only
-decide part of what accessibility requires. This vignette explains where
-that line falls and gives a short checklist for the part that needs a
-person.
+onepagr’s built-in templates are checked with software checkers: PAC,
+run by hand on each rendered template, veraPDF (PDF/UA-1 profile) run
+from the command line, and Typst’s own `--pdf-standard ua-1` compile,
+plus computed WCAG contrast ratios. Software checkers can only decide
+part of what accessibility requires. This vignette explains where that
+line falls and gives a short checklist for the part that needs a person.
 
 It describes what was checked. It is not a statement of legal compliance
 with the ADA, Section 508, or any other law or regulation.
 
-## What automation can and cannot decide
+## What software checkers can and cannot decide
 
 The PDF Association’s [Matterhorn
 Protocol](https://pdfa.org/resource/the-matterhorn-protocol/) (version
@@ -48,7 +48,7 @@ exact wording.
 - *Headings* (14-001, 14-004, 14-005). Every visually bold section label
   should be a real heading, and levels should not skip. A label written
   as styled text looks like a heading but is tagged as a paragraph, and
-  the automated PDF/UA and WCAG checks pass it anyway.
+  the PDF/UA and WCAG checks pass it anyway.
 
 **Graphics and meaning**
 
