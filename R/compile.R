@@ -330,6 +330,45 @@ validate_template_data <- function(path, data) {
   invisible(TRUE)
 }
 
+#' Render a template with whisker and write the result next to it
+#'
+#' Internal. Writes `<name>_rendered.typ` beside `path`.
+#'
+#' @param path Character. Path to a .typ file.
+#' @param data Named list of whisker substitution values.
+#' @return Character, the path of the rendered `.typ` file.
+#' @noRd
+write_rendered_typ <- function(path, data) {
+  template_text <- paste(readLines(path, warn = FALSE), collapse = "\n")
+  rendered <- whisker::whisker.render(template_text, data)
+  typ_out <- file.path(
+    dirname(path),
+    paste0(tools::file_path_sans_ext(basename(path)), "_rendered.typ")
+  )
+  writeLines(rendered, typ_out)
+  typ_out
+}
+
+#' Remove a stale output file so a failed compile can't be masked by it
+#'
+#' Internal. Compile success is judged by the output file existing, so an
+#' older PDF at the same path has to be cleared first.
+#'
+#' @param output Character. Path of the PDF about to be written.
+#' @return `NULL`, invisibly. Errors if the file can't be removed.
+#' @noRd
+clear_output_file <- function(output) {
+  unlink(output)
+  if (file.exists(output)) {
+    stop(
+      "Cannot replace the existing output file (is it open in another ",
+      "program?): ", output,
+      call. = FALSE
+    )
+  }
+  invisible(NULL)
+}
+
 #' Compile a .typ file with whisker-substituted data via Quarto/Typst
 #'
 #' Low-level primitive: whisker-renders `path` against `data`, writes the
@@ -380,38 +419,15 @@ compile_typst <- function(path, data, output, font_dir = NULL) {
   data <- fill_token_defaults(path, data)
   validate_template_data(path, data)
 
-  quarto_bin <- quarto::quarto_path()
-  if (is.null(quarto_bin)) {
-    stop(
-      "Quarto was not found. Run onepagr::check_quarto() for details, or ",
-      "onepagr::install_quarto() to install it.",
-      call. = FALSE
-    )
-  }
+  quarto_bin <- quarto_bin_or_stop()
 
   if (!is.null(font_dir) && !dir.exists(font_dir)) {
     stop("font_dir does not exist: ", font_dir, call. = FALSE)
   }
 
-  template_text <- paste(readLines(path, warn = FALSE), collapse = "\n")
-  rendered <- whisker::whisker.render(template_text, data)
-  typ_out <- file.path(
-    dirname(path),
-    paste0(tools::file_path_sans_ext(basename(path)), "_rendered.typ")
-  )
-  writeLines(rendered, typ_out)
-
+  typ_out <- write_rendered_typ(path, data)
   font_args <- if (!is.null(font_dir)) c("--font-path", shQuote(font_dir))
-  # A failed compile must not be masked by an older PDF at the same path:
-  # success is judged by the file existing, so clear it first.
-  unlink(output)
-  if (file.exists(output)) {
-    stop(
-      "Cannot replace the existing output file (is it open in another ",
-      "program?): ", output,
-      call. = FALSE
-    )
-  }
+  clear_output_file(output)
   # suppressWarnings() only silences system2()'s own "had status N" warning,
   # which fires unconditionally on a non-zero exit whenever stdout is
   # captured as text: redundant here since a non-zero exit is already

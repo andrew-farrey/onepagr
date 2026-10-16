@@ -28,7 +28,8 @@ render <- function(template, theme) {
 
 page_png <- function(pdf, page, width_px) {
   dpi <- width_px / 8.5  # US Letter, 8.5 in wide
-  f <- file.path(work, sprintf("%s_p%d_%d.png", tools::file_path_sans_ext(basename(pdf)), page, width_px))
+  stem <- tools::file_path_sans_ext(basename(pdf))
+  f <- file.path(work, sprintf("%s_p%d_%d.png", stem, page, width_px))
   pdf_convert(pdf, pages = page, format = "png", dpi = dpi, filenames = f, verbose = FALSE)
   image_read(f)
 }
@@ -58,5 +59,8 @@ for (th in c("default", "uk", "kdph")) {
 
 for (f in list.files(out_dir, "^example-.*\\.png$", full.names = TRUE)) {
   info <- image_info(image_read(f))
-  cat(sprintf("%-46s %4d x %4d  %4.0f KB\n", basename(f), info$width, info$height, file.size(f) / 1024))
+  cat(sprintf(
+    "%-46s %4d x %4d  %4.0f KB\n",
+    basename(f), info$width, info$height, file.size(f) / 1024
+  ))
 }

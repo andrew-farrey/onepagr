@@ -127,7 +127,8 @@ test_that("county_choropleth declares footer sizing tokens with neutral defaults
     )
   }
   defaults <- extract_token_defaults(resolve_template("county_choropleth"))
-  expect_equal(unname(unlist(defaults[c("logo_a_height", "logo_height", "logo_b_height")])), rep("32", 3))
+  heights <- defaults[c("logo_a_height", "logo_height", "logo_b_height")]
+  expect_equal(unname(unlist(heights)), rep("32", 3))
   expect_equal(unname(unlist(defaults[c("logo_a_dy", "logo_dy", "logo_b_dy")])), rep("0", 3))
 })
 
