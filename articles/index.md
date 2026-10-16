@@ -2,6 +2,8 @@
 
 ### All vignettes
 
+- [Accessibility: what is checked, and what you
+  check](https://andrew-farrey.github.io/onepagr/articles/accessibility-checks.md):
 - [An end-to-end workflow: from data to
   PDF](https://andrew-farrey.github.io/onepagr/articles/end-to-end-workflow.md):
 - [Getting started with
