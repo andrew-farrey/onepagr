@@ -14,3 +14,4 @@
 ^data-raw$
 ^CITATION\.cff$
 ^cran-comments\.md$
+^CRAN-SUBMISSION$
