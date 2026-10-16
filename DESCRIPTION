@@ -8,7 +8,7 @@ Authors@R: c(person("Andrew", "Farrey", email = "afarrey11@outlook.com",
     person("Microsoft Corporation", role = c("ctb", "cph"),
     comment = "Fluent System Icons glyph in the hex logo; see inst/COPYRIGHTS"))
 Description: Generates polished, accessible one-page (front-and-back) Portable
-    Document Format (PDF) reports from analysis output, conforming to the
+    Document Format (PDF) reports from analysis output, designed to meet the
     Web Content Accessibility Guidelines (WCAG) 2.2 level AA and the
     Portable Document Format Universal Accessibility standard (PDF/UA-1,
     ISO 14289-1). Uses a small set of fixed 'Typst' report templates and a
