@@ -111,7 +111,7 @@
   radius: theme.radius-card, inset: (x: sp(theme, 8pt), y: sp(theme, 6pt)), width: 100%,
 )[
   #text(size: fs(theme, 20pt), weight: "bold", fill: if color == none { theme.brand-blue } else { color })[#num] \
-  #text(size: fs(theme, 8.5pt), fill: if text-color == none { rgb("#1a3a7a") } else { text-color })[#body-text]
+  #text(size: fs(theme, 8.5pt), fill: if text-color == none { theme.at("callout-text", default: rgb("#1a3a7a")) } else { text-color })[#body-text]
 ]
 
 // Composition bar row: label, proportional bar, "% . n=" text AFTER the

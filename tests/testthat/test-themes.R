@@ -271,3 +271,71 @@ test_that("check_theme accepts an integer scale factor", {
   expect_true(result$ok)
   expect_equal(nrow(result$type_mismatches), 0)
 })
+
+default_theme_lines <- function() readLines(resolve_theme("default"), warn = FALSE)
+
+test_that("a theme that inlines the gradient colors still passes check_theme", {
+  skip_if_no_typst_eval()
+  src <- default_theme_lines()
+  src <- src[!grepl("^[[:space:]]*brand-sky:", src)]
+  src <- sub("theme.brand-sky,", 'rgb("#9EC5FE"),', src, fixed = TRUE)
+  src <- sub("theme.brand-sky.darken", 'rgb("#9EC5FE").darken', src, fixed = TRUE)
+  path <- tempfile(fileext = ".typ")
+  writeLines(src, path)
+  on.exit(unlink(path))
+  expect_true(suppressMessages(check_theme(theme_path = path))$ok)
+})
+
+test_that("check_theme reports a misspelled theme-grad key as unknown", {
+  skip_if_no_typst_eval()
+  src <- sub(
+    "brand-sky-grad:",
+    "brand-sky-grd: gradient.linear(red, blue), brand-sky-grad:",
+    default_theme_lines(), fixed = TRUE
+  )
+  path <- tempfile(fileext = ".typ")
+  writeLines(src, path)
+  on.exit(unlink(path))
+  result <- suppressMessages(check_theme(theme_path = path))
+  expect_true("brand-sky-grd" %in% result$unknown_grad)
+  expect_true(result$ok)
+})
+
+test_that("the shipped themes define exactly the keys onepagr knows", {
+  skip_if_no_typst_eval()
+  for (built_in in list_themes()) {
+    result <- check_theme(built_in)
+    expect_length(result$unknown, 0)
+    expect_length(result$unknown_grad, 0)
+    expect_true(
+      any(grepl("^[[:space:]]*callout-text:", readLines(resolve_theme(built_in)))),
+      info = built_in
+    )
+  }
+})
+
+test_that("an optional theme key of the wrong type is reported", {
+  skip_if_no_typst_eval()
+  src <- sub("callout-text:", "callout-text: 12pt, unused-callout-text:", default_theme_lines(), fixed = TRUE)
+  path <- tempfile(fileext = ".typ")
+  writeLines(src, path)
+  on.exit(unlink(path))
+  result <- suppressMessages(check_theme(theme_path = path))
+  expect_false(result$ok)
+  expect_equal(result$type_mismatches$key, "callout-text")
+})
+
+test_that("a theme without callout-text still renders a callout", {
+  skip_if_not(quarto::quarto_available())
+  src <- default_theme_lines()
+  src <- src[!grepl("^[[:space:]]*callout-text:", src)]
+  path <- tempfile(fileext = ".typ")
+  writeLines(src, path)
+  out <- tempfile(fileext = ".pdf")
+  on.exit(unlink(c(path, out, sub(".pdf", "_typst", out, fixed = TRUE)), recursive = TRUE))
+  render_onepager(
+    example_data("cohort_summary"), "cohort_summary", theme_path = path,
+    output = out
+  )
+  expect_true(file.exists(out))
+})

@@ -10,19 +10,18 @@ onepagr_theme_schema()
 \value{
 A list with \code{theme} (named character vector, key -> Typst
 \code{type()} name; \code{|} separates accepted alternatives, so \code{body-font} is
-\code{"str|array"} to allow a font fallback list), \code{theme_grad} (same
-shape), and \code{radius_card} (the
-nested dictionary \code{theme$radius-card} must contain).
+\code{"str|array"} to allow a font fallback list), \code{optional_theme} (same
+shape, keys that may be present), \code{theme_grad} (same shape), and
+\code{radius_card} (the nested dictionary \code{theme$radius-card} must contain).
 }
 \description{
-Internal. Derived by grep-ing every real \verb{theme.<key>} /
-\verb{theme-grad.<key>} reference across \code{inst/typst/components.typ} and
-every \verb{inst/typst/templates/*/template.typ} (not assumed), then
-cross-checked directly against both shipped theme files' own key sets
-via a real \verb{typst eval} run: confirmed identical key-for-key between
-\code{default.typ} and \code{uk.typ}. If a future template or component
-introduces a new theme token, add it here too; \code{test-themes.R} diffs
-this list against both shipped theme files' real key sets and fails
-loudly if they diverge.
+Internal. The required keys are the ones \code{inst/typst/components.typ} and
+every \verb{inst/typst/templates/*/template.typ} actually read as
+\verb{theme.<key>} / \verb{theme-grad.<key>} (counted by script, not assumed); the
+\code{optional_theme} keys are allowed but not read directly. All three
+shipped themes (\code{default.typ}, \code{uk.typ}, \code{kdph.typ}) define exactly these
+keys, which \code{test-themes.R} checks with a real \verb{typst eval} run, so a
+key added to a component or template has to be added here too or that
+test fails.
 }
 \keyword{internal}

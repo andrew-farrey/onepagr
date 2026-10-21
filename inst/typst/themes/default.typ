@@ -67,6 +67,8 @@
   // Bootstrap's own 80% $primary-bg-subtle, to keep it visually
   // distinct from card-bg above).
   callout-bg: rgb("#DBE9FF"),
+  // Body text inside callout boxes. Keep it readable on callout-bg (4.5:1).
+  callout-text: rgb("#1a3a7a"),
   lessons-bg: rgb("#DBE9FF"),
   // Bootstrap $primary shaded 60% toward black -- same value as
   // brand-midnight (both need to be "dark, safe text on a light tint");
