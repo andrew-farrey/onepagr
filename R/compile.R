@@ -316,7 +316,27 @@ validate_template_data <- function(path, data) {
 #' @return Character, the path of the rendered `.typ` file.
 #' @noRd
 write_rendered_typ <- function(path, data) {
-  template_text <- paste(readLines(path, warn = FALSE), collapse = "\n")
+  spec <- template_spec(path)
+  lines <- readLines(path, warn = FALSE)
+  occ <- spec$occurrences
+  # A token inside a "string literal" gets its own escaped copy of the value,
+  # chosen per occurrence: the same token can also sit in the body, where its
+  # value is markup and must stay untouched.
+  for (k in unique(occ$line[occ$in_string])) {
+    in_string <- occ$in_string[occ$line == k]
+    found <- gregexpr(token_pattern, lines[k], perl = TRUE)
+    hits <- regmatches(lines[k], found)[[1]]
+    for (j in which(in_string)) {
+      tok <- sub(token_pattern, "\\1", hits[j], perl = TRUE)
+      value <- data[[tok]]
+      data[[paste0("onepagr_str_", tok)]] <- typst_escape_string(
+        if (length(value) == 0L || is.na(value)) "" else as.character(value)
+      )
+      hits[j] <- paste0("{{{onepagr_str_", tok, "}}}")
+    }
+    regmatches(lines[k], found) <- list(hits)
+  }
+  template_text <- paste(lines, collapse = "\n")
   rendered <- whisker::whisker.render(template_text, data)
   typ_out <- file.path(
     dirname(path),
@@ -394,6 +414,7 @@ clear_output_file <- function(output) {
 compile_typst <- function(path, data, output, font_dir = NULL) {
   data <- coerce_data_values(data)
   warn_unknown_tokens(path, data)
+  check_bracket_balance(template_spec(path), data)
   data <- fill_token_defaults(path, data)
   validate_template_data(path, data)
 

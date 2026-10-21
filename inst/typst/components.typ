@@ -24,11 +24,15 @@
 // breaking the compile with "unclosed delimiter" (county_choropleth's
 // footnote, which needs a literal footnote-marker asterisk). Escape with
 // a leading backslash ("\@", "\$", "\*") wherever a literal one of these
-// characters is needed inside markup body text -- and note this only
-// fixes a token spliced into markup SOURCE text; a token substituted
-// into a quoted Typst STRING argument instead needs no escaping at all
-// (see county_choropleth's contact-email comment for why those two
-// substitution contexts behave differently).
+// characters is needed inside markup body text (or run plain text through
+// onepagr::typst_escape()). A value in markup body text IS Typst markup by
+// design: "*bold*" works and "#link(...)" embeds a link.
+//
+// A token inside a quoted Typst STRING argument behaves differently: it is
+// never markup, so a "\@" there is wrong, and onepagr escapes the
+// characters that would end or break the string (a double quote, a
+// backslash, a newline) automatically when it renders the template. The
+// caller escapes nothing for those tokens.
 
 // Type and spacing controls. A theme carries three settings: min-font-size
 // (no text renders smaller than this; 0pt means no floor), font-scale, and

@@ -78,3 +78,90 @@ format_number_value <- function(name, value) {
     call. = FALSE
   )
 }
+
+#' Escape text for a Typst string literal
+#'
+#' Internal. Applied automatically to every token that sits inside a
+#' `"..."` literal in a template: a backslash, a double quote or a newline
+#' there would otherwise end the string or break the compile.
+#'
+#' @param x Character vector.
+#' @return Character vector, escaped.
+#' @noRd
+typst_escape_string <- function(x) {
+  x <- gsub("\\", "\\\\", x, fixed = TRUE)
+  x <- gsub("\"", "\\\"", x, fixed = TRUE)
+  x <- gsub("\r", "", x, fixed = TRUE)
+  gsub("\n", "\\n", x, fixed = TRUE)
+}
+
+#' Escape plain text for use in a content token
+#'
+#' A value for a token that sits in the body of a template is Typst markup:
+#' `*bold*` and `_italic_` work, and `#link(...)` embeds a link. That is
+#' what you want for formatted text. For plain text from a database or a
+#' free-text field, use `typst_escape()` so that characters Typst would
+#' treat as markup (`#`, `$`, `*`, `_`, a backtick, `<`, `>`, `@`, `[`, `]`,
+#' `~` and the backslash itself) show up literally instead of breaking the
+#' compile.
+#'
+#' Tokens that sit inside a quoted string in a template (organization names,
+#' alt text, contact details, file paths) are escaped for you and do not
+#' need this.
+#'
+#' @param x Character vector of plain text.
+#' @return Character vector with a backslash before each special character;
+#'   `NA` stays `NA`.
+#' @examples
+#' typst_escape("Cost: $5 (see #3) [draft]")
+#' @export
+typst_escape <- function(x) {
+  gsub("([\\\\#$*_`<>@\\[\\]~])", "\\\\\\1", x, perl = TRUE)
+}
+
+brackets_balanced <- function(x) {
+  # Drop backslash-escaped characters and quoted segments, then check that
+  # square brackets nest and close.
+  x <- gsub("\\\\.", "", x, perl = TRUE)
+  x <- gsub("\"[^\"]*\"", "", x, perl = TRUE)
+  brackets <- strsplit(x, "")[[1]]
+  brackets <- brackets[brackets %in% c("[", "]")]
+  depth <- 0L
+  for (b in brackets) {
+    depth <- depth + if (b == "[") 1L else -1L
+    if (depth < 0L) {
+      return(FALSE)
+    }
+  }
+  depth == 0L
+}
+
+#' Stop early on a value that would break a content block
+#'
+#' Internal. A lone `]` (or an unclosed `[`) in a value that lands in a
+#' template's body ends the Typst content block early, and the compile
+#' fails with an error about a generated file the user never wrote. Tokens
+#' that sit only inside a quoted string are exempt: a bracket is text there.
+#'
+#' @param spec A [template_spec()].
+#' @param data Named list of values.
+#' @return `invisible(TRUE)`.
+#' @noRd
+check_bracket_balance <- function(spec, data) {
+  occ <- spec$occurrences
+  for (tok in unique(occ$token[!occ$in_string])) {
+    value <- data[[tok]]
+    if (is.null(value) || length(value) != 1L || is.na(value)) {
+      next
+    }
+    if (!brackets_balanced(as.character(value))) {
+      stop(
+        "Value for \"", tok, "\" has an unbalanced \"[\" or \"]\", which ",
+        "would break the Typst compile. Escape a literal bracket with a ",
+        "backslash, or use typst_escape() for plain text.",
+        call. = FALSE
+      )
+    }
+  }
+  invisible(TRUE)
+}
