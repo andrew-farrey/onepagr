@@ -118,13 +118,18 @@
 // bar (not inside the fill) -- composition shares can range very wide
 // (e.g. 1% to 86%), too wide a range for text-inside-the-fill to hold up
 // at the low end.
+// Keeps a bar inside its track: a value above 100 or below 0 would otherwise
+// overflow the track and paint over the label. The printed label still shows
+// the value as given.
+#let bar-pct(pct) = calc.clamp(pct, 0, 100)
+
 #let bar-row(theme, label, pct, n, label-width: 75pt, muted: false) = grid(
   columns: (fd(theme, label-width), 1fr, auto),
   column-gutter: sp(theme, 8pt),
   align: (right, left, left),
   [#text(size: fs(theme, 8.5pt), fill: theme.text-secondary)[#label]],
   box(fill: white, stroke: theme.stroke-hairline + theme.border-color, radius: 3pt, height: fd(theme, 14pt), width: 100%)[
-    #box(fill: if muted { theme.text-muted } else { theme.brand-blue }, stroke: theme.stroke-fill + black, radius: 3pt, height: 100%, width: pct * 1%)
+    #box(fill: if muted { theme.text-muted } else { theme.brand-blue }, stroke: theme.stroke-fill + black, radius: 3pt, height: 100%, width: bar-pct(pct) * 1%)
   ],
   [#text(size: fs(theme, 8.5pt), fill: black, weight: "bold")[#pct% #sym.dot.c n = #n]],
 )
@@ -137,7 +142,7 @@
   align: (right, left, left),
   [#text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[#label]],
   box(fill: white, stroke: theme.stroke-hairline + theme.border-color, radius: 3pt, height: fd(theme, 12pt), width: 100%)[
-    #box(fill: theme.brand-blue, stroke: theme.stroke-fill + black, radius: 3pt, height: 100%, width: (value / max * 100) * 1%)
+    #box(fill: theme.brand-blue, stroke: theme.stroke-fill + black, radius: 3pt, height: 100%, width: bar-pct(value / max * 100) * 1%)
   ],
   [#text(size: fs(theme, 7.5pt), fill: black, weight: "bold")[+#value units]],
 )

@@ -143,7 +143,7 @@ brackets_balanced <- function(x) {
 #' fails with an error about a generated file the user never wrote. Tokens
 #' that sit only inside a quoted string are exempt: a bracket is text there.
 #'
-#' @param spec A [template_spec()].
+#' @param spec A `template_spec()`.
 #' @param data Named list of values.
 #' @return `invisible(TRUE)`.
 #' @noRd
@@ -191,7 +191,7 @@ tokens_referenced_in_values <- function(data) {
 #' `NA` stops with an error naming every one. A needed token that is blank
 #' gets a warning, unless the template declares `// allow-empty: token`.
 #'
-#' @param spec A [template_spec()].
+#' @param spec A `template_spec()`.
 #' @param data Named list of values (before defaults are filled in).
 #' @return `invisible(TRUE)`.
 #' @noRd
@@ -217,6 +217,24 @@ check_template_data <- function(spec, data) {
       paste(missing, collapse = ", "),
       call. = FALSE
     )
+  }
+
+  # A *_width token used in code (not inside a string) is a bare Typst number
+  # that sets a bar's width, so it has to be a plain number from 0 to 100:
+  # "65%", "64,6" and "140" all compile or draw wrongly otherwise.
+  occ <- spec$occurrences
+  for (tok in unique(occ$token[!occ$in_string & grepl("_width$", occ$token)])) {
+    if (value_missing(data, tok)) {
+      next
+    }
+    text <- trimws(as.character(data[[tok]][1]))
+    if (!grepl("^[0-9]+([.][0-9]+)?$", text) || as.numeric(text) > 100) {
+      stop(
+        'Token "', tok, '" must be a plain number from 0 to 100 (for ',
+        'example 64.6), not "', text, '".',
+        call. = FALSE
+      )
+    }
   }
 
   blank <- needed[vapply(needed, function(tok) {

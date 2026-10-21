@@ -58,3 +58,54 @@ test_that("compile_typst formats a numeric value without scientific notation", {
   expect_true(grepl("100000", text, fixed = TRUE))
   expect_false(grepl("1e+05", text, fixed = TRUE))
 })
+
+write_width_template <- function(env = parent.frame()) {
+  path <- tempfile(fileext = ".typ")
+  writeLines("#bar-row(theme, [x], {{{pct_x_width}}}, [n])", path)
+  withr::defer(unlink(path), envir = env)
+  path
+}
+
+test_that("a bar width token must be a plain number from 0 to 100", {
+  spec <- template_spec(write_width_template())
+  for (bad in c("140", "-1", "64,6", "65%", "", "abc", "1e2")) {
+    expect_error(
+      check_template_data(spec, list(pct_x_width = bad)), "pct_x_width",
+      info = bad
+    )
+  }
+  for (ok in c("0", "100", "64.6", "7")) {
+    expect_true(check_template_data(spec, list(pct_x_width = ok)), info = ok)
+  }
+})
+
+test_that("a width token used inside a string is not a bar width", {
+  path <- tempfile(fileext = ".typ")
+  writeLines("#image(\"a.png\", width: \"{{{logo_width}}}\")", path)
+  on.exit(unlink(path))
+  expect_true(check_template_data(template_spec(path), list(logo_width = "32pt")))
+})
+
+test_that("the shipped example data passes the width rule", {
+  for (t in c("cohort_summary", "trend_snapshot")) {
+    expect_true(validate_template_data(resolve_template(t), example_data(t)))
+  }
+})
+
+test_that("bar-pct clamps a bar width to the track", {
+  skip_if_no_typst_eval()
+  dest <- tempfile()
+  export_template("cohort_summary", dest)
+  on.exit(unlink(dest, recursive = TRUE))
+  eval_typst <- function(expr) {
+    out <- system2(
+      quarto::quarto_path(),
+      c("typst", "eval", shQuote(expr), "--format", "json", "--root", shQuote(dest)),
+      stdout = TRUE, stderr = TRUE
+    )
+    jsonlite::fromJSON(paste(out, collapse = ""))
+  }
+  expect_equal(eval_typst("{import \"/components.typ\": bar-pct; bar-pct(140)}"), 100)
+  expect_equal(eval_typst("{import \"/components.typ\": bar-pct; bar-pct(-5)}"), 0)
+  expect_equal(eval_typst("{import \"/components.typ\": bar-pct; bar-pct(64.6)}"), 64.6)
+})

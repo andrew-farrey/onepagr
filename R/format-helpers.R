@@ -18,6 +18,10 @@ fmt_n <- function(x) {
 #' scale (e.g. 84, not 0.84), matching the convention used throughout
 #' onepagr's reference templates and R data-prep scripts.
 #'
+#' The result carries a `%` sign, so it is for text labels. A bar-chart
+#' `*_width` token takes a plain number from 0 to 100 (for example `"64.6"`),
+#' not this output: `"65%"` is rejected before the compile.
+#'
 #' @param x Numeric vector, already scaled 0-100.
 #' @param digits Number of decimal places. Default 0.
 #' @return Character vector.

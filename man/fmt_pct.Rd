@@ -19,6 +19,11 @@ Thin wrapper around \code{\link[scales:percent]{scales::percent()}}. Input is al
 scale (e.g. 84, not 0.84), matching the convention used throughout
 onepagr's reference templates and R data-prep scripts.
 }
+\details{
+The result carries a \verb{\%} sign, so it is for text labels. A bar-chart
+\verb{*_width} token takes a plain number from 0 to 100 (for example \code{"64.6"}),
+not this output: \code{"65\%"} is rejected before the compile.
+}
 \examples{
 fmt_pct(84.2)
 fmt_pct(84.216, digits = 1)
