@@ -480,3 +480,18 @@ test_that("non-ASCII template text survives rendering byte for byte", {
     bytes(out), charToRaw(enc2utf8(paste0("#text[", sign, " ok]\n")))
   )
 })
+
+test_that("a value for another template's token does not demand its references", {
+  tmp <- tempfile(fileext = ".typ")
+  writeLines("{{{a}}}", tmp)
+  on.exit(unlink(tmp))
+  # One data list shared across templates: `other` belongs to a different
+  # template, so what it refers to is not this template's business.
+  expect_true(
+    validate_template_data(tmp, list(a = "x", other = "see {{{not_here}}}"))
+  )
+  # Still checked when the value is for one of this template's own tokens.
+  expect_error(
+    validate_template_data(tmp, list(a = "N = {{{not_here}}}")), "not_here"
+  )
+})

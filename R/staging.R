@@ -95,18 +95,20 @@ check_extra_assets <- function(extra_assets, template_path) {
 #' Create a fresh `<output>_typst` work folder
 #'
 #' Internal. The folder is a build artifact, so an earlier one is removed
-#' first, but only when it is recognizably an onepagr work folder (it holds
-#' `components.typ` and `theme.typ`); anything else at that path is left
-#' alone and reported.
+#' first, but only when it carries the marker file this function leaves in
+#' every folder it creates. Anything else at that path, including an
+#' `export_template()` copy (which holds the same `theme.typ` and
+#' `components.typ`) or a work folder from an earlier onepagr version, is
+#' left alone and reported.
 #'
 #' @param output Character. The PDF path the folder belongs to.
 #' @return Character, the new folder's path.
 #' @noRd
 fresh_work_dir <- function(output) {
   work_dir <- paste0(tools::file_path_sans_ext(output), "_typst")
+  marker <- ".onepagr-work-folder"
   if (file.exists(work_dir)) {
-    ours <- dir.exists(work_dir) &&
-      all(file.exists(file.path(work_dir, c("components.typ", "theme.typ"))))
+    ours <- dir.exists(work_dir) && file.exists(file.path(work_dir, marker))
     if (!ours) {
       stop(
         "\"", work_dir, "\" already exists and is not an onepagr work ",
@@ -118,5 +120,6 @@ fresh_work_dir <- function(output) {
     unlink(work_dir, recursive = TRUE)
   }
   dir.create(work_dir)
+  file.create(file.path(work_dir, marker))
   work_dir
 }

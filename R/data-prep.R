@@ -203,7 +203,12 @@ check_template_data <- function(spec, data) {
   uses_omitted_default <- vapply(tokens$needed_by, function(by) {
     !is.na(by) && any(trimws(strsplit(by, ",", fixed = TRUE)[[1]]) %in% omitted)
   }, logical(1))
-  referenced <- setdiff(tokens_referenced_in_values(data), names(spec$defaults))
+  # Only this template's own tokens: one data list can be shared across
+  # templates, and what another template's value refers to is not needed here.
+  own_values <- data[names(data) %in% tokens$token]
+  referenced <- setdiff(
+    tokens_referenced_in_values(own_values), names(spec$defaults)
+  )
   needed <- unique(c(
     tokens$token[tokens$kind == "required"],
     tokens$token[tokens$kind == "conditional" & uses_omitted_default],

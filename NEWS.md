@@ -38,7 +38,8 @@ combinations render identically to 0.1.1 (same text, same pixels).
   `data` has a name it does not use.
 * Every template takes an optional `doc_lang` (default `"en"`) that sets the
   document language screen readers use.
-* Token handling reads and parses each template once per session.
+* Each template is parsed once per session (the file is only re-read to
+  notice edits), which cuts the token handling cost of a render.
 
 ## Export, render and install
 
@@ -47,9 +48,11 @@ combinations render identically to 0.1.1 (same text, same pixels).
   takes `theme_path`.
 * `render_onepager()` stops on an `extra_assets` file that would replace
   `theme.typ`, `components.typ` or a template file, or that two assets share a
-  name, and replaces its `_typst` work folder on each render. A folder at that
-  path that onepagr did not create is left alone. A failed file copy is an
-  error. The documentation now says that `template_rendered.typ`, not
+  name, and replaces its `_typst` work folder on each render. Only a folder
+  that onepagr created (it holds a hidden marker file) is replaced; any other
+  folder at that path, including an `export_template()` copy or a work folder
+  left by an earlier version, is left alone and the render stops, so delete
+  an old one once. A failed file copy is an error. The documentation now says that `template_rendered.typ`, not
   `template.typ`, is the file that compiles.
 * `install_quarto()` finds `bin/quarto` wherever the archive put it (the
   macOS archive has no `quarto-<version>/` folder) and downloads the arm64

@@ -253,3 +253,20 @@ test_that("a Spanish document compiles", {
   render_onepager(data, "overdose_spike_alert", output = out)
   expect_true(file.exists(out))
 })
+
+test_that("an exported template at the work-folder path is not deleted", {
+  out <- tempfile(fileext = ".pdf")
+  work <- sub(".pdf", "_typst", out, fixed = TRUE)
+  # An export_template() copy holds components.typ and theme.typ, just as a
+  # work folder does, but it is the user's own and may carry edits.
+  export_template("overdose_spike_alert", work)
+  writeLines("// my notes", file.path(work, "notes.typ"))
+  on.exit(unlink(work, recursive = TRUE))
+  expect_error(
+    render_onepager(
+      example_data("overdose_spike_alert"), "overdose_spike_alert", output = out
+    ),
+    "not an onepagr work"
+  )
+  expect_true(file.exists(file.path(work, "notes.typ")))
+})
