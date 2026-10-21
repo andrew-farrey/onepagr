@@ -465,3 +465,18 @@ test_that("rendering template_data('optional') values leaves no literal braces",
   text <- paste(pdftools::pdf_text(out), collapse = "\n")
   expect_false(grepl("{{{", text, fixed = TRUE))
 })
+
+test_that("non-ASCII template text survives rendering byte for byte", {
+  sign <- intToUtf8(9888L)
+  tmp <- tempfile(fileext = ".typ")
+  writeLines(paste0("#text[", sign, " {{{x}}}]"), tmp, useBytes = TRUE)
+  out <- write_rendered_typ(tmp, list(x = "ok"))
+  on.exit(unlink(c(tmp, out)))
+  bytes <- function(path) {
+    raw <- readBin(path, "raw", file.size(path))
+    raw[raw != as.raw(13)]
+  }
+  expect_identical(
+    bytes(out), charToRaw(enc2utf8(paste0("#text[", sign, " ok]\n")))
+  )
+})

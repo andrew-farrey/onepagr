@@ -103,3 +103,18 @@ test_that("template_data alone is enough to render every built-in template", {
     }
   }
 })
+
+test_that("example_data names the missing file when a template has no example", {
+  testthat::local_mocked_bindings(
+    resolve_template = function(template) "unused",
+    .package = "onepagr"
+  )
+  expect_error(example_data("no_such_template"), "No example data")
+  expect_error(example_data("no_such_template"), "no_such_template.R")
+})
+
+test_that("example_data finds every built-in template's example by name", {
+  for (t in list_templates()) {
+    expect_type(example_data(t), "list")
+  }
+})

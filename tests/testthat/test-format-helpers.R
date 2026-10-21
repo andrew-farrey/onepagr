@@ -13,3 +13,8 @@ test_that("fmt_pct respects the digits argument", {
   expect_equal(fmt_pct(70.2, digits = 1), "70.2%")
   expect_equal(fmt_pct(29.83, digits = 1), "29.8%")
 })
+
+test_that("fmt_n and fmt_pct round a half to the even digit, as documented", {
+  expect_equal(fmt_n(c(0.5, 1.5, 2.5)), c("0", "2", "2"))
+  expect_equal(fmt_pct(c(84.5, 85.5)), c("84%", "86%"))
+})

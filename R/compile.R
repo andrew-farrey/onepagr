@@ -318,7 +318,7 @@ validate_template_data <- function(path, data) {
 #' @noRd
 write_rendered_typ <- function(path, data) {
   spec <- template_spec(path)
-  lines <- readLines(path, warn = FALSE)
+  lines <- readLines(path, warn = FALSE, encoding = "UTF-8")
   occ <- spec$occurrences
   # A token inside a "string literal" gets its own escaped copy of the value,
   # chosen per occurrence: the same token can also sit in the body, where its
@@ -343,7 +343,9 @@ write_rendered_typ <- function(path, data) {
     dirname(path),
     paste0(tools::file_path_sans_ext(basename(path)), "_rendered.typ")
   )
-  writeLines(rendered, typ_out)
+  # Typst reads UTF-8; write the bytes as-is so the native encoding of the R
+  # session (older R on Windows, a non-UTF-8 locale) cannot change them.
+  writeLines(enc2utf8(rendered), typ_out, useBytes = TRUE)
   typ_out
 }
 

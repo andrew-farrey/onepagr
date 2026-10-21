@@ -4,7 +4,7 @@
 \alias{check_theme_dict}
 \title{Compare a theme dictionary's real keys/types against an expected schema}
 \usage{
-check_theme_dict(actual_matrix, expected_types)
+check_theme_dict(actual_matrix, expected_types, optional_types = character(0))
 }
 \arguments{
 \item{actual_matrix}{2-column character matrix from

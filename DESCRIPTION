@@ -22,10 +22,13 @@ URL: https://github.com/andrew-farrey/onepagr
 BugReports: https://github.com/andrew-farrey/onepagr/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
+Depends:
+    R (>= 4.0.0)
 Imports:
     jsonlite,
     quarto,
     scales,
+    stats,
     tools,
     utils,
     whisker
