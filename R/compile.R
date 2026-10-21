@@ -392,6 +392,7 @@ clear_output_file <- function(output) {
 #' }
 #' @export
 compile_typst <- function(path, data, output, font_dir = NULL) {
+  data <- coerce_data_values(data)
   warn_unknown_tokens(path, data)
   data <- fill_token_defaults(path, data)
   validate_template_data(path, data)
