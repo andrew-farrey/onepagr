@@ -201,9 +201,10 @@ test_that("template_tokens lists required tokens first, then defaults", {
   )
   on.exit(unlink(tmp))
   out <- template_tokens(tmp)
-  expect_equal(names(out), c("token", "required", "default"))
+  expect_equal(names(out), c("token", "required", "default", "needed_by"))
   expect_equal(out$token, c("doc_title", "n_total", "heading_x", "blank"))
-  expect_equal(out$required, c(TRUE, TRUE, FALSE, FALSE))
+  expect_equal(out$required, c(TRUE, FALSE, FALSE, FALSE))
+  expect_equal(out$needed_by, c(NA, "heading_x", NA, NA))
   expect_equal(
     out$default, c(NA, NA, "Results (N = {{{n_total}}})", "")
   )
@@ -271,7 +272,7 @@ test_that("warn_unknown_tokens stays silent for known and shared names", {
   expect_no_warning(warn_unknown_tokens(tmp, list(doc_title = "x")))
 })
 
-test_that("extract_required_tokens counts tokens a default refers to", {
+test_that("extract_required_tokens leaves out tokens only a default refers to", {
   tmp <- tempfile(fileext = ".typ")
   writeLines(
     c(
@@ -281,7 +282,9 @@ test_that("extract_required_tokens counts tokens a default refers to", {
     tmp
   )
   on.exit(unlink(tmp))
-  expect_equal(extract_required_tokens(tmp), c("doc_title", "n_total"))
+  expect_equal(extract_required_tokens(tmp), "doc_title")
+  # n_total is still checked while heading_x keeps its default.
+  expect_error(validate_template_data(tmp, list(doc_title = "x")), "n_total")
 })
 
 test_that("fill_token_defaults renders a default against the data", {
