@@ -4,7 +4,13 @@
 \alias{export_template}
 \title{Export a built-in template for customization}
 \usage{
-export_template(template, dest, theme = "default")
+export_template(
+  template,
+  dest,
+  theme = "default",
+  theme_path = NULL,
+  overwrite = FALSE
+)
 }
 \arguments{
 \item{template}{Character. A built-in template name (see \code{\link[=list_templates]{list_templates()}}).}
@@ -15,6 +21,13 @@ recursively if it doesn't exist.}
 \item{theme}{Character. A built-in theme name, or a path to a custom
 theme .typ file, to resolve and copy in as \code{theme.typ}. Default
 \code{"default"}.}
+
+\item{theme_path}{Character or \code{NULL}. Explicit theme file path override,
+as in \code{\link[=render_onepager]{render_onepager()}}; when supplied, \code{theme} is ignored.}
+
+\item{overwrite}{Logical. If \code{dest} already holds an exported template,
+\code{FALSE} (the default) stops with an error so hand edits are not lost;
+\code{TRUE} replaces the files.}
 }
 \value{
 Character, \code{dest}, invisibly.

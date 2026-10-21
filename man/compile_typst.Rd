@@ -33,7 +33,8 @@ Character, the \code{output} path, invisibly.
 }
 \description{
 Low-level primitive: whisker-renders \code{path} against \code{data}, writes the
-result next to \code{path}, then compiles it to \code{output} via \verb{quarto typst compile --pdf-standard ua-1 --features a11y-extras}. Works on any .typ
+result next to \code{path} as \verb{<name>_rendered.typ} (that file, not \code{path}
+itself, is what compiles), then compiles it to \code{output} via \verb{quarto typst compile --pdf-standard ua-1 --features a11y-extras}. Works on any .typ
 file (a package-shipped template or a user's own
 \code{export_template()}-edited copy) since required-token validation is
 derived by scanning the file itself, not a separately-maintained

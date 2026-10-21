@@ -124,7 +124,8 @@ render_onepager(data, template = "overdose_spike_alert", theme = "uk", output = 
 
 That's it: `alert.pdf` is a finished, accessible PDF. By default,
 `render_onepager()` also leaves the resolved `.typ` source next to the
-output (`alert_typst/`), so it's never hidden away, even if you never
+output (`alert_typst/`; `template_rendered.typ` in it is the file with your
+data filled in), so it's never hidden away, even if you never
 need to look at it. That's deliberate: it's useful for troubleshooting,
 and it means a real, working template is always sitting somewhere you
 can hand it to an AI coding assistant (or a collaborator) to build out

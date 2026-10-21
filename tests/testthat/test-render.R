@@ -153,3 +153,73 @@ test_that("note_page_count stays silent when the PDF cannot be read", {
   expect_no_message(note_page_count(typ, "unused.pdf", "cohort_summary"))
   expect_no_error(note_page_count(typ, "unused.pdf", "cohort_summary"))
 })
+
+render_to_tmp <- function(...) {
+  out <- tempfile(fileext = ".pdf")
+  render_onepager(
+    example_data("overdose_spike_alert"), "overdose_spike_alert",
+    output = out, ...
+  )
+}
+
+test_that("an extra asset may not replace a package file", {
+  dir <- tempfile()
+  dir.create(dir)
+  on.exit(unlink(dir, recursive = TRUE))
+  for (reserved in c("theme.typ", "components.typ", "template.typ")) {
+    fake <- file.path(dir, reserved)
+    writeLines("x", fake)
+    expect_error(render_to_tmp(extra_assets = fake), reserved, fixed = TRUE)
+  }
+})
+
+test_that("two extra assets may not share a file name", {
+  a <- file.path(tempfile(), "x.png")
+  b <- file.path(tempfile(), "x.png")
+  for (f in c(a, b)) {
+    dir.create(dirname(f))
+    writeLines("x", f)
+  }
+  on.exit(unlink(c(dirname(a), dirname(b)), recursive = TRUE))
+  expect_error(render_to_tmp(extra_assets = c(a, b)), "share the file name")
+})
+
+test_that("a missing extra asset is reported before anything is staged", {
+  out <- tempfile(fileext = ".pdf")
+  expect_error(
+    render_onepager(
+      example_data("overdose_spike_alert"), "overdose_spike_alert",
+      output = out, extra_assets = "no-such-file.png"
+    ),
+    "not found"
+  )
+  expect_false(dir.exists(sub(".pdf", "_typst", out, fixed = TRUE)))
+})
+
+test_that("an unrelated folder at the work-folder path is not deleted", {
+  out <- tempfile(fileext = ".pdf")
+  work <- sub(".pdf", "_typst", out, fixed = TRUE)
+  dir.create(work)
+  writeLines("keep me", file.path(work, "notes.txt"))
+  on.exit(unlink(work, recursive = TRUE))
+  expect_error(
+    render_onepager(
+      example_data("overdose_spike_alert"), "overdose_spike_alert", output = out
+    ),
+    "not an onepagr work"
+  )
+  expect_true(file.exists(file.path(work, "notes.txt")))
+})
+
+test_that("a re-render replaces the previous work folder", {
+  skip_if_not(quarto::quarto_available())
+  out <- tempfile(fileext = ".pdf")
+  work <- sub(".pdf", "_typst", out, fixed = TRUE)
+  on.exit(unlink(c(out, work), recursive = TRUE))
+  data <- example_data("overdose_spike_alert")
+  render_onepager(data, "overdose_spike_alert", output = out)
+  writeLines("stale", file.path(work, "stale.txt"))
+  render_onepager(data, "overdose_spike_alert", output = out)
+  expect_false(file.exists(file.path(work, "stale.txt")))
+  expect_true(file.exists(file.path(work, "template_rendered.typ")))
+})

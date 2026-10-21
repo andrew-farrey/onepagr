@@ -370,7 +370,8 @@ clear_output_file <- function(output) {
 #' Compile a .typ file with whisker-substituted data via Quarto/Typst
 #'
 #' Low-level primitive: whisker-renders `path` against `data`, writes the
-#' result next to `path`, then compiles it to `output` via `quarto typst
+#' result next to `path` as `<name>_rendered.typ` (that file, not `path`
+#' itself, is what compiles), then compiles it to `output` via `quarto typst
 #' compile --pdf-standard ua-1 --features a11y-extras`. Works on any .typ
 #' file (a package-shipped template or a user's own
 #' `export_template()`-edited copy) since required-token validation is
