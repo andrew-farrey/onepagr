@@ -1,81 +1,106 @@
 # onepagr (development version)
 
-Fixes from an external code review. All 15 built-in template and theme
-combinations render identically to 0.1.1 (same text, same pixels).
+This release folds in fixes from an external code review and a round of
+accessibility evidence work. All 15 built-in template and theme combinations
+render the same as before the review fixes (same text, same pixels).
 
 ## Data and tokens
 
-* A double quote, backslash or newline in a value that a template places
-  inside a quoted string (organization names, alt text, contact details,
-  file paths) is now escaped automatically, so `Sample "North" Health
-  Department` renders instead of failing in Typst. Values in the body of a
-  template are still Typst markup, as before.
-* New `typst_escape()` makes plain text safe for a body token (`#`, `$`,
-  `*`, `_`, a backtick, `<`, `>`, `@`, brackets and `~` show up literally).
-* A lone `]` or unclosed `[` in a body value is reported in R, naming the
-  token, instead of as a Typst error about a generated file.
+* `compile_typst()` and `render_onepager()` escape a double quote, backslash or
+  newline in a value that a template places inside a quoted string
+  (organization names, alt text, contact details, file paths), so `Sample
+  "North" Health Department` renders instead of failing in Typst. A value in
+  the body of a template is still Typst markup, as before.
+* `typst_escape()` is new. It makes plain text safe for a body token: `#`, `$`,
+  `*`, `_`, a backtick, `<`, `>`, `@`, brackets and `~` show up literally.
+* `compile_typst()` reports a lone `]` or an unclosed `[` in a body value in R,
+  naming the token, instead of as a Typst error about a generated file.
 * Numbers are formatted without scientific notation, so `100000` prints as
   `100000`, not `1e+05`. A number with more digits than a short decimal, an R
-  logical, or a vector longer than one is an error that points to
-  `fmt_n()`/`fmt_pct()` or the accepted spelling.
-* A value that refers to a token (`{{{n_total}}}`), including values from
-  `template_data(tokens = "optional")`, is now filled from your data, so
-  literal `{{{token}}}` text no longer reaches the PDF.
-* A token that only an optional token's default uses is needed only while
-  that default is in use. `template_tokens()` gains a `needed_by` column, and
-  `extract_required_tokens()` lists only tokens used in the template body.
-* A blank required value now draws a warning. A template can declare
-  `// allow-empty: token` for text that is blank on purpose; the alert
+  logical, or a vector longer than one is an error that points to `fmt_n()` and
+  `fmt_pct()` or to the accepted spelling.
+* A value that refers to a token (`{{{n_total}}}`), including a value from
+  `template_data(tokens = "optional")`, is filled from your data, so literal
+  `{{{token}}}` text no longer reaches the PDF.
+* `template_tokens()` gains a `needed_by` column, and `extract_required_tokens()`
+  lists only tokens the template body uses. A token that only an optional
+  token's default uses is needed only while that default is in use.
+* `validate_template_data()` warns about a blank required value. A template can
+  declare `// allow-empty: token` for text that is blank on purpose; the alert
   templates do this for `cluster_text` and `resources_text`.
-* A `//` after a URL or inside a quoted string is no longer treated as a
-  comment, so a token after `https://` on a line is found. A token name with a
-  dot is rejected, and `template_tokens("name")` no longer prefers a file of
-  the same name in the working directory.
+* Template parsing no longer treats a `//` after a URL or inside a quoted string
+  as a comment, so a token after `https://` on a line is found. A token name
+  with a dot is rejected, `template_tokens("name")` no longer prefers a file of
+  the same name in the working directory, and each template is parsed once per
+  session (the file is only re-read to notice edits).
 * A `*_width` bar token must be a plain number from 0 to 100, and bars are
   clamped to their track. `"65%"`, `"64,6"` and `"140"` stop with an error
   naming the token.
-* A custom template with no tokens no longer crashes `compile_typst()` when
+* `compile_typst()` no longer crashes on a custom template with no tokens when
   `data` has a name it does not use.
 * Every template takes an optional `doc_lang` (default `"en"`) that sets the
   document language screen readers use.
-* Each template is parsed once per session (the file is only re-read to
-  notice edits), which cuts the token handling cost of a render.
 
 ## Export, render and install
 
-* `export_template()` now stops if `dest` already holds an exported template,
-  so hand edits are not lost; use `overwrite = TRUE` to replace it. It also
-  takes `theme_path`.
+* `export_template()` stops if `dest` already holds an exported template, so
+  hand edits are not lost; use `overwrite = TRUE` to replace it. It also takes
+  `theme_path`.
 * `render_onepager()` stops on an `extra_assets` file that would replace
   `theme.typ`, `components.typ` or a template file, or that two assets share a
-  name, and replaces its `_typst` work folder on each render. Only a folder
-  that onepagr created (it holds a hidden marker file) is replaced; any other
-  folder at that path, including an `export_template()` copy or a work folder
-  left by an earlier version, is left alone and the render stops, so delete
-  an old one once. A failed file copy is an error. The documentation now says that `template_rendered.typ`, not
-  `template.typ`, is the file that compiles.
-* `install_quarto()` finds `bin/quarto` wherever the archive put it (the
-  macOS archive has no `quarto-<version>/` folder) and downloads the arm64
-  build on 64-bit ARM Linux. `set_quarto_path()` saves an absolute path.
+  name, and stops on a failed file copy. It replaces its `_typst` work folder on
+  each render, but only one that onepagr created (it holds a hidden marker
+  file). Any other folder at that path, including an `export_template()` copy or
+  a work folder left by an earlier version, is left alone and the render stops,
+  so delete an old one once.
+* The documentation for `render_onepager()` and `compile_typst()` now says that
+  `template_rendered.typ`, not `template.typ`, is the file that compiles.
+* `install_quarto()` finds `bin/quarto` wherever the archive put it (the macOS
+  archive has no `quarto-<version>/` folder) and downloads the arm64 build on
+  64-bit ARM Linux. `set_quarto_path()` saves an absolute path.
 
 ## Themes
 
 * `check_theme()` no longer fails a theme for lacking `brand-sky`, `card-bg`,
-  `callout-bg`, `lessons-bg` or `disclaimer-bg`, which no component reads,
-  and reports unknown `theme-grad` keys as `unknown_grad`. Callout body text
-  is a theme key, `callout-text`, with the previous color as its fallback.
+  `callout-bg`, `lessons-bg` or `disclaimer-bg`, which no component reads, and
+  reports unknown `theme-grad` keys as `unknown_grad`.
+* Callout body text is a theme key, `callout-text`, with the previous color as
+  its fallback, so a custom theme with a dark callout background can set it.
+* The header subtitle in all five templates is now solid white instead of white
+  at 85% opacity. With the `default` theme the translucent text measured 3.93:1
+  against the lightest end of the header gradient, under the 4.5:1 that WCAG 2.2
+  AA requires for text this size. It now measures 4.95:1 there, the same margin
+  as the title, and the `uk` and `kdph` themes pass by a wider margin (7.53:1 and
+  10.60:1).
+
+## Accessibility documentation
+
+* `vignette("accessibility-checks")` is new. It explains what PAC, veraPDF and
+  Typst's own `ua-1` compile check, which PDF/UA-1 conditions still need a person
+  (cross-referenced to the PDF Association's Matterhorn Protocol 1.1), and gives
+  a checklist for them.
+* The README states the scope of the accessibility claims: which checkers were
+  run, that PAC was run by hand, and that onepagr does not certify legal
+  compliance with any law or regulation. Every built-in template and theme was
+  also checked with veraPDF (PDF/UA-1 profile).
+* The README and the accessibility vignette now say that on the two alert
+  templates the page footer is a pagination artifact, so its logos, organization
+  name and contact details are not read by a screen reader.
 
 ## Documentation and packaging
 
-* The README and accessibility vignette now say that on the two alert
-  templates the page footer is a pagination artifact, so its logos,
-  organization name and contact details are not read by a screen reader.
 * `fmt_n()` and `fmt_pct()` document that a half rounds to the even digit.
 * `example_data()` names the missing file when a template has no example.
-  Templates are read and written as UTF-8. `Depends: R (>= 4.0.0)`; `stats`
-  is now listed in Imports.
-* Corrected references to unshipped design documents and to theme keys that
-  do not exist.
+  Templates are read and written as UTF-8.
+* `DESCRIPTION` now says the templates are designed to meet WCAG 2.2 level AA and
+  PDF/UA-1, quotes 'Typst', spells out both acronyms, adds the copyright holder
+  role to `Authors@R`, declares `R (>= 4.0.0)`, and lists `stats` in Imports.
+* The bundled header texture is an original generated pattern, and the bundled
+  Fluent icon in the hex logo is credited in `inst/COPYRIGHTS`.
+* The README gains a Background section on where the templates came from, and the
+  gallery images are regenerated from the current templates and themes.
+* Corrected references to unshipped design documents and to theme keys that do
+  not exist.
 
 ## Internal
 
@@ -84,32 +109,6 @@ combinations render identically to 0.1.1 (same text, same pixels).
   inherits parameter documentation from `export_template()` and
   `compile_typst()`. A `.lintr` file sets the lint settings, and a lint
   workflow runs on every push.
-
-# onepagr 0.1.1
-
-* The header subtitle in all five templates is now solid white instead of
-  white at 85% opacity. With the `default` theme the translucent text
-  measured 3.93:1 against the lightest end of the header gradient, under
-  the 4.5:1 that WCAG 2.2 AA requires for text this size. It now measures
-  4.95:1 there, the same margin as the title, and the `uk` and `kdph`
-  themes are unchanged in outcome (7.53:1 and 10.60:1).
-* New vignette, `vignette("accessibility-checks")`: what PAC, veraPDF, and
-  Typst's own `ua-1` compile check, which PDF/UA-1 conditions still need a
-  person (cross-referenced to the PDF Association's Matterhorn Protocol
-  1.1), and a checklist for them.
-* The README now states the scope of the accessibility claims: which
-  checkers were run, that PAC was run by hand, and that onepagr does not
-  certify legal compliance with any law or regulation. Every built-in
-  template and theme was also checked with veraPDF (PDF/UA-1 profile).
-* The `DESCRIPTION` now says the templates are designed to meet WCAG 2.2
-  level AA and PDF/UA-1, and quotes 'Typst' and spells out both acronyms.
-* The bundled header texture is replaced with an original generated
-  pattern, and the bundled Fluent icon in the hex logo is credited in
-  `inst/COPYRIGHTS`. The copyright holder role is added to `Authors@R`.
-* The `template_data()` example writes to `tempdir()`.
-* The README gains a Background section on where the templates came from,
-  and the gallery images are regenerated from the current templates and
-  themes.
 
 # onepagr 0.1.0
 
