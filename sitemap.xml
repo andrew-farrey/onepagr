@@ -1,7 +1,10 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://andrew-farrey.github.io/onepagr/404.html</loc></url>
+<url><loc>https://andrew-farrey.github.io/onepagr/CODE_OF_CONDUCT.html</loc></url>
+<url><loc>https://andrew-farrey.github.io/onepagr/CONTRIBUTING.html</loc></url>
 <url><loc>https://andrew-farrey.github.io/onepagr/LICENSE-text.html</loc></url>
 <url><loc>https://andrew-farrey.github.io/onepagr/LICENSE.html</loc></url>
+<url><loc>https://andrew-farrey.github.io/onepagr/PULL_REQUEST_TEMPLATE.html</loc></url>
 <url><loc>https://andrew-farrey.github.io/onepagr/articles/accessibility-checks.html</loc></url>
 <url><loc>https://andrew-farrey.github.io/onepagr/articles/end-to-end-workflow.html</loc></url>
 <url><loc>https://andrew-farrey.github.io/onepagr/articles/getting-started.html</loc></url>

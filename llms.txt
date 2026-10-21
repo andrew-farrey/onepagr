@@ -321,6 +321,21 @@ never hides the `.typ` source it compiles from, and
 exists specifically so a real, working template is always available to
 hand to an AI assistant, or a human collaborator, to extend.
 
+## Contributing
+
+Bug reports, accessibility problems and suggestions are welcome as
+[issues](https://github.com/andrew-farrey/onepagr/issues). See
+[`CONTRIBUTING.md`](https://github.com/andrew-farrey/onepagr/blob/master/CONTRIBUTING.md)
+for how to set up, the checks a template change needs, and the project’s
+branch, commit and pull request conventions.
+
+## Code of Conduct
+
+Please note that the onepagr project is released with a [Contributor
+Code of
+Conduct](https://andrew-farrey.github.io/onepagr/CODE_OF_CONDUCT.html).
+By contributing to this project, you agree to abide by its terms.
+
 ## License
 
 MIT. See `LICENSE.md`.
