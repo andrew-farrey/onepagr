@@ -2,3 +2,46 @@ url: https://andrew-farrey.github.io/onepagr/
 template:
   bootstrap: 5
 
+reference:
+  - title: Render a report
+    desc: Turn a data list into a finished, accessible PDF.
+    contents:
+      - render_onepager
+      - compile_typst
+      - export_template
+  - title: Templates and themes
+    desc: What ships with the package, and how to see what a template takes.
+    contents:
+      - list_templates
+      - list_themes
+      - resolve_template
+      - resolve_theme
+      - template_tokens
+      - template_data
+      - example_data
+      - check_theme
+  - title: Preparing your data
+    desc: Format values and check them before rendering.
+    contents:
+      - fmt_n
+      - fmt_pct
+      - typst_escape
+      - validate_template_data
+      - extract_required_tokens
+  - title: Set up Quarto and Typst
+    desc: Check for, install and point onepagr at the toolchain it needs.
+    contents:
+      - check_quarto
+      - install_quarto
+      - set_quarto_path
+
+articles:
+  - title: Get started
+    navbar: ~
+    contents:
+      - getting-started
+      - end-to-end-workflow
+  - title: Customize and verify
+    contents:
+      - theming
+      - accessibility-checks
