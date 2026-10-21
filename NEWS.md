@@ -1,15 +1,86 @@
 # onepagr (development version)
 
-* Internal refactoring only; no change to any exported function's behavior
-  or messages. `check_theme()` and `compile_typst()` are split into
-  smaller internal helpers (the problem list and early-return result for
-  `check_theme()`, the template-rendering and stale-output steps for
-  `compile_typst()`), and the "Quarto was not found" error now comes from
-  one shared helper.
-* `render_onepager()` inherits the `template` and `output` parameter
-  documentation from `export_template()` and `compile_typst()` instead of
-  repeating it.
-* A `.lintr` file sets the project's lint settings.
+Fixes from an external code review. All 15 built-in template and theme
+combinations render identically to 0.1.1 (same text, same pixels).
+
+## Data and tokens
+
+* A double quote, backslash or newline in a value that a template places
+  inside a quoted string (organization names, alt text, contact details,
+  file paths) is now escaped automatically, so `Sample "North" Health
+  Department` renders instead of failing in Typst. Values in the body of a
+  template are still Typst markup, as before.
+* New `typst_escape()` makes plain text safe for a body token (`#`, `$`,
+  `*`, `_`, a backtick, `<`, `>`, `@`, brackets and `~` show up literally).
+* A lone `]` or unclosed `[` in a body value is reported in R, naming the
+  token, instead of as a Typst error about a generated file.
+* Numbers are formatted without scientific notation, so `100000` prints as
+  `100000`, not `1e+05`. A number with more digits than a short decimal, an R
+  logical, or a vector longer than one is an error that points to
+  `fmt_n()`/`fmt_pct()` or the accepted spelling.
+* A value that refers to a token (`{{{n_total}}}`), including values from
+  `template_data(tokens = "optional")`, is now filled from your data, so
+  literal `{{{token}}}` text no longer reaches the PDF.
+* A token that only an optional token's default uses is needed only while
+  that default is in use. `template_tokens()` gains a `needed_by` column, and
+  `extract_required_tokens()` lists only tokens used in the template body.
+* A blank required value now draws a warning. A template can declare
+  `// allow-empty: token` for text that is blank on purpose; the alert
+  templates do this for `cluster_text` and `resources_text`.
+* A `//` after a URL or inside a quoted string is no longer treated as a
+  comment, so a token after `https://` on a line is found. A token name with a
+  dot is rejected, and `template_tokens("name")` no longer prefers a file of
+  the same name in the working directory.
+* A `*_width` bar token must be a plain number from 0 to 100, and bars are
+  clamped to their track. `"65%"`, `"64,6"` and `"140"` stop with an error
+  naming the token.
+* A custom template with no tokens no longer crashes `compile_typst()` when
+  `data` has a name it does not use.
+* Every template takes an optional `doc_lang` (default `"en"`) that sets the
+  document language screen readers use.
+* Token handling reads and parses each template once per session.
+
+## Export, render and install
+
+* `export_template()` now stops if `dest` already holds an exported template,
+  so hand edits are not lost; use `overwrite = TRUE` to replace it. It also
+  takes `theme_path`.
+* `render_onepager()` stops on an `extra_assets` file that would replace
+  `theme.typ`, `components.typ` or a template file, or that two assets share a
+  name, and replaces its `_typst` work folder on each render. A folder at that
+  path that onepagr did not create is left alone. A failed file copy is an
+  error. The documentation now says that `template_rendered.typ`, not
+  `template.typ`, is the file that compiles.
+* `install_quarto()` finds `bin/quarto` wherever the archive put it (the
+  macOS archive has no `quarto-<version>/` folder) and downloads the arm64
+  build on 64-bit ARM Linux. `set_quarto_path()` saves an absolute path.
+
+## Themes
+
+* `check_theme()` no longer fails a theme for lacking `brand-sky`, `card-bg`,
+  `callout-bg`, `lessons-bg` or `disclaimer-bg`, which no component reads,
+  and reports unknown `theme-grad` keys as `unknown_grad`. Callout body text
+  is a theme key, `callout-text`, with the previous color as its fallback.
+
+## Documentation and packaging
+
+* The README and accessibility vignette now say that on the two alert
+  templates the page footer is a pagination artifact, so its logos,
+  organization name and contact details are not read by a screen reader.
+* `fmt_n()` and `fmt_pct()` document that a half rounds to the even digit.
+* `example_data()` names the missing file when a template has no example.
+  Templates are read and written as UTF-8. `Depends: R (>= 4.0.0)`; `stats`
+  is now listed in Imports.
+* Corrected references to unshipped design documents and to theme keys that
+  do not exist.
+
+## Internal
+
+* `check_theme()` and `compile_typst()` are split into smaller helpers, the
+  "Quarto was not found" error comes from one place, and `render_onepager()`
+  inherits parameter documentation from `export_template()` and
+  `compile_typst()`. A `.lintr` file sets the lint settings, and a lint
+  workflow runs on every push.
 
 # onepagr 0.1.1
 

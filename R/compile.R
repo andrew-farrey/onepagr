@@ -266,8 +266,9 @@ fill_token_defaults <- function(path, data) {
   snapshot <- data
   for (name in names(data)) {
     value <- data[[name]]
-    if (is.character(value) && length(value) == 1L && !is.na(value) &&
-        grepl("{{{", value, fixed = TRUE)) {
+    refers_to_token <- is.character(value) && length(value) == 1L &&
+      !is.na(value) && grepl("{{{", value, fixed = TRUE)
+    if (refers_to_token) {
       data[[name]] <- whisker::whisker.render(value, snapshot)
     }
   }
@@ -290,19 +291,19 @@ extract_designed_pages <- function(path) {
 #'
 #' Raises a clear error listing every missing or NA token before whisker
 #' or Typst ever run, instead of letting a missing token silently render
-#' as blank text.
+#' as blank text. The tokens that count are the ones the template body
+#' uses, plus the ones needed by a default that `data` leaves in use (see
+#' [template_tokens()]). A blank value for one of them draws a warning
+#' unless the template declares `// allow-empty: token`, and a bar-chart
+#' `*_width` token must be a plain number from 0 to 100.
 #'
 #' @param path Character. Path to a .typ file.
 #' @param data Named list of whisker substitution values.
 #' @return Invisibly `TRUE` if validation passes.
 #' @examples
 #' path <- resolve_template("cohort_summary")
-#' required <- extract_required_tokens(path)
-#' # Placeholder values: validate_template_data() only checks presence/
-#' # non-NA, not real content, so this always passes regardless of which
-#' # tokens a given template actually needs.
-#' data <- setNames(as.list(rep("placeholder", length(required))), required)
-#' validate_template_data(path, data)
+#' # A complete example list passes; drop a required value and it errors.
+#' validate_template_data(path, example_data("cohort_summary"))
 #' @export
 validate_template_data <- function(path, data) {
   check_template_data(template_spec(path), data)

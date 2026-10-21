@@ -316,7 +316,10 @@ test_that("the shipped themes define exactly the keys onepagr knows", {
 
 test_that("an optional theme key of the wrong type is reported", {
   skip_if_no_typst_eval()
-  src <- sub("callout-text:", "callout-text: 12pt, unused-callout-text:", default_theme_lines(), fixed = TRUE)
+  src <- sub(
+    "callout-text:", "callout-text: 12pt, unused-callout-text:",
+    default_theme_lines(), fixed = TRUE
+  )
   path <- tempfile(fileext = ".typ")
   writeLines(src, path)
   on.exit(unlink(path))
