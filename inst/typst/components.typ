@@ -332,10 +332,9 @@
 // actions, resource/response listings, cluster-detection detail). The
 // body argument can contain arbitrary Typst markup -- bullet lists,
 // #link() calls, even embedded #bar-row()/#domain-bar() calls -- since
-// it's passed through as content, not re-parsed or restricted. See
-// docs/superpowers/specs/2026-08-16-spike-alert-templates-design.md,
-// Section 5, for the full rationale for one generic component instead
-// of several narrow ones.
+// it's passed through as content, not re-parsed or restricted. It is one
+// generic component instead of several narrow ones so a new alert section
+// needs no new component.
 //
 // Same accessible-heading fix as the LESSONS LEARNED/DISCLAIMER pattern
 // in cohort_summary/trend_snapshot: the show rule is a `set`-style rule
@@ -360,9 +359,7 @@
 // "critical" silently (e.g. R's TRUE becomes the string "TRUE", not
 // "true") -- without this guard, an R caller's mistake here would
 // silently downgrade a critical alert to warning styling with no error
-// anywhere. See this package's design doc,
-// docs/superpowers/specs/2026-08-16-spike-alert-templates-design.md,
-// Section 4, for why severity is data-driven in the first place.
+// anywhere. Severity is data-driven so one alert layout serves both levels.
 #let severity-palette(theme, level) = {
   if level == "critical" {
     (color: theme.severity-critical, bg: theme.severity-critical-bg, text: theme.severity-critical-text)
@@ -461,9 +458,11 @@
 // -- not silently different from the fixed-page templates, and not yet
 // resolved; revisit if Typst ever exposes a way to detect page
 // boundaries without an explicit #pagebreak().
-#let apply-base-styles(doc-title, org-full, theme, body, footer: none, margin-bottom: 0.85in) = {
+#let apply-base-styles(doc-title, org-full, theme, body, footer: none, margin-bottom: 0.85in, lang: "en") = {
   set document(title: [#doc-title], author: org-full)
-  set text(font: theme.body-font, size: theme.body-size)
+  // `lang` sets the document language that screen readers use (the PDF's
+  // /Lang entry); a Spanish bulletin should say "es", not the "en" default.
+  set text(font: theme.body-font, size: theme.body-size, lang: lang)
   // Hyphenation rendered as a literal "4" glyph at line-break points on
   // one real deployment's Liberation Sans (no discretionary-hyphen glyph
   // available there). Disabling sidesteps it; re-verify this is still

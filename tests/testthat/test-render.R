@@ -223,3 +223,33 @@ test_that("a re-render replaces the previous work folder", {
   expect_false(file.exists(file.path(work, "stale.txt")))
   expect_true(file.exists(file.path(work, "template_rendered.typ")))
 })
+
+test_that("every template takes an optional doc_lang that defaults to English", {
+  for (t in list_templates()) {
+    tokens <- template_tokens(t)
+    expect_equal(tokens$default[tokens$token == "doc_lang"], "en", info = t)
+  }
+})
+
+test_that("doc_lang reaches the Typst document language", {
+  dest <- tempfile()
+  export_template("overdose_spike_alert", dest)
+  on.exit(unlink(dest, recursive = TRUE))
+  path <- file.path(dest, "template.typ")
+  data <- utils::modifyList(
+    example_data("overdose_spike_alert"), list(doc_lang = "es")
+  )
+  out <- write_rendered_typ(path, fill_token_defaults(path, data))
+  expect_true(any(grepl("lang: \"es\"", readLines(out, warn = FALSE), fixed = TRUE)))
+})
+
+test_that("a Spanish document compiles", {
+  skip_if_not(quarto::quarto_available())
+  out <- tempfile(fileext = ".pdf")
+  on.exit(unlink(c(out, sub(".pdf", "_typst", out, fixed = TRUE)), recursive = TRUE))
+  data <- utils::modifyList(
+    example_data("overdose_spike_alert"), list(doc_lang = "es")
+  )
+  render_onepager(data, "overdose_spike_alert", output = out)
+  expect_true(file.exists(out))
+})

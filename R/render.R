@@ -73,7 +73,7 @@
 #' @param font_dir Character or `NULL`. Passed through to
 #'   [compile_typst()]'s `font_dir` argument, a directory of font files
 #'   to make available for this compile, in addition to system fonts, for
-#'   a theme's `text-font`/`heading-font` tokens that name a font not
+#'   a theme's `body-font` tokens that name a font not
 #'   installed system-wide (e.g. a Posit Workbench deployment without
 #'   permission to install fonts at the OS level). Default `NULL`.
 #' @return Character, the `output` path, invisibly.

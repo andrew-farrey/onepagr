@@ -245,11 +245,11 @@ templates that are already investigated and are not accessibility
 defects:
 
 - **"H/P element detected, but no corresponding structural element
-  exists," on the header/footer logos.** A false positive: each logo is
-  a raster image with the organization's name already carried as its
-  alt text, and the heuristic appears to independently read that same
-  name from the image's pixels, expecting matching text that
-  correctly doesn't exist.
+  exists," on the header/footer logos.** A false positive on the
+  fixed-page templates: each logo is a raster image with the
+  organization's name already carried as its alt text, and the heuristic
+  appears to independently read that same name from the image's pixels,
+  expecting matching text that correctly doesn't exist.
 - **"Table element detected, but no table structure exists," on a
   template's bar-chart rows.** Technically correct: those rows use
   Typst's `#grid()`, not `#table()`, so there is no `/Table` tag. Left
@@ -259,6 +259,14 @@ defects:
 Neither affects the PDF/UA or WCAG tabs, which is the actual
 conformance bar every built-in template is held to and where "100%
 passing" refers to.
+
+One real limitation is not something PAC flags: on the two alert templates
+(`overdose_spike_alert` and `syndromic_alert`) the page footer is a
+pagination artifact, so its logos, organization name and contact details are
+not in the document's structure tree and a screen reader does not read them.
+PDF/UA allows this, which is why every checker passes it. Put contact details
+in the body text of those templates (for example in `footnote_sources`). The
+fixed-page templates do not have this limitation.
 
 **Scope of these claims.** Every built-in template, rendered with each
 built-in theme from the bundled example data, has been checked with PAC

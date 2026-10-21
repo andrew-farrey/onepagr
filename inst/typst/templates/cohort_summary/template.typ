@@ -64,8 +64,9 @@
 // optional-token: heading_lessons = LESSONS LEARNED & IMPLICATIONS
 // optional-token: heading_disclaimer = DISCLAIMER
 // Optional data: the reader-facing text. Each one defaults to the text
-// shown here. Prefixes: strip_label_ and footer_label_ (metadata strip and
-// footer labels), stat_ (captions on numbers), bar_ (bar-row labels),
+// shown here. Prefixes used across the built-in templates (template_tokens()
+// lists this template's own): strip_label_ and footer_label_ (metadata strip
+// and footer labels), stat_ (captions on numbers), bar_ (bar-row labels),
 // text_ (paragraphs, bullets and notes), alt_ (chart and map alt text),
 // chips_ (a list of short items separated by |), figure_path and
 // map_title0. A default may refer to data tokens, as {{{n_total}}} does.
@@ -134,8 +135,7 @@
 
 // Template-specific tuning values -- unlike theme.typ's systemic tokens,
 // these are specific to how THIS template's content happens to lay out,
-// not something a different brand theme needs to know about. See this
-// package's design doc, Section 3, for the full rationale on this split.
+// not something a different brand theme needs to know about.
 #let layout = (
   // Right column (bullets + callout) is shorter than the left column's
   // two paragraphs in the BACKGROUND & RATIONALE / WHAT THIS DATA ADDS
@@ -179,6 +179,8 @@
 // optional-token: logo_partner_a_path =
 // optional-token: logo_partner_a_alt =
 // optional-token: show_partner_b = false
+// Document language for screen readers (a language code such as en, es, fr).
+// optional-token: doc_lang = en
 // optional-token: logo_partner_b_path =
 // optional-token: logo_partner_b_alt =
 // optional-token: header_texture_path = assets/header-texture.png
@@ -218,7 +220,7 @@
 // independently swept the same rigorous way -- if this page's content
 // grows in the future (more text, more bar-rows), re-verify the page
 // count directly rather than assuming this margin still holds.
-#apply-base-styles([{{{doc_title}}}], "{{{org_full}}}", theme, margin-bottom: 0pt)[
+#apply-base-styles([{{{doc_title}}}], "{{{org_full}}}", theme, margin-bottom: 0pt, lang: "{{{doc_lang}}}")[
 
 // ============================================================
 // HEADER

@@ -74,7 +74,7 @@ package assets).}
 \item{font_dir}{Character or \code{NULL}. Passed through to
 \code{\link[=compile_typst]{compile_typst()}}'s \code{font_dir} argument, a directory of font files
 to make available for this compile, in addition to system fonts, for
-a theme's \code{text-font}/\code{heading-font} tokens that name a font not
+a theme's \code{body-font} tokens that name a font not
 installed system-wide (e.g. a Posit Workbench deployment without
 permission to install fonts at the OS level). Default \code{NULL}.}
 }

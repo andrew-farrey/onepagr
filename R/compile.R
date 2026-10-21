@@ -399,7 +399,7 @@ clear_output_file <- function(output) {
 #'   `.otf`) to make available to Typst for this compile, passed through
 #'   as `--font-path`. Typst does not merge this with the system font
 #'   list: both system fonts and this directory are searched, so a
-#'   theme's `text-font`/`heading-font` tokens can name either a
+#'   theme's `body-font` tokens can name either a
 #'   system-installed font or one shipped here (confirmed directly:
 #'   `quarto typst fonts --font-path <dir>` lists a font from `<dir>`
 #'   alongside system fonts, not instead of them). Default `NULL` (system

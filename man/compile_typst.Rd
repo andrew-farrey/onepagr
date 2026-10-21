@@ -22,7 +22,7 @@ optional tokens.}
 \code{.otf}) to make available to Typst for this compile, passed through
 as \code{--font-path}. Typst does not merge this with the system font
 list: both system fonts and this directory are searched, so a
-theme's \code{text-font}/\code{heading-font} tokens can name either a
+theme's \code{body-font} tokens can name either a
 system-installed font or one shipped here (confirmed directly:
 \verb{quarto typst fonts --font-path <dir>} lists a font from \verb{<dir>}
 alongside system fonts, not instead of them). Default \code{NULL} (system
