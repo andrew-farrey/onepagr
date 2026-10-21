@@ -165,3 +165,72 @@ check_bracket_balance <- function(spec, data) {
   }
   invisible(TRUE)
 }
+
+# A value counts as missing when it is absent, empty, or NA.
+value_missing <- function(data, tok) {
+  value <- data[[tok]]
+  length(value) == 0L || is.na(value)[1]
+}
+
+# Token names referenced as {{{name}}} inside the supplied string values.
+tokens_referenced_in_values <- function(data) {
+  pattern <- "[{][{][{][[:space:]]*([A-Za-z0-9_]+)[[:space:]]*[}][}][}]"
+  texts <- unlist(lapply(data, function(v) {
+    if (is.character(v) && length(v) == 1L && !is.na(v)) v
+  }), use.names = FALSE)
+  found <- unlist(regmatches(texts, gregexpr(pattern, texts, perl = TRUE)))
+  unique(sub(pattern, "\\1", found, perl = TRUE))
+}
+
+#' Check data against what a template needs, before anything is rendered
+#'
+#' Internal. A token is needed when the template body uses it and it has no
+#' default; when it is used only by the default of an optional token that
+#' `data` leaves out (so that default will be used); or when a value in
+#' `data` refers to it as `{{{token}}}`. A needed token that is missing or
+#' `NA` stops with an error naming every one. A needed token that is blank
+#' gets a warning, unless the template declares `// allow-empty: token`.
+#'
+#' @param spec A [template_spec()].
+#' @param data Named list of values (before defaults are filled in).
+#' @return `invisible(TRUE)`.
+#' @noRd
+check_template_data <- function(spec, data) {
+  tokens <- spec$tokens
+  omitted <- names(spec$defaults)[vapply(
+    names(spec$defaults), function(tok) value_missing(data, tok), logical(1)
+  )]
+  uses_omitted_default <- vapply(tokens$needed_by, function(by) {
+    !is.na(by) && any(trimws(strsplit(by, ",", fixed = TRUE)[[1]]) %in% omitted)
+  }, logical(1))
+  referenced <- setdiff(tokens_referenced_in_values(data), names(spec$defaults))
+  needed <- unique(c(
+    tokens$token[tokens$kind == "required"],
+    tokens$token[tokens$kind == "conditional" & uses_omitted_default],
+    referenced
+  ))
+
+  missing <- needed[vapply(needed, function(tok) value_missing(data, tok), NA)]
+  if (length(missing) > 0) {
+    stop(
+      "Missing or NA required token(s) for ", basename(spec$path), ": ",
+      paste(missing, collapse = ", "),
+      call. = FALSE
+    )
+  }
+
+  blank <- needed[vapply(needed, function(tok) {
+    value <- data[[tok]]
+    is.character(value) && !nzchar(trimws(value[1]))
+  }, NA)]
+  blank <- setdiff(blank, spec$allow_empty)
+  if (length(blank) > 0) {
+    warning(
+      "Blank value for required token(s): ", paste(blank, collapse = ", "),
+      '. If blank is intended, declare "// allow-empty: ', blank[1],
+      '" in the template.',
+      call. = FALSE
+    )
+  }
+  invisible(TRUE)
+}

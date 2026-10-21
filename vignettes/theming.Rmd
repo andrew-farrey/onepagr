@@ -412,10 +412,11 @@ A few things to know:
   `$`, `*`, `_`, `#` or a backtick literally, put a backslash before it.
   Alt text (`alt_*`) is plain text, and should not contain a double quote.
 * The number in a default is filled from your data. A default such as
-  `Results (N = {{{n_total}}})` uses your `n_total`. Your own replacement is
-  used exactly as written, so type any numbers into it yourself. The token in
-  the default is still required, because the template needs it whether or
-  not you keep the default text.
+  `Results (N = {{{n_total}}})` uses your `n_total`. Your own replacement can
+  refer to a token the same way (`{{{n_total}}}` is filled from your data),
+  or you can type the number into it yourself. A token that only a default
+  refers to is needed only while that default is in use: reword the default
+  and you no longer have to supply that token.
 * Headings stay real headings in the PDF's structure whatever text you give
   them, so screen readers and the document outline keep working. Update the
   `alt_*` text whenever you change what a chart or map shows.

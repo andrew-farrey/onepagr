@@ -199,8 +199,10 @@
 #v(theme.space-sm)
 
 // Optional -- see overdose_spike_alert/template.typ's identical comment
-// on show_resources for why cluster_text still needs a value ("") even
-// when show_cluster is false.
+// on show_resources for why cluster_text and resources_text still need a
+// value ("") even when their section is switched off. Blank is intended
+// for both, so they are declared here.
+// allow-empty: cluster_text, resources_text
 #if bool-token("show_cluster", "{{{show_cluster}}}") [
   // brand-accent-text, not brand-accent -- see
   // overdose_spike_alert/template.typ's identical comment on this exact

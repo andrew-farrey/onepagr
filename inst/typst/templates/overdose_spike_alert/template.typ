@@ -209,7 +209,9 @@
 // data list must still supply resources_text (as "" when unused) even
 // when show_resources is false: validate_template_data() doesn't parse
 // Typst #if blocks, so every {{{token}}} in this file always needs SOME
-// value -- see design doc Section 3.
+// value. A blank value is intended here, so it is declared below and
+// does not draw a blank-value warning.
+// allow-empty: resources_text
 // ============================================================
 #if bool-token("show_resources", "{{{show_resources}}}") [
   #v(theme.space-sm)

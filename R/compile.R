@@ -165,10 +165,10 @@ template_data <- function(
     if (want_required) {
       # A default can refer to a required token (e.g. a heading default of
       # "Results (N = {{{n_total}}})"); resolve that here against the real
-      # required values already in `out`, the same resolution
-      # fill_token_defaults() performs at render time, so a value this
-      # function returns is always finished text, never leftover
-      # {{{...}}} markup a caller would have to notice and fix.
+      # values already in `out`, the same resolution fill_token_defaults()
+      # performs at render time, so the "both" result is finished text.
+      # (With tokens = "optional" the defaults come back unresolved; they are
+      # resolved when rendered, so merging them over real values is safe.)
       out <- fill_token_defaults(resolve_template(template), out)
     } else {
       out <- c(out, optional_defaults)
@@ -202,6 +202,9 @@ warn_unknown_tokens <- function(path, data) {
     return(invisible(character(0)))
   }
   hint <- function(name) {
+    if (length(own) == 0) {
+      return("")
+    }
     distance <- drop(utils::adist(name, own))
     closest <- which.min(distance)
     if (distance[closest] <= max(2, floor(nchar(name) / 4))) {
@@ -257,6 +260,17 @@ fill_token_defaults <- function(path, data) {
   for (tok in omitted) {
     data[[tok]] <- whisker::whisker.render(defaults[[tok]], data)
   }
+  # Any other value that still refers to a token (one the caller typed, or one
+  # from template_data("optional")) is resolved the same way, once, against
+  # the data as it stands, so literal {{{token}}} markup never reaches the PDF.
+  snapshot <- data
+  for (name in names(data)) {
+    value <- data[[name]]
+    if (is.character(value) && length(value) == 1L && !is.na(value) &&
+        grepl("{{{", value, fixed = TRUE)) {
+      data[[name]] <- whisker::whisker.render(value, snapshot)
+    }
+  }
   data
 }
 
@@ -291,20 +305,7 @@ extract_designed_pages <- function(path) {
 #' validate_template_data(path, data)
 #' @export
 validate_template_data <- function(path, data) {
-  tokens <- template_spec(path)$tokens
-  required <- tokens$token[tokens$kind %in% c("required", "conditional")]
-  is_missing <- function(tok) {
-    !tok %in% names(data) || length(data[[tok]]) == 0 || is.na(data[[tok]])[1]
-  }
-  problems <- required[vapply(required, is_missing, logical(1))]
-  if (length(problems) > 0) {
-    stop(
-      "Missing or NA required token(s) for ", basename(path), ": ",
-      paste(problems, collapse = ", "),
-      call. = FALSE
-    )
-  }
-  invisible(TRUE)
+  check_template_data(template_spec(path), data)
 }
 
 #' Render a template with whisker and write the result next to it
@@ -414,9 +415,12 @@ clear_output_file <- function(output) {
 compile_typst <- function(path, data, output, font_dir = NULL) {
   data <- coerce_data_values(data)
   warn_unknown_tokens(path, data)
-  check_bracket_balance(template_spec(path), data)
+  spec <- template_spec(path)
+  check_bracket_balance(spec, data)
+  # Checked before the defaults are filled in, so it is known which optional
+  # tokens were left out and which default-only tokens that makes necessary.
+  check_template_data(spec, data)
   data <- fill_token_defaults(path, data)
-  validate_template_data(path, data)
 
   quarto_bin <- quarto_bin_or_stop()
 

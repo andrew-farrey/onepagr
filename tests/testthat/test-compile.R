@@ -301,9 +301,10 @@ test_that("fill_token_defaults renders a default against the data", {
   out <- fill_token_defaults(tmp, list(n_total = "12", heading_y = "Mine"))
   expect_equal(out$heading_x, "Results (N = 12) & more")
   expect_equal(out$heading_y, "Mine")
-  # A supplied value is taken literally, never rendered again.
+  # A supplied value that refers to a token is resolved too, so literal
+  # {{{token}}} markup never reaches the PDF.
   out <- fill_token_defaults(tmp, list(n_total = "12", heading_x = "{{{n_total}}}"))
-  expect_equal(out$heading_x, "{{{n_total}}}")
+  expect_equal(out$heading_x, "12")
 })
 
 test_that("compile_typst fills an omitted optional token from its default", {
@@ -366,4 +367,101 @@ test_that("compile_typst errors when it cannot clear the existing output path", 
   out <- file.path(dir, "out.pdf")
   dir.create(out)
   expect_error(compile_typst(good, list(), out), "Cannot replace the existing output file")
+})
+
+test_that("warn_unknown_tokens does not crash on a template with no tokens", {
+  tmp <- tempfile(fileext = ".typ")
+  writeLines(c("#set document(title: [Plain])", "Hello"), tmp)
+  on.exit(unlink(tmp))
+  expect_warning(warn_unknown_tokens(tmp, list(foo = "x")), "foo")
+})
+
+test_that("a token only an overridden default uses is not required", {
+  path <- resolve_template("cohort_summary")
+  data <- example_data("cohort_summary")
+  data$heading_timing <- "TIMING TO REFERENCE DATE"
+  data$timing_denom <- NULL
+  expect_true(validate_template_data(path, data))
+})
+
+test_that("a token a default in use needs is still required", {
+  path <- resolve_template("cohort_summary")
+  data <- example_data("cohort_summary")
+  data$timing_denom <- NULL
+  expect_error(validate_template_data(path, data), "timing_denom")
+})
+
+test_that("a token referenced inside a supplied value is required", {
+  tmp <- tempfile(fileext = ".typ")
+  writeLines("{{{heading}}}", tmp)
+  on.exit(unlink(tmp))
+  expect_error(
+    validate_template_data(tmp, list(heading = "N = {{{n_total}}}")),
+    "n_total"
+  )
+  expect_true(
+    validate_template_data(tmp, list(heading = "N = {{{n_total}}}", n_total = "5"))
+  )
+})
+
+test_that("a blank required value warns unless the template allows it", {
+  tmp <- tempfile(fileext = ".typ")
+  writeLines("#text[{{{greeting}}}]", tmp)
+  allowed <- tempfile(fileext = ".typ")
+  writeLines(c("// allow-empty: greeting", "#text[{{{greeting}}}]"), allowed)
+  on.exit(unlink(c(tmp, allowed)))
+  expect_warning(validate_template_data(tmp, list(greeting = "")), "Blank value")
+  expect_warning(validate_template_data(tmp, list(greeting = "   ")), "greeting")
+  expect_no_warning(validate_template_data(allowed, list(greeting = "")))
+})
+
+test_that("the alert templates accept a blank text for a switched-off section", {
+  syndromic <- utils::modifyList(
+    example_data("syndromic_alert"),
+    list(show_cluster = "false", cluster_text = "")
+  )
+  expect_no_warning(
+    validate_template_data(resolve_template("syndromic_alert"), syndromic)
+  )
+  for (t in c("overdose_spike_alert", "syndromic_alert")) {
+    data <- utils::modifyList(
+      example_data(t), list(show_resources = "false", resources_text = "")
+    )
+    expect_no_warning(validate_template_data(resolve_template(t), data))
+  }
+})
+
+test_that("fill_token_defaults resolves token references in a supplied value", {
+  tmp <- tempfile(fileext = ".typ")
+  writeLines(
+    c(
+      "// optional-token: heading_x = Results (N = {{{n_total}}})",
+      "{{{heading_x}}} {{{n_total}}}"
+    ),
+    tmp
+  )
+  on.exit(unlink(tmp))
+  out <- fill_token_defaults(
+    tmp, list(n_total = "12", heading_x = "N is {{{n_total}}}")
+  )
+  expect_equal(out$heading_x, "N is 12")
+})
+
+test_that("optional defaults merged over example data leave no braces", {
+  base <- template_data("overdose_spike_alert", "optional")
+  merged <- utils::modifyList(base, example_data("overdose_spike_alert"))
+  out <- fill_token_defaults(resolve_template("overdose_spike_alert"), merged)
+  expect_false(any(grepl("{{{", unlist(out), fixed = TRUE)))
+})
+
+test_that("rendering template_data('optional') values leaves no literal braces", {
+  skip_if_not(quarto::quarto_available())
+  skip_if_not_installed("pdftools")
+  base <- template_data("overdose_spike_alert", "optional")
+  merged <- utils::modifyList(base, example_data("overdose_spike_alert"))
+  out <- tempfile(fileext = ".pdf")
+  on.exit(unlink(c(out, sub("\\.pdf$", "_typst", out)), recursive = TRUE))
+  render_onepager(merged, "overdose_spike_alert", output = out)
+  text <- paste(pdftools::pdf_text(out), collapse = "\n")
+  expect_false(grepl("{{{", text, fixed = TRUE))
 })
