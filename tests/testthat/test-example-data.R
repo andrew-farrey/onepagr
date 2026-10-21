@@ -29,9 +29,11 @@ test_that("template_data defaults to every token, required and optional", {
 test_that("template_data with tokens = \"required\" returns only those", {
   info <- template_tokens("cohort_summary")
   data <- template_data("cohort_summary", "required")
-  required_names <- info$token[info$required]
-  expect_setequal(names(data), required_names)
-  expect_setequal(attr(data, "required"), required_names)
+  # Every token with no default of its own: the ones used in the body, plus
+  # the ones only a default refers to, which the starter list needs so its
+  # default wording renders.
+  expect_setequal(names(data), info$token[is.na(info$default)])
+  expect_setequal(attr(data, "required"), info$token[info$required])
   # Values come from the same example a user would otherwise have to
   # read out of a test fixture or the vignette by hand.
   expect_equal(data$n_decedents, example_data("cohort_summary")$n_decedents)
@@ -40,7 +42,7 @@ test_that("template_data with tokens = \"required\" returns only those", {
 test_that("template_data with tokens = \"optional\" returns those at default", {
   info <- template_tokens("cohort_summary")
   data <- template_data("cohort_summary", "optional")
-  optional_names <- info$token[!info$required]
+  optional_names <- info$token[!is.na(info$default)]
   expect_setequal(names(data), optional_names)
   expect_length(attr(data, "required"), 0)
   expect_equal(
