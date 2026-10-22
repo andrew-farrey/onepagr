@@ -181,7 +181,7 @@ test_that("install_quarto downloads and extracts the macOS tar.gz", {
     add = TRUE
   )
   testthat::local_mocked_bindings(Sys.info = function() {
-    c(sysname = "Darwin")
+    c(sysname = "Darwin", machine = "arm64")
   }, .package = "base")
   testthat::local_mocked_bindings(
     R_user_dir = function(...) tempfile("onepagr-test-"),
@@ -200,7 +200,9 @@ test_that("install_quarto downloads and extracts the macOS tar.gz", {
     # extraction would produce.
     untar = function(tarfile, exdir) {
       calls$untar_exdir <- exdir
-      bin_dir <- file.path(exdir, "quarto-9.9.9", "bin")
+      # The real macOS archive unpacks bin/ and share/ at its root, with no
+      # quarto-<version>/ folder.
+      bin_dir <- file.path(exdir, "bin")
       dir.create(bin_dir, recursive = TRUE, showWarnings = FALSE)
       file.create(file.path(bin_dir, "quarto"))
       invisible(0)
@@ -215,7 +217,7 @@ test_that("install_quarto downloads and extracts the macOS tar.gz", {
   expect_true(
     grepl("quarto-9.9.9-macos.tar.gz", calls$download_url, fixed = TRUE)
   )
-  expect_equal(calls$untar_exdir, install_dir)
+  expect_equal(calls$untar_exdir, file.path(install_dir, "quarto-9.9.9"))
 })
 
 test_that("install_quarto downloads and extracts the Linux tar.gz", {
@@ -229,7 +231,7 @@ test_that("install_quarto downloads and extracts the Linux tar.gz", {
     add = TRUE
   )
   testthat::local_mocked_bindings(Sys.info = function() {
-    c(sysname = "Linux")
+    c(sysname = "Linux", machine = "x86_64")
   }, .package = "base")
   testthat::local_mocked_bindings(
     R_user_dir = function(...) tempfile("onepagr-test-"),
@@ -278,7 +280,9 @@ test_that("set_quarto_path sets QUARTO_PATH for the current session", {
     set_quarto_path(quarto_bin, persist = FALSE),
     "QUARTO_PATH set to"
   )
-  expect_equal(Sys.getenv("QUARTO_PATH"), quarto_bin)
+  expect_equal(
+    Sys.getenv("QUARTO_PATH"), normalizePath(quarto_bin, winslash = "/")
+  )
 })
 
 test_that("set_quarto_path errors clearly on a nonexistent path", {
@@ -328,7 +332,8 @@ test_that("set_quarto_path persists to renviron_path when persist = TRUE", {
   expect_true(file.exists(renviron_path))
   lines <- readLines(renviron_path)
   expect_true(any(grepl(
-    paste0('QUARTO_PATH="', quarto_bin, '"'), lines, fixed = TRUE
+    paste0('QUARTO_PATH="', normalizePath(quarto_bin, winslash = "/"), '"'),
+    lines, fixed = TRUE
   )))
 })
 

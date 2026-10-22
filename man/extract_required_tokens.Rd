@@ -22,18 +22,16 @@ triple-brace substitution only, no Mustache sections or partials.
 \details{
 \verb{//} line comments are stripped before scanning: Typst templates
 routinely document the triple-brace convention with a literal
-\code{{{{token}}}} example in a header comment (this is a real case, not
-hypothetical; the reference trend-snapshot template does exactly
-this), and without stripping comments first, that illustrative example
-is indistinguishable from a real required token. \verb{//} is unambiguously
-a comment marker in Typst (division is a single \code{/}), so this is safe
-for any Typst source: the one caveat is a literal \verb{//} inside a
-string constant in the template's own code (not data, which arrives
-via tokens), which onepagr's built-in templates never do.
+\code{{{{token}}}} example in a header comment, and without stripping
+comments first, that illustrative example is indistinguishable from a
+real required token. A \verb{//} inside a quoted string, or directly after a
+colon (the \verb{://} of a URL), is text, not a comment, so a token after a
+URL on the same line is still found.
 
 A token with a declared default (see the optional-token marker in
 \code{\link[=compile_typst]{compile_typst()}}) is not required, so it is left out of the result.
-A default can refer to other tokens (\code{{{{token}}}}); those are required.
+A token that only a default refers to is not listed here either: it is
+needed only while that default is in use (see \code{\link[=template_tokens]{template_tokens()}}).
 }
 \examples{
 path <- resolve_template("cohort_summary")

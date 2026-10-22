@@ -82,6 +82,8 @@
   brand-sky: rgb("#62bcf0"),
   card-bg: rgb("#ebebeb"),
   callout-bg: rgb("#e5f3fa"),
+  // Body text inside callout boxes. Keep it readable on callout-bg (4.5:1).
+  callout-text: rgb("#1a3a7a"),
   lessons-bg: rgb("#e5f3fa"),
   lessons-text: rgb("#012a5c"),
   disclaimer-bg: rgb("#e3e1d3"),

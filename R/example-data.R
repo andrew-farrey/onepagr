@@ -27,15 +27,19 @@ example_data <- function(template) {
   # for every other function that takes a template name; the result
   # itself isn't needed here, only the check.
   resolve_template(template)
-  file <- switch(
-    template,
-    cohort_summary = ,
-    trend_snapshot = "cohort_summary.R",
-    overdose_spike_alert = "overdose_spike_alert.R",
-    syndromic_alert = "syndromic_alert.R",
-    county_choropleth = "county_choropleth.R"
-  )
+  # Each template's example lives in inst/examples/<template>.R; a template
+  # that deliberately shares another's numbers is listed here.
+  shared <- c(trend_snapshot = "cohort_summary")
+  stem <- if (template %in% names(shared)) shared[[template]] else template
+  file <- paste0(stem, ".R")
   path <- system.file("examples", file, package = "onepagr")
+  if (!nzchar(path)) {
+    stop(
+      "No example data for template \"", template, "\": expected ",
+      "inst/examples/", file, ".",
+      call. = FALSE
+    )
+  }
   env <- new.env(parent = baseenv())
   sys.source(path, envir = env)
   env$example_data

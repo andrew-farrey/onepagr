@@ -36,11 +36,10 @@ this function, to avoid requiring elevated-privilege automation. On
 macOS and Linux, the release archive is downloaded and extracted
 directly into the user-local install directory.
 
-Before shipping: verify the exact release archive filename pattern
-used below against quarto-dev/quarto-cli's current GitHub releases page
-(https://github.com/quarto-dev/quarto-cli/releases); release asset
-naming has changed across Quarto versions historically, so this should
-be confirmed against a live release rather than assumed to still match.
+On Linux the build for the machine's architecture is downloaded (\code{amd64}
+or \code{arm64}). The archive is extracted into \verb{quarto-<version>/} under the
+install directory and the \code{bin/quarto} binary is located inside it, so the
+different archive layouts per platform do not matter.
 
 The default \code{version} below must bundle a Typst new enough for
 \code{\link[=check_quarto]{check_quarto()}}'s own minimum (see that function's docs for why

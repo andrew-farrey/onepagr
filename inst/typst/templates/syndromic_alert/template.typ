@@ -4,9 +4,7 @@
 // Modeled on ESSENCE-style syndromic surveillance alerts, but
 // deliberately NOT overdose- or ESSENCE-specific -- alert_condition is a
 // free token so this template also fits influenza-like illness,
-// heat/cold events, or any other syndrome. See this package's design
-// doc, docs/superpowers/specs/2026-08-16-spike-alert-templates-design.md,
-// Section 7.
+// heat/cold events, or any other syndrome.
 //
 // Natural pagination (no #pagebreak()) -- same rationale as
 // overdose_spike_alert/template.typ.
@@ -35,8 +33,9 @@
 // optional-token: label_actions = RECOMMENDED ACTIONS
 // optional-token: label_resources = RESOURCES
 // Optional data: the reader-facing text. Each one defaults to the text
-// shown here. Prefixes: strip_label_ and footer_label_ (metadata strip and
-// footer labels), stat_ (captions on numbers), bar_ (bar-row labels),
+// shown here. Prefixes used across the built-in templates (template_tokens()
+// lists this template's own): strip_label_ and footer_label_ (metadata strip
+// and footer labels), stat_ (captions on numbers), bar_ (bar-row labels),
 // text_ (paragraphs, bullets and notes), alt_ (chart and map alt text),
 // chips_ (a list of short items separated by |), figure_path and
 // map_title0. A default may refer to data tokens, as {{{n_total}}} does.
@@ -70,6 +69,8 @@
 // optional-token: logo_partner_a_path =
 // optional-token: logo_partner_a_alt =
 // optional-token: show_partner_b = false
+// Document language for screen readers (a language code such as en, es, fr).
+// optional-token: doc_lang = en
 // optional-token: logo_partner_b_path =
 // optional-token: logo_partner_b_alt =
 // optional-token: header_texture_path = assets/header-texture.png
@@ -91,7 +92,7 @@
 // footer is still passed here (not self-placed) -- see the identical
 // comment in overdose_spike_alert/template.typ (same rationale: no
 // #pagebreak() to hook a per-page placement onto).
-#apply-base-styles([{{{doc_title}}}], "{{{org_full}}}", theme, footer: footer)[
+#apply-base-styles([{{{doc_title}}}], "{{{org_full}}}", theme, footer: footer, lang: "{{{doc_lang}}}")[
 
 #block(width: 100%, fill: theme-grad.brand-blue-grad, clip: true, inset: (x: sp(theme, 20pt), y: sp(theme, 10pt)), above: 0pt, below: 0pt)[
   #place(top + right, dx: 40pt, dy: -30pt)[
@@ -199,8 +200,10 @@
 #v(theme.space-sm)
 
 // Optional -- see overdose_spike_alert/template.typ's identical comment
-// on show_resources for why cluster_text still needs a value ("") even
-// when show_cluster is false.
+// on show_resources for why cluster_text and resources_text still need a
+// value ("") even when their section is switched off. Blank is intended
+// for both, so they are declared here.
+// allow-empty: cluster_text, resources_text
 #if bool-token("show_cluster", "{{{show_cluster}}}") [
   // brand-accent-text, not brand-accent -- see
   // overdose_spike_alert/template.typ's identical comment on this exact

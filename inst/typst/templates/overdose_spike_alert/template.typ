@@ -1,9 +1,7 @@
 // overdose_spike_alert -- anomaly/threshold framing: an observed value
 // crossed a threshold in a specific place/time, here's what to do about
-// it. Modeled on ODMAP-style overdose spike bulletins -- see this
-// package's design doc,
-// docs/superpowers/specs/2026-08-16-spike-alert-templates-design.md,
-// Section 6, for the full field list and rationale.
+// it. Modeled on ODMAP-style overdose spike bulletins; template_tokens()
+// lists the full set of fields.
 //
 // Unlike cohort_summary/trend_snapshot, this template uses NATURAL
 // pagination -- no #pagebreak() -- since alert bulletins vary in length
@@ -39,8 +37,9 @@
 // optional-token: label_actions = RECOMMENDED ACTIONS
 // optional-token: label_resources = LOCAL RESPONSE RESOURCES
 // Optional data: the reader-facing text. Each one defaults to the text
-// shown here. Prefixes: strip_label_ and footer_label_ (metadata strip and
-// footer labels), stat_ (captions on numbers), bar_ (bar-row labels),
+// shown here. Prefixes used across the built-in templates (template_tokens()
+// lists this template's own): strip_label_ and footer_label_ (metadata strip
+// and footer labels), stat_ (captions on numbers), bar_ (bar-row labels),
 // text_ (paragraphs, bullets and notes), alt_ (chart and map alt text),
 // chips_ (a list of short items separated by |), figure_path and
 // map_title0. A default may refer to data tokens, as {{{n_total}}} does.
@@ -76,6 +75,8 @@
 // optional-token: logo_partner_a_path =
 // optional-token: logo_partner_a_alt =
 // optional-token: show_partner_b = false
+// Document language for screen readers (a language code such as en, es, fr).
+// optional-token: doc_lang = en
 // optional-token: logo_partner_b_path =
 // optional-token: logo_partner_b_alt =
 // optional-token: header_texture_path = assets/header-texture.png
@@ -107,7 +108,7 @@
 // the footer logos here are still Artifact-excluded from the PDF's
 // accessibility tree, a known, not-yet-resolved gap specific to the two
 // natural-pagination templates.
-#apply-base-styles([{{{doc_title}}}], "{{{org_full}}}", theme, footer: footer)[
+#apply-base-styles([{{{doc_title}}}], "{{{org_full}}}", theme, footer: footer, lang: "{{{doc_lang}}}")[
 
 // ============================================================
 // HEADER (same idiom as cohort_summary/trend_snapshot)
@@ -187,7 +188,7 @@
 // which sub-areas are affected varies alert-to-alert and isn't bounded
 // to a fixed count. The caller can embed real #bar-row(theme, ...) calls
 // directly in geo_breakdown_text for the proportional-bar visual
-// treatment, or plain text/bullets -- see design doc Section 6.
+// treatment, or plain text/bullets.
 // ============================================================
 #text-box(theme, theme-grad, [{{{label_geo_breakdown}}}], [{{{geo_breakdown_text}}}])
 
@@ -209,7 +210,9 @@
 // data list must still supply resources_text (as "" when unused) even
 // when show_resources is false: validate_template_data() doesn't parse
 // Typst #if blocks, so every {{{token}}} in this file always needs SOME
-// value -- see design doc Section 3.
+// value. A blank value is intended here, so it is declared below and
+// does not draw a blank-value warning.
+// allow-empty: resources_text
 // ============================================================
 #if bool-token("show_resources", "{{{show_resources}}}") [
   #v(theme.space-sm)

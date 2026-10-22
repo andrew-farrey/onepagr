@@ -110,8 +110,11 @@ By default, `render_onepager()` leaves the resolved `.typ` source
 (and everything it needs to recompile: the theme, shared components,
 and assets) next to your output PDF, in a folder named after it, here
 something like `<tempfile>_typst/`. That's deliberate: the actual Typst
-source is never hidden, even if you never open it. If you want only the
-PDF and nothing else, pass `keep_typst = FALSE`.
+source is never hidden, even if you never open it. In that folder,
+`template_rendered.typ` is the file with your data filled in (compile that
+one); `template.typ` is the template as shipped, placeholders and all, and
+will not compile on its own. Each render replaces the folder. If you want
+only the PDF and nothing else, pass `keep_typst = FALSE`.
 
 ## Picking a theme
 

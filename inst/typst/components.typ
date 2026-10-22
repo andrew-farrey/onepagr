@@ -24,11 +24,15 @@
 // breaking the compile with "unclosed delimiter" (county_choropleth's
 // footnote, which needs a literal footnote-marker asterisk). Escape with
 // a leading backslash ("\@", "\$", "\*") wherever a literal one of these
-// characters is needed inside markup body text -- and note this only
-// fixes a token spliced into markup SOURCE text; a token substituted
-// into a quoted Typst STRING argument instead needs no escaping at all
-// (see county_choropleth's contact-email comment for why those two
-// substitution contexts behave differently).
+// characters is needed inside markup body text (or run plain text through
+// onepagr::typst_escape()). A value in markup body text IS Typst markup by
+// design: "*bold*" works and "#link(...)" embeds a link.
+//
+// A token inside a quoted Typst STRING argument behaves differently: it is
+// never markup, so a "\@" there is wrong, and onepagr escapes the
+// characters that would end or break the string (a double quote, a
+// backslash, a newline) automatically when it renders the template. The
+// caller escapes nothing for those tokens.
 
 // Type and spacing controls. A theme carries three settings: min-font-size
 // (no text renders smaller than this; 0pt means no floor), font-scale, and
@@ -107,20 +111,25 @@
   radius: theme.radius-card, inset: (x: sp(theme, 8pt), y: sp(theme, 6pt)), width: 100%,
 )[
   #text(size: fs(theme, 20pt), weight: "bold", fill: if color == none { theme.brand-blue } else { color })[#num] \
-  #text(size: fs(theme, 8.5pt), fill: if text-color == none { rgb("#1a3a7a") } else { text-color })[#body-text]
+  #text(size: fs(theme, 8.5pt), fill: if text-color == none { theme.at("callout-text", default: rgb("#1a3a7a")) } else { text-color })[#body-text]
 ]
 
 // Composition bar row: label, proportional bar, "% . n=" text AFTER the
 // bar (not inside the fill) -- composition shares can range very wide
 // (e.g. 1% to 86%), too wide a range for text-inside-the-fill to hold up
 // at the low end.
+// Keeps a bar inside its track: a value above 100 or below 0 would otherwise
+// overflow the track and paint over the label. The printed label still shows
+// the value as given.
+#let bar-pct(pct) = calc.clamp(pct, 0, 100)
+
 #let bar-row(theme, label, pct, n, label-width: 75pt, muted: false) = grid(
   columns: (fd(theme, label-width), 1fr, auto),
   column-gutter: sp(theme, 8pt),
   align: (right, left, left),
   [#text(size: fs(theme, 8.5pt), fill: theme.text-secondary)[#label]],
   box(fill: white, stroke: theme.stroke-hairline + theme.border-color, radius: 3pt, height: fd(theme, 14pt), width: 100%)[
-    #box(fill: if muted { theme.text-muted } else { theme.brand-blue }, stroke: theme.stroke-fill + black, radius: 3pt, height: 100%, width: pct * 1%)
+    #box(fill: if muted { theme.text-muted } else { theme.brand-blue }, stroke: theme.stroke-fill + black, radius: 3pt, height: 100%, width: bar-pct(pct) * 1%)
   ],
   [#text(size: fs(theme, 8.5pt), fill: black, weight: "bold")[#pct% #sym.dot.c n = #n]],
 )
@@ -133,7 +142,7 @@
   align: (right, left, left),
   [#text(size: fs(theme, 7.5pt), fill: theme.text-secondary)[#label]],
   box(fill: white, stroke: theme.stroke-hairline + theme.border-color, radius: 3pt, height: fd(theme, 12pt), width: 100%)[
-    #box(fill: theme.brand-blue, stroke: theme.stroke-fill + black, radius: 3pt, height: 100%, width: (value / max * 100) * 1%)
+    #box(fill: theme.brand-blue, stroke: theme.stroke-fill + black, radius: 3pt, height: 100%, width: bar-pct(value / max * 100) * 1%)
   ],
   [#text(size: fs(theme, 7.5pt), fill: black, weight: "bold")[+#value units]],
 )
@@ -323,10 +332,9 @@
 // actions, resource/response listings, cluster-detection detail). The
 // body argument can contain arbitrary Typst markup -- bullet lists,
 // #link() calls, even embedded #bar-row()/#domain-bar() calls -- since
-// it's passed through as content, not re-parsed or restricted. See
-// docs/superpowers/specs/2026-08-16-spike-alert-templates-design.md,
-// Section 5, for the full rationale for one generic component instead
-// of several narrow ones.
+// it's passed through as content, not re-parsed or restricted. It is one
+// generic component instead of several narrow ones so a new alert section
+// needs no new component.
 //
 // Same accessible-heading fix as the LESSONS LEARNED/DISCLAIMER pattern
 // in cohort_summary/trend_snapshot: the show rule is a `set`-style rule
@@ -351,9 +359,7 @@
 // "critical" silently (e.g. R's TRUE becomes the string "TRUE", not
 // "true") -- without this guard, an R caller's mistake here would
 // silently downgrade a critical alert to warning styling with no error
-// anywhere. See this package's design doc,
-// docs/superpowers/specs/2026-08-16-spike-alert-templates-design.md,
-// Section 4, for why severity is data-driven in the first place.
+// anywhere. Severity is data-driven so one alert layout serves both levels.
 #let severity-palette(theme, level) = {
   if level == "critical" {
     (color: theme.severity-critical, bg: theme.severity-critical-bg, text: theme.severity-critical-text)
@@ -452,9 +458,11 @@
 // -- not silently different from the fixed-page templates, and not yet
 // resolved; revisit if Typst ever exposes a way to detect page
 // boundaries without an explicit #pagebreak().
-#let apply-base-styles(doc-title, org-full, theme, body, footer: none, margin-bottom: 0.85in) = {
+#let apply-base-styles(doc-title, org-full, theme, body, footer: none, margin-bottom: 0.85in, lang: "en") = {
   set document(title: [#doc-title], author: org-full)
-  set text(font: theme.body-font, size: theme.body-size)
+  // `lang` sets the document language that screen readers use (the PDF's
+  // /Lang entry); a Spanish bulletin should say "es", not the "en" default.
+  set text(font: theme.body-font, size: theme.body-size, lang: lang)
   // Hyphenation rendered as a literal "4" glyph at line-break points on
   // one real deployment's Liberation Sans (no discretionary-hyphen glyph
   // available there). Disabling sidesteps it; re-verify this is still

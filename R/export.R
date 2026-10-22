@@ -19,6 +19,11 @@
 #' @param theme Character. A built-in theme name, or a path to a custom
 #'   theme .typ file, to resolve and copy in as `theme.typ`. Default
 #'   `"default"`.
+#' @param theme_path Character or `NULL`. Explicit theme file path override,
+#'   as in [render_onepager()]; when supplied, `theme` is ignored.
+#' @param overwrite Logical. If `dest` already holds an exported template,
+#'   `FALSE` (the default) stops with an error so hand edits are not lost;
+#'   `TRUE` replaces the files.
 #' @return Character, `dest`, invisibly.
 #' @examples
 #' dest <- file.path(tempdir(), "my-cohort-summary")
@@ -26,25 +31,21 @@
 #' list.files(dest)
 #' unlink(dest, recursive = TRUE)
 #' @export
-export_template <- function(template, dest, theme = "default") {
+export_template <- function(template, dest, theme = "default",
+                            theme_path = NULL, overwrite = FALSE) {
   template_path <- resolve_template(template)
-  template_src_dir <- dirname(template_path)
-  theme_src <- resolve_theme(theme)
-  components_src <- system.file("typst", "components.typ", package = "onepagr")
-  assets_src <- system.file("typst", "assets", package = "onepagr")
+  theme_src <- resolve_theme(theme, theme_path)
 
+  if (!overwrite && file.exists(file.path(dest, "template.typ"))) {
+    stop(
+      "\"", dest, "\" already contains an exported template. Use ",
+      "overwrite = TRUE to replace it (your edits will be lost).",
+      call. = FALSE
+    )
+  }
   if (!dir.exists(dest)) {
     dir.create(dest, recursive = TRUE)
   }
-
-  file.copy(
-    list.files(template_src_dir, full.names = TRUE), dest, overwrite = TRUE
-  )
-  file.copy(theme_src, file.path(dest, "theme.typ"), overwrite = TRUE)
-  file.copy(components_src, dest, overwrite = TRUE)
-  if (dir.exists(assets_src)) {
-    file.copy(assets_src, dest, recursive = TRUE, overwrite = TRUE)
-  }
-
+  stage_template_files(template_path, theme_src, dest)
   invisible(dest)
 }

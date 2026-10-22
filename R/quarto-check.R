@@ -171,11 +171,10 @@ download_with_timeout <- function(url, dest, min_timeout = 600) {
 #' macOS and Linux, the release archive is downloaded and extracted
 #' directly into the user-local install directory.
 #'
-#' Before shipping: verify the exact release archive filename pattern
-#' used below against quarto-dev/quarto-cli's current GitHub releases page
-#' (https://github.com/quarto-dev/quarto-cli/releases); release asset
-#' naming has changed across Quarto versions historically, so this should
-#' be confirmed against a live release rather than assumed to still match.
+#' On Linux the build for the machine's architecture is downloaded (`amd64`
+#' or `arm64`). The archive is extracted into `quarto-<version>/` under the
+#' install directory and the `bin/quarto` binary is located inside it, so the
+#' different archive layouts per platform do not matter.
 #'
 #' The default `version` below must bundle a Typst new enough for
 #' [check_quarto()]'s own minimum (see that function's docs for why
@@ -223,19 +222,47 @@ install_quarto <- function(version = "1.10.18") {
   file_name <- if (sysname == "Darwin") {
     sprintf("quarto-%s-macos.tar.gz", version)
   } else {
-    sprintf("quarto-%s-linux-amd64.tar.gz", version)
+    arm <- grepl("arm64|aarch64", Sys.info()[["machine"]], ignore.case = TRUE)
+    sprintf("quarto-%s-linux-%s.tar.gz", version, if (arm) "arm64" else "amd64")
   }
   dest <- file.path(install_dir, file_name)
   download_with_timeout(paste0(base_url, file_name), dest)
-  utils::untar(dest, exdir = install_dir)
+
+  # The archives do not share a layout (the Linux ones unpack into a
+  # quarto-<version>/ folder, the macOS one puts bin/ and share/ at its
+  # root), so extract into a folder of our own and look for the binary.
+  exdir <- file.path(install_dir, sprintf("quarto-%s", version))
+  dir.create(exdir, recursive = TRUE, showWarnings = FALSE)
+  utils::untar(dest, exdir = exdir)
   unlink(dest)
 
-  bin_path <- file.path(
-    install_dir, sprintf("quarto-%s", version), "bin", "quarto"
-  )
-  message("Quarto ", version, " installed to ", install_dir, ".")
+  bin_path <- find_quarto_binary(exdir)
+  message("Quarto ", version, " installed to ", dirname(dirname(bin_path)), ".")
   set_quarto_path(bin_path)
   invisible(install_dir)
+}
+
+#' Find `bin/quarto` inside an extracted Quarto archive
+#'
+#' Internal. Looks for a file named `quarto` in a folder named `bin`,
+#' wherever the archive put it, and prefers the shallowest match.
+#'
+#' @param exdir Character. The folder the archive was extracted into.
+#' @return Character, the path to the binary.
+#' @noRd
+find_quarto_binary <- function(exdir) {
+  found <- list.files(
+    exdir, pattern = "^quarto$", recursive = TRUE, full.names = TRUE
+  )
+  found <- found[basename(dirname(found)) == "bin"]
+  if (length(found) == 0) {
+    stop(
+      "Could not find bin/quarto in the extracted Quarto archive (",
+      exdir, ").",
+      call. = FALSE
+    )
+  }
+  found[order(nchar(found))][1]
 }
 
 #' Point onepagr (and Quarto) at a specific Quarto binary
@@ -283,6 +310,9 @@ set_quarto_path <- function(
   if (!file.exists(path)) {
     stop("path does not exist: ", path, call. = FALSE)
   }
+  # An absolute path with forward slashes: a relative one saved to .Renviron
+  # would break every R session started in another folder.
+  path <- normalizePath(path, winslash = "/", mustWork = TRUE)
 
   Sys.setenv(QUARTO_PATH = path)
   message("QUARTO_PATH set to ", path, " for this session.")

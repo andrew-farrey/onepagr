@@ -89,30 +89,28 @@ list_templates <- function() {
 #' The exact key -> Typst type contract onepagr's shipped templates and
 #' `components.typ` rely on
 #'
-#' Internal. Derived by grep-ing every real `theme.<key>` /
-#' `theme-grad.<key>` reference across `inst/typst/components.typ` and
-#' every `inst/typst/templates/*/template.typ` (not assumed), then
-#' cross-checked directly against both shipped theme files' own key sets
-#' via a real `typst eval` run: confirmed identical key-for-key between
-#' `default.typ` and `uk.typ`. If a future template or component
-#' introduces a new theme token, add it here too; `test-themes.R` diffs
-#' this list against both shipped theme files' real key sets and fails
-#' loudly if they diverge.
+#' Internal. The required keys are the ones `inst/typst/components.typ` and
+#' every `inst/typst/templates/*/template.typ` actually read as
+#' `theme.<key>` / `theme-grad.<key>` (counted by script, not assumed); the
+#' `optional_theme` keys are allowed but not read directly. All three
+#' shipped themes (`default.typ`, `uk.typ`, `kdph.typ`) define exactly these
+#' keys, which `test-themes.R` checks with a real `typst eval` run, so a
+#' key added to a component or template has to be added here too or that
+#' test fails.
 #'
 #' @return A list with `theme` (named character vector, key -> Typst
 #'   `type()` name; `|` separates accepted alternatives, so `body-font` is
-#'   `"str|array"` to allow a font fallback list), `theme_grad` (same
-#'   shape), and `radius_card` (the
-#'   nested dictionary `theme$radius-card` must contain).
+#'   `"str|array"` to allow a font fallback list), `optional_theme` (same
+#'   shape, keys that may be present), `theme_grad` (same shape), and
+#'   `radius_card` (the nested dictionary `theme$radius-card` must contain).
 #' @keywords internal
 onepagr_theme_schema <- function() {
   list(
     theme = c(
       "brand-blue" = "color", "brand-midnight" = "color",
       "map-border-color" = "color", "brand-accent" = "color",
-      "brand-accent-text" = "color", "brand-sky" = "color",
-      "card-bg" = "color", "callout-bg" = "color", "lessons-bg" = "color",
-      "lessons-text" = "color", "disclaimer-bg" = "color",
+      "brand-accent-text" = "color",
+      "lessons-text" = "color",
       "disclaimer-border" = "color", "disclaimer-text" = "color",
       "border-color" = "color", "box-border" = "color",
       "text-secondary" = "color", "text-muted" = "color",
@@ -127,6 +125,17 @@ onepagr_theme_schema <- function() {
       "stroke-border" = "length", "stroke-accent" = "length",
       "stroke-accent-left" = "length", "stroke-fill" = "length",
       "radius-card" = "dictionary", "content-pad-x" = "length"
+    ),
+    # Keys that a theme may define but that no component or template reads
+    # directly: the shipped themes use the five background colors only to
+    # build their own `theme-grad` gradients, so a theme that defines its
+    # gradients another way does not need them. `callout-text` is read with
+    # a fallback, so a theme without it still renders. Checked for type when
+    # present, never reported as missing or unknown.
+    optional_theme = c(
+      "brand-sky" = "color", "card-bg" = "color", "callout-bg" = "color",
+      "lessons-bg" = "color", "disclaimer-bg" = "color",
+      "callout-text" = "color"
     ),
     theme_grad = c(
       "card-bg-grad" = "gradient", "callout-bg-grad" = "gradient",
@@ -258,9 +267,13 @@ theme_type_vector <- function(m) {
 #'   frame: `key`, `expected`, `actual`), and `unknown` (character vector
 #'   of keys present but outside `expected_types`).
 #' @keywords internal
-check_theme_dict <- function(actual_matrix, expected_types) {
+check_theme_dict <- function(actual_matrix, expected_types,
+                             optional_types = character(0)) {
   actual_types <- theme_type_vector(actual_matrix)
   missing <- setdiff(names(expected_types), names(actual_types))
+  # An optional key is type-checked when present but is never missing or
+  # unknown.
+  expected_types <- c(expected_types, optional_types)
   present <- intersect(names(expected_types), names(actual_types))
 
   # An expected type may list alternatives separated by "|" (e.g.
@@ -322,7 +335,7 @@ failed_theme_result <- function(path, error) {
     type_mismatches_grad = empty_type_mismatches(),
     radius_card_missing = character(0),
     radius_card_type_mismatches = empty_type_mismatches(),
-    unknown = character(0)
+    unknown = character(0), unknown_grad = character(0)
   )
 }
 
@@ -429,10 +442,11 @@ check_radius_card <- function(radius_card, theme_check, expected_types) {
 #'   found in `theme` / `theme-grad`), `type_mismatches` /
 #'   `type_mismatches_grad` (data frames with `key`, `expected`, `actual`
 #'   columns), `radius_card_missing` / `radius_card_type_mismatches` (same
-#'   shape, for the nested `radius-card` dictionary), and `unknown`
-#'   (character vector of keys present in `theme` but outside onepagr's
-#'   known schema, informational only, not a failure; could be a typo,
-#'   or a key your own templates read directly).
+#'   shape, for the nested `radius-card` dictionary), and `unknown` /
+#'   `unknown_grad` (character vectors of keys present in `theme` /
+#'   `theme-grad` but outside onepagr's known schema, informational only,
+#'   not a failure; could be a typo, or a key your own templates read
+#'   directly).
 #' @examples
 #' \dontrun{
 #' # Needs Quarto (bundling Typst) on the system: see check_quarto().
@@ -446,12 +460,11 @@ check_theme <- function(theme = "default", theme_path = NULL) {
   info <- introspect_theme_typ(path)
 
   if (!is.null(info$error)) {
-    message("Theme \"", path, "\" failed to evaluate:
-", info$error)
+    message("Theme \"", path, "\" failed to evaluate:\n", info$error)
     return(invisible(failed_theme_result(path, info$error)))
   }
 
-  theme_check <- check_theme_dict(info$theme, schema$theme)
+  theme_check <- check_theme_dict(info$theme, schema$theme, schema$optional_theme)
   grad_check <- check_theme_dict(info$theme_grad, schema$theme_grad)
 
   rc <- check_radius_card(info$radius_card, theme_check, schema$radius_card)
@@ -463,23 +476,26 @@ check_theme <- function(theme = "default", theme_path = NULL) {
     type_mismatches_grad = grad_check$mismatches,
     radius_card_missing = rc$missing,
     radius_card_type_mismatches = rc$mismatches,
-    unknown = theme_check$unknown
+    unknown = theme_check$unknown,
+    unknown_grad = grad_check$unknown
   )
   problems <- theme_problems(result)
   result$ok <- length(problems) == 0
 
   if (!result$ok) {
     message(
-      "Theme \"", path, "\" has ", length(problems), " problem(s):
-- ",
-      paste(problems, collapse = "
-- ")
+      "Theme \"", path, "\" has ", length(problems), " problem(s):\n- ",
+      paste(problems, collapse = "\n- ")
     )
   }
-  if (length(result$unknown) > 0) {
+  extra <- c(
+    result$unknown,
+    if (length(result$unknown_grad) > 0) paste0("theme-grad.", result$unknown_grad)
+  )
+  if (length(extra) > 0) {
     message(
       "Note: theme \"", path, "\" defines key(s) onepagr doesn't use: ",
-      paste(result$unknown, collapse = ", "),
+      paste(extra, collapse = ", "),
       ". Not an error: could be a typo, or intentional for your own ",
       "templates."
     )

@@ -8,18 +8,16 @@
 #'
 #' `//` line comments are stripped before scanning: Typst templates
 #' routinely document the triple-brace convention with a literal
-#' `{{{token}}}` example in a header comment (this is a real case, not
-#' hypothetical; the reference trend-snapshot template does exactly
-#' this), and without stripping comments first, that illustrative example
-#' is indistinguishable from a real required token. `//` is unambiguously
-#' a comment marker in Typst (division is a single `/`), so this is safe
-#' for any Typst source: the one caveat is a literal `//` inside a
-#' string constant in the template's own code (not data, which arrives
-#' via tokens), which onepagr's built-in templates never do.
+#' `{{{token}}}` example in a header comment, and without stripping
+#' comments first, that illustrative example is indistinguishable from a
+#' real required token. A `//` inside a quoted string, or directly after a
+#' colon (the `://` of a URL), is text, not a comment, so a token after a
+#' URL on the same line is still found.
 #'
 #' A token with a declared default (see the optional-token marker in
 #' [compile_typst()]) is not required, so it is left out of the result.
-#' A default can refer to other tokens (`{{{token}}}`); those are required.
+#' A token that only a default refers to is not listed here either: it is
+#' needed only while that default is in use (see [template_tokens()]).
 #'
 #' @param path Character. Path to a .typ file.
 #' @return Character vector of unique token names, in first-appearance order.
@@ -28,22 +26,8 @@
 #' extract_required_tokens(path)
 #' @export
 extract_required_tokens <- function(path) {
-  lines <- readLines(path, warn = FALSE)
-  lines <- sub("//.*$", "", lines)
-  text <- paste(lines, collapse = "\n")
-  matches <- regmatches(
-    text, gregexpr("\\{\\{\\{\\s*([a-zA-Z0-9_.]+)\\s*\\}\\}\\}", text)
-  )[[1]]
-  tokens <- gsub("^\\{\\{\\{\\s*|\\s*\\}\\}\\}$", "", matches)
-  defaults <- extract_token_defaults(path)
-  # A default may itself refer to other tokens, e.g. a heading default of
-  # "Results (N = {{{n_total}}})": those stay required.
-  token_pattern <- "\\{\\{\\{\\s*([a-zA-Z0-9_.]+)\\s*\\}\\}\\}"
-  referenced <- unlist(regmatches(
-    unlist(defaults), gregexpr(token_pattern, unlist(defaults))
-  ))
-  referenced <- gsub("^\\{\\{\\{\\s*|\\s*\\}\\}\\}$", "", referenced)
-  setdiff(unique(c(tokens, referenced)), names(defaults))
+  tokens <- template_spec(path)$tokens
+  tokens$token[tokens$kind == "required"]
 }
 
 #' List the tokens a template takes
@@ -63,15 +47,19 @@ extract_required_tokens <- function(path) {
 #'
 #' A default is Typst markup and can itself contain `{{{token}}}`
 #' references, which are filled from your data. A token that only a default
-#' refers to still counts as required.
+#' refers to is needed only while that default is in use: reword the
+#' default yourself and you no longer have to supply it.
 #'
 #' @param template Character. A built-in template name (see
-#'   [list_templates()]), or the path to a `.typ` file such as one written by
-#'   [export_template()].
+#'   [list_templates()]; a built-in name always wins over a file of the same
+#'   name in the working directory), or the path to a `.typ` file such as
+#'   one written by [export_template()].
 #' @return A data frame with one row per token and columns `token`,
-#'   `required` (logical) and `default` (`NA` for a required token). Required
-#'   tokens come first, then optional ones, each in the order the template
-#'   uses them.
+#'   `required` (logical), `default` (`NA` unless the token is optional)
+#'   and `needed_by`. Required tokens come first, then tokens needed only
+#'   while some optional token's default is in use (`required` is `FALSE`
+#'   and `needed_by` names those optional tokens), then optional ones, each
+#'   in the order the template uses them.
 #' @examples
 #' tokens <- template_tokens("cohort_summary")
 #' head(tokens)
@@ -80,17 +68,19 @@ extract_required_tokens <- function(path) {
 #' tokens[grepl("^heading_", tokens$token), c("token", "default")]
 #' @export
 template_tokens <- function(template) {
-  path <- if (utils::file_test("-f", template)) {
+  path <- if (template %in% list_templates()) {
+    resolve_template(template)
+  } else if (utils::file_test("-f", template)) {
     template
   } else {
     resolve_template(template)
   }
-  defaults <- extract_token_defaults(path)
-  required <- extract_required_tokens(path)
+  tokens <- template_spec(path)$tokens
   data.frame(
-    token = c(required, names(defaults)),
-    required = rep(c(TRUE, FALSE), c(length(required), length(defaults))),
-    default = c(rep(NA_character_, length(required)), unlist(defaults)),
+    token = tokens$token,
+    required = tokens$kind == "required",
+    default = tokens$default,
+    needed_by = tokens$needed_by,
     row.names = NULL,
     stringsAsFactors = FALSE
   )
@@ -146,18 +136,21 @@ template_data <- function(
   tokens <- match.arg(tokens)
   info <- template_tokens(template)
   required_names <- info$token[info$required]
-  optional_names <- info$token[!info$required]
+  # Tokens with no default of their own, whether used in the body or only by
+  # some default: all need a real value for the starter list to be complete.
+  example_names <- info$token[is.na(info$default)]
+  optional_names <- info$token[!is.na(info$default)]
   optional_defaults <- stats::setNames(
-    as.list(info$default[!info$required]), optional_names
+    as.list(info$default[!is.na(info$default)]), optional_names
   )
 
   want_required <- tokens %in% c("both", "required")
   want_optional <- tokens %in% c("both", "optional")
 
   out <- list()
-  if (want_required && length(required_names) > 0) {
+  if (want_required && length(example_names) > 0) {
     example <- example_data(template)
-    missing <- setdiff(required_names, names(example))
+    missing <- setdiff(example_names, names(example))
     if (length(missing) > 0) {
       stop(
         "example_data(\"", template, "\") is missing a value for: ",
@@ -166,16 +159,16 @@ template_data <- function(
         call. = FALSE
       )
     }
-    out <- c(out, example[required_names])
+    out <- c(out, example[example_names])
   }
   if (want_optional && length(optional_names) > 0) {
     if (want_required) {
       # A default can refer to a required token (e.g. a heading default of
       # "Results (N = {{{n_total}}})"); resolve that here against the real
-      # required values already in `out`, the same resolution
-      # fill_token_defaults() performs at render time, so a value this
-      # function returns is always finished text, never leftover
-      # {{{...}}} markup a caller would have to notice and fix.
+      # values already in `out`, the same resolution fill_token_defaults()
+      # performs at render time, so the "both" result is finished text.
+      # (With tokens = "optional" the defaults come back unresolved; they are
+      # resolved when rendered, so merging them over real values is safe.)
       out <- fill_token_defaults(resolve_template(template), out)
     } else {
       out <- c(out, optional_defaults)
@@ -209,6 +202,9 @@ warn_unknown_tokens <- function(path, data) {
     return(invisible(character(0)))
   }
   hint <- function(name) {
+    if (length(own) == 0) {
+      return("")
+    }
     distance <- drop(utils::adist(name, own))
     closest <- which.min(distance)
     if (distance[closest] <= max(2, floor(nchar(name) / 4))) {
@@ -239,16 +235,7 @@ warn_unknown_tokens <- function(path, data) {
 #' @return Named list of default values (empty if none are declared).
 #' @keywords internal
 extract_token_defaults <- function(path) {
-  lines <- readLines(path, warn = FALSE)
-  found <- regmatches(lines, regexec(
-    "^\\s*//\\s*optional-token:\\s*([a-zA-Z0-9_.]+)\\s*=\\s*(.*?)\\s*$",
-    lines
-  ))
-  found <- found[lengths(found) == 3]
-  stats::setNames(
-    lapply(found, function(f) f[[3]]),
-    vapply(found, function(f) f[[2]], character(1))
-  )
+  template_spec(path)$defaults
 }
 
 #' Fill a template's omitted optional tokens with their defaults
@@ -273,6 +260,18 @@ fill_token_defaults <- function(path, data) {
   for (tok in omitted) {
     data[[tok]] <- whisker::whisker.render(defaults[[tok]], data)
   }
+  # Any other value that still refers to a token (one the caller typed, or one
+  # from template_data("optional")) is resolved the same way, once, against
+  # the data as it stands, so literal {{{token}}} markup never reaches the PDF.
+  snapshot <- data
+  for (name in names(data)) {
+    value <- data[[name]]
+    refers_to_token <- is.character(value) && length(value) == 1L &&
+      !is.na(value) && grepl("{{{", value, fixed = TRUE)
+    if (refers_to_token) {
+      data[[name]] <- whisker::whisker.render(value, snapshot)
+    }
+  }
   data
 }
 
@@ -285,49 +284,29 @@ fill_token_defaults <- function(path, data) {
 #' @return Integer page count, or `NA_integer_` if the template declares none.
 #' @keywords internal
 extract_designed_pages <- function(path) {
-  lines <- readLines(path, warn = FALSE)
-  found <- regmatches(lines, regexec(
-    "^\\s*//\\s*designed-pages:\\s*([0-9]+)\\s*$", lines
-  ))
-  found <- found[lengths(found) == 2]
-  if (length(found) == 0) {
-    return(NA_integer_)
-  }
-  as.integer(found[[1]][[2]])
+  template_spec(path)$designed_pages
 }
 
 #' Validate whisker data against a template's required tokens
 #'
 #' Raises a clear error listing every missing or NA token before whisker
 #' or Typst ever run, instead of letting a missing token silently render
-#' as blank text.
+#' as blank text. The tokens that count are the ones the template body
+#' uses, plus the ones needed by a default that `data` leaves in use (see
+#' [template_tokens()]). A blank value for one of them draws a warning
+#' unless the template declares `// allow-empty: token`, and a bar-chart
+#' `*_width` token must be a plain number from 0 to 100.
 #'
 #' @param path Character. Path to a .typ file.
 #' @param data Named list of whisker substitution values.
 #' @return Invisibly `TRUE` if validation passes.
 #' @examples
 #' path <- resolve_template("cohort_summary")
-#' required <- extract_required_tokens(path)
-#' # Placeholder values: validate_template_data() only checks presence/
-#' # non-NA, not real content, so this always passes regardless of which
-#' # tokens a given template actually needs.
-#' data <- setNames(as.list(rep("placeholder", length(required))), required)
-#' validate_template_data(path, data)
+#' # A complete example list passes; drop a required value and it errors.
+#' validate_template_data(path, example_data("cohort_summary"))
 #' @export
 validate_template_data <- function(path, data) {
-  required <- extract_required_tokens(path)
-  is_missing <- function(tok) {
-    !tok %in% names(data) || length(data[[tok]]) == 0 || is.na(data[[tok]])[1]
-  }
-  problems <- required[vapply(required, is_missing, logical(1))]
-  if (length(problems) > 0) {
-    stop(
-      "Missing or NA required token(s) for ", basename(path), ": ",
-      paste(problems, collapse = ", "),
-      call. = FALSE
-    )
-  }
-  invisible(TRUE)
+  check_template_data(template_spec(path), data)
 }
 
 #' Render a template with whisker and write the result next to it
@@ -339,13 +318,35 @@ validate_template_data <- function(path, data) {
 #' @return Character, the path of the rendered `.typ` file.
 #' @noRd
 write_rendered_typ <- function(path, data) {
-  template_text <- paste(readLines(path, warn = FALSE), collapse = "\n")
+  spec <- template_spec(path)
+  lines <- readLines(path, warn = FALSE, encoding = "UTF-8")
+  occ <- spec$occurrences
+  # A token inside a "string literal" gets its own escaped copy of the value,
+  # chosen per occurrence: the same token can also sit in the body, where its
+  # value is markup and must stay untouched.
+  for (k in unique(occ$line[occ$in_string])) {
+    in_string <- occ$in_string[occ$line == k]
+    found <- gregexpr(token_pattern, lines[k], perl = TRUE)
+    hits <- regmatches(lines[k], found)[[1]]
+    for (j in which(in_string)) {
+      tok <- sub(token_pattern, "\\1", hits[j], perl = TRUE)
+      value <- data[[tok]]
+      data[[paste0("onepagr_str_", tok)]] <- typst_escape_string(
+        if (length(value) == 0L || is.na(value)) "" else as.character(value)
+      )
+      hits[j] <- paste0("{{{onepagr_str_", tok, "}}}")
+    }
+    regmatches(lines[k], found) <- list(hits)
+  }
+  template_text <- paste(lines, collapse = "\n")
   rendered <- whisker::whisker.render(template_text, data)
   typ_out <- file.path(
     dirname(path),
     paste0(tools::file_path_sans_ext(basename(path)), "_rendered.typ")
   )
-  writeLines(rendered, typ_out)
+  # Typst reads UTF-8; write the bytes as-is so the native encoding of the R
+  # session (older R on Windows, a non-UTF-8 locale) cannot change them.
+  writeLines(enc2utf8(rendered), typ_out, useBytes = TRUE)
   typ_out
 }
 
@@ -372,7 +373,8 @@ clear_output_file <- function(output) {
 #' Compile a .typ file with whisker-substituted data via Quarto/Typst
 #'
 #' Low-level primitive: whisker-renders `path` against `data`, writes the
-#' result next to `path`, then compiles it to `output` via `quarto typst
+#' result next to `path` as `<name>_rendered.typ` (that file, not `path`
+#' itself, is what compiles), then compiles it to `output` via `quarto typst
 #' compile --pdf-standard ua-1 --features a11y-extras`. Works on any .typ
 #' file (a package-shipped template or a user's own
 #' `export_template()`-edited copy) since required-token validation is
@@ -398,7 +400,7 @@ clear_output_file <- function(output) {
 #'   `.otf`) to make available to Typst for this compile, passed through
 #'   as `--font-path`. Typst does not merge this with the system font
 #'   list: both system fonts and this directory are searched, so a
-#'   theme's `text-font`/`heading-font` tokens can name either a
+#'   theme's `body-font` tokens can name either a
 #'   system-installed font or one shipped here (confirmed directly:
 #'   `quarto typst fonts --font-path <dir>` lists a font from `<dir>`
 #'   alongside system fonts, not instead of them). Default `NULL` (system
@@ -415,9 +417,14 @@ clear_output_file <- function(output) {
 #' }
 #' @export
 compile_typst <- function(path, data, output, font_dir = NULL) {
+  data <- coerce_data_values(data)
   warn_unknown_tokens(path, data)
+  spec <- template_spec(path)
+  check_bracket_balance(spec, data)
+  # Checked before the defaults are filled in, so it is known which optional
+  # tokens were left out and which default-only tokens that makes necessary.
+  check_template_data(spec, data)
   data <- fill_token_defaults(path, data)
-  validate_template_data(path, data)
 
   quarto_bin <- quarto_bin_or_stop()
 

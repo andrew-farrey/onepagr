@@ -23,11 +23,10 @@
 // because this file replaces an earlier version whose severity-*
 // tokens were shipped as unverified drafts and genuinely failed PAC's
 // WCAG check once a real alert template used them (2.0:1 on one
-// pairing) -- see this package's plan/spec docs for that incident.
-// Re-verify any value you change here the same way; a color that looks
+// pairing). Re-verify any value you change here the same way; a color that looks
 // "close enough" by eye is not evidence.
 //
-// bg-tint / text-shade values are derived using Bootstrap's own
+// The background tints and text shades are derived using Bootstrap's own
 // $-bg-subtle (mix with white, 80% weight) / $-text-emphasis (mix with
 // black, 60% weight) formulas from the same source file -- Bootstrap's
 // own considered choice for exactly this kind of bg+text pairing, not
@@ -67,6 +66,8 @@
   // Bootstrap's own 80% $primary-bg-subtle, to keep it visually
   // distinct from card-bg above).
   callout-bg: rgb("#DBE9FF"),
+  // Body text inside callout boxes. Keep it readable on callout-bg (4.5:1).
+  callout-text: rgb("#1a3a7a"),
   lessons-bg: rgb("#DBE9FF"),
   // Bootstrap $primary shaded 60% toward black -- same value as
   // brand-midnight (both need to be "dark, safe text on a light tint");

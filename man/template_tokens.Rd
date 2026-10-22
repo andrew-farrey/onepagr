@@ -8,14 +8,17 @@ template_tokens(template)
 }
 \arguments{
 \item{template}{Character. A built-in template name (see
-\code{\link[=list_templates]{list_templates()}}), or the path to a \code{.typ} file such as one written by
-\code{\link[=export_template]{export_template()}}.}
+\code{\link[=list_templates]{list_templates()}}; a built-in name always wins over a file of the same
+name in the working directory), or the path to a \code{.typ} file such as
+one written by \code{\link[=export_template]{export_template()}}.}
 }
 \value{
 A data frame with one row per token and columns \code{token},
-\code{required} (logical) and \code{default} (\code{NA} for a required token). Required
-tokens come first, then optional ones, each in the order the template
-uses them.
+\code{required} (logical), \code{default} (\code{NA} unless the token is optional)
+and \code{needed_by}. Required tokens come first, then tokens needed only
+while some optional token's default is in use (\code{required} is \code{FALSE}
+and \code{needed_by} names those optional tokens), then optional ones, each
+in the order the template uses them.
 }
 \description{
 Shows every \code{{{{token}}}} a template reads: the ones your \code{data} list must
@@ -34,7 +37,8 @@ items separated by \code{|}). Filter on those prefixes with \code{\link[=grepl]{
 
 A default is Typst markup and can itself contain \code{{{{token}}}}
 references, which are filled from your data. A token that only a default
-refers to still counts as required.
+refers to is needed only while that default is in use: reword the
+default yourself and you no longer have to supply it.
 }
 \examples{
 tokens <- template_tokens("cohort_summary")

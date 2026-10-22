@@ -21,10 +21,11 @@ evaluate at all, in which case every field below is empty/\code{NA}),
 found in \code{theme} / \code{theme-grad}), \code{type_mismatches} /
 \code{type_mismatches_grad} (data frames with \code{key}, \code{expected}, \code{actual}
 columns), \code{radius_card_missing} / \code{radius_card_type_mismatches} (same
-shape, for the nested \code{radius-card} dictionary), and \code{unknown}
-(character vector of keys present in \code{theme} but outside onepagr's
-known schema, informational only, not a failure; could be a typo,
-or a key your own templates read directly).
+shape, for the nested \code{radius-card} dictionary), and \code{unknown} /
+\code{unknown_grad} (character vectors of keys present in \code{theme} /
+\code{theme-grad} but outside onepagr's known schema, informational only,
+not a failure; could be a typo, or a key your own templates read
+directly).
 }
 \description{
 Validates a theme \code{.typ} file's \code{theme} and \code{theme-grad} exports by

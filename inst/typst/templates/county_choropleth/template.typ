@@ -39,8 +39,9 @@
 // optional-token: heading_components = COMPONENT FACTORS BEHIND THE SVI SCORE
 // optional-token: heading_disclaimer = DISCLAIMER
 // Optional data: the reader-facing text. Each one defaults to the text
-// shown here. Prefixes: strip_label_ and footer_label_ (metadata strip and
-// footer labels), stat_ (captions on numbers), bar_ (bar-row labels),
+// shown here. Prefixes used across the built-in templates (template_tokens()
+// lists this template's own): strip_label_ and footer_label_ (metadata strip
+// and footer labels), stat_ (captions on numbers), bar_ (bar-row labels),
 // text_ (paragraphs, bullets and notes), alt_ (chart and map alt text),
 // chips_ (a list of short items separated by |), figure_path and
 // map_title0. A default may refer to data tokens, as {{{n_total}}} does.
@@ -131,6 +132,8 @@
 // optional-token: logo_partner_a_path =
 // optional-token: logo_partner_a_alt =
 // optional-token: show_partner_b = false
+// Document language for screen readers (a language code such as en, es, fr).
+// optional-token: doc_lang = en
 // optional-token: logo_partner_b_path =
 // optional-token: logo_partner_b_alt =
 // optional-token: header_texture_path = assets/header-texture.png
@@ -173,7 +176,7 @@
 // excluded from the PDF's accessibility tree, alt text or not, so a
 // template with a known fixed page count self-places the footer as real
 // body content instead.
-#apply-base-styles([{{{doc_title}}}], "{{{org_full}}}", theme, margin-bottom: 0pt)[
+#apply-base-styles([{{{doc_title}}}], "{{{org_full}}}", theme, margin-bottom: 0pt, lang: "{{{doc_lang}}}")[
 
 // ============================================================
 // HEADER
