@@ -17,12 +17,12 @@ Source:
 Farrey A (2026). *onepagr: Accessible One-Page Reports from 'Typst'
 Templates*.
 [doi:10.5281/zenodo.23032485](https://doi.org/10.5281/zenodo.23032485).
-R package version 0.1.1.
+R package version 0.1.1.9000.
 
     @Manual{,
       title = {onepagr: Accessible One-Page Reports from 'Typst' Templates},
       author = {Andrew Farrey},
       year = {2026},
-      note = {R package version 0.1.1},
+      note = {R package version 0.1.1.9000},
       doi = {10.5281/zenodo.23032485},
     }

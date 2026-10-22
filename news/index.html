@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">onepagr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,13 @@
       <small>Source: <a href="https://github.com/andrew-farrey/onepagr/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="development version" id="onepagr-development-version">onepagr (development version)<a class="anchor" aria-label="anchor" href="#onepagr-development-version"></a></h2>
+<ul><li>Internal refactoring only; no change to any exported function’s behavior or messages. <code><a href="../reference/check_theme.html">check_theme()</a></code> and <code><a href="../reference/compile_typst.html">compile_typst()</a></code> are split into smaller internal helpers (the problem list and early-return result for <code><a href="../reference/check_theme.html">check_theme()</a></code>, the template-rendering and stale-output steps for <code><a href="../reference/compile_typst.html">compile_typst()</a></code>), and the “Quarto was not found” error now comes from one shared helper.</li>
+<li>
+<code><a href="../reference/render_onepager.html">render_onepager()</a></code> inherits the <code>template</code> and <code>output</code> parameter documentation from <code><a href="../reference/export_template.html">export_template()</a></code> and <code><a href="../reference/compile_typst.html">compile_typst()</a></code> instead of repeating it.</li>
+<li>A <code>.lintr</code> file sets the project’s lint settings.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.1" id="onepagr-011">onepagr 0.1.1<a class="anchor" aria-label="anchor" href="#onepagr-011"></a></h2>
 <ul><li>The header subtitle in all five templates is now solid white instead of white at 85% opacity. With the <code>default</code> theme the translucent text measured 3.93:1 against the lightest end of the header gradient, under the 4.5:1 that WCAG 2.2 AA requires for text this size. It now measures 4.95:1 there, the same margin as the title, and the <code>uk</code> and <code>kdph</code> themes are unchanged in outcome (7.53:1 and 10.60:1).</li>

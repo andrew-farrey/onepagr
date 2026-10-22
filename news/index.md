@@ -1,5 +1,26 @@
 # Changelog
 
+## onepagr (development version)
+
+- Internal refactoring only; no change to any exported function’s
+  behavior or messages.
+  [`check_theme()`](https://andrew-farrey.github.io/onepagr/reference/check_theme.md)
+  and
+  [`compile_typst()`](https://andrew-farrey.github.io/onepagr/reference/compile_typst.md)
+  are split into smaller internal helpers (the problem list and
+  early-return result for
+  [`check_theme()`](https://andrew-farrey.github.io/onepagr/reference/check_theme.md),
+  the template-rendering and stale-output steps for
+  [`compile_typst()`](https://andrew-farrey.github.io/onepagr/reference/compile_typst.md)),
+  and the “Quarto was not found” error now comes from one shared helper.
+- [`render_onepager()`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md)
+  inherits the `template` and `output` parameter documentation from
+  [`export_template()`](https://andrew-farrey.github.io/onepagr/reference/export_template.md)
+  and
+  [`compile_typst()`](https://andrew-farrey.github.io/onepagr/reference/compile_typst.md)
+  instead of repeating it.
+- A `.lintr` file sets the project’s lint settings.
+
 ## onepagr 0.1.1
 
 - The header subtitle in all five templates is now solid white instead

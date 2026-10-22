@@ -40,7 +40,8 @@ to see what you have.
 ## Code, tests and documentation
 
 - **Style.** The tidyverse style guide, enforced by the `lintr` settings
-  in `.lintr` (lines up to 100 characters). `lintr::lint_package()`
+  in `.lintr` (lines up to 100 characters).
+  [`lintr::lint_package()`](https://lintr.r-lib.org/reference/lint.html)
   should report nothing. Please do not reformat code you are not
   otherwise changing.
 - **Documentation.** roxygen2 with markdown. Edit the roxygen comments,
