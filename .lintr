@@ -1,0 +1,9 @@
+linters: linters_with_defaults(
+    line_length_linter(100)
+  )
+exclusions: list(
+    "data-raw/hex-sticker",
+    "inst/examples" = list(line_length_linter = Inf),
+    "tests/testthat/test-integration.R" = list(object_usage_linter = Inf),
+    "tests/testthat/fixtures/sample_data_overdose_spike_alert.R" = list(object_length_linter = Inf)
+  )

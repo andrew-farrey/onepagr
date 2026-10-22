@@ -15,5 +15,6 @@
 ^CITATION\.cff$
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
+^\.lintr$
 ^CODE_OF_CONDUCT\.md$
 ^CONTRIBUTING\.md$

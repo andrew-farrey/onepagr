@@ -38,12 +38,12 @@
 #'   `alt_*` and so on) that each default to the template's own wording.
 #'   [template_tokens()] lists what a template takes, with the defaults
 #'   (see `vignette("theming")`, Part 5).
-#' @param template Character. A built-in template name (see [list_templates()]).
+#' @inheritParams export_template
+#' @inheritParams compile_typst
 #' @param theme Character. A built-in theme name, or a path to a custom
 #'   theme .typ file (see [resolve_theme()]). Default `"default"`.
 #' @param theme_path Character or `NULL`. Explicit theme file path
 #'   override; when supplied, `theme` is ignored. Default `NULL`.
-#' @param output Character. Path to write the compiled PDF to.
 #' @param keep_typst Logical. Whether to leave the resolved `.typ` tree
 #'   next to `output` (`TRUE`, default) or use a disposable tempdir
 #'   (`FALSE`).
