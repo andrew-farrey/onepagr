@@ -88,8 +88,10 @@ render_onepager(
   contains invalid component" even after fixing Windows backslashes to
   forward slashes: this isn't a path-syntax issue, Typst does not permit
   escaping its compile root at all). Each file is copied in by its
-  basename (overwriting on conflict); pass just that basename as the
-  corresponding whisker token's value (e.g.
+  basename. A name that would replace a file onepagr stages itself
+  (`theme.typ`, `components.typ`, the template's own files), or that two
+  assets share, stops the render with an error. Pass just that basename
+  as the corresponding whisker token's value (e.g.
   `extra_assets = "path/to/map0.png"` pairs with a template token value
   of `"map0.png"`, not the original full path). Default `character(0)`
   (no extra assets, e.g. for templates whose images are all static
@@ -100,10 +102,10 @@ render_onepager(
   Character or `NULL`. Passed through to
   [`compile_typst()`](https://andrew-farrey.github.io/onepagr/reference/compile_typst.md)'s
   `font_dir` argument, a directory of font files to make available for
-  this compile, in addition to system fonts, for a theme's
-  `text-font`/`heading-font` tokens that name a font not installed
-  system-wide (e.g. a Posit Workbench deployment without permission to
-  install fonts at the OS level). Default `NULL`.
+  this compile, in addition to system fonts, for a theme's `body-font`
+  tokens that name a font not installed system-wide (e.g. a Posit
+  Workbench deployment without permission to install fonts at the OS
+  level). Default `NULL`.
 
 ## Value
 
@@ -111,12 +113,18 @@ Character, the `output` path, invisibly.
 
 ## Details
 
-By default (`keep_typst = TRUE`) the resolved, whisker-substituted
-`.typ` file is written next to `output`, along with the theme,
-components, and assets it was compiled with, self-contained and
-independently recompilable, not hidden in a disposable tempdir. Set
-`keep_typst = FALSE` to compile in a disposable tempdir instead and
-return only the PDF.
+By default (`keep_typst = TRUE`) the work folder is kept next to
+`output`, named after it with `_typst` added (`report.pdf` gives
+`report_typst/`), rather than hidden in a disposable tempdir. It holds
+the theme, components, assets and template the PDF was built from.
+Inside it, `template.typ` is the template as shipped, with its
+`{{{token}}}` placeholders still in place, and `template_rendered.typ`
+is the same file with your data filled in. Compile
+`template_rendered.typ` to rebuild the PDF; `template.typ` alone will
+not compile. The folder is a build artifact: each render replaces it (a
+folder at that path that onepagr did not create is left alone, and the
+render stops). Set `keep_typst = FALSE` to compile in a disposable
+tempdir instead and return only the PDF.
 
 When a fixed-page template's output has a different page count than it
 was designed for (for example after raising the type size), a message

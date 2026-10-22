@@ -17,16 +17,20 @@ template_tokens(template)
 - template:
 
   Character. A built-in template name (see
-  [`list_templates()`](https://andrew-farrey.github.io/onepagr/reference/list_templates.md)),
-  or the path to a `.typ` file such as one written by
+  [`list_templates()`](https://andrew-farrey.github.io/onepagr/reference/list_templates.md);
+  a built-in name always wins over a file of the same name in the
+  working directory), or the path to a `.typ` file such as one written
+  by
   [`export_template()`](https://andrew-farrey.github.io/onepagr/reference/export_template.md).
 
 ## Value
 
 A data frame with one row per token and columns `token`, `required`
-(logical) and `default` (`NA` for a required token). Required tokens
-come first, then optional ones, each in the order the template uses
-them.
+(logical), `default` (`NA` unless the token is optional) and
+`needed_by`. Required tokens come first, then tokens needed only while
+some optional token's default is in use (`required` is `FALSE` and
+`needed_by` names those optional tokens), then optional ones, each in
+the order the template uses them.
 
 ## Details
 
@@ -41,20 +45,21 @@ items separated by `|`). Filter on those prefixes with
 
 A default is Typst markup and can itself contain `{{{token}}}`
 references, which are filled from your data. A token that only a default
-refers to still counts as required.
+refers to is needed only while that default is in use: reword the
+default yourself and you no longer have to supply it.
 
 ## Examples
 
 ``` r
 tokens <- template_tokens("cohort_summary")
 head(tokens)
-#>               token required default
-#> 1     contact_email     TRUE    <NA>
-#> 2 logo_primary_path     TRUE    <NA>
-#> 3  logo_primary_alt     TRUE    <NA>
-#> 4          org_full     TRUE    <NA>
-#> 5       contact_url     TRUE    <NA>
-#> 6         doc_title     TRUE    <NA>
+#>               token required default needed_by
+#> 1     contact_email     TRUE    <NA>      <NA>
+#> 2 logo_primary_path     TRUE    <NA>      <NA>
+#> 3  logo_primary_alt     TRUE    <NA>      <NA>
+#> 4          org_full     TRUE    <NA>      <NA>
+#> 5       contact_url     TRUE    <NA>      <NA>
+#> 6         doc_title     TRUE    <NA>      <NA>
 
 # Every section heading you can reword, with its current text:
 tokens[grepl("^heading_", tokens$token), c("token", "default")]

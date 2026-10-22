@@ -74,9 +74,17 @@ exact wording.
 **Page furniture and notes**
 
 - *Headers and footers* (18-001, 18-002). Repeating page furniture
-  should be marked as artifacts. The built-in footer also carries real
-  content, such as sources and contact details, so it is tagged as
-  content on purpose.
+  should be marked as artifacts. On the fixed-page templates
+  (`cohort_summary`, `trend_snapshot`, `county_choropleth`) the footer
+  also carries real content, such as the organization name and contact
+  details, so it is tagged as content on purpose. The two alert
+  templates (`overdose_spike_alert`, `syndromic_alert`) cannot do this:
+  their page count depends on the content, Typst leaves everything in a
+  page footer out of the tag tree, and a walk of their PDFs shows one
+  tagged figure (the header logo) and no links. A screen reader does not
+  reach their footer logos, organization name, contact URL or email.
+  Repeat contact details in body text on those templates, for example in
+  `footnote_sources`.
 - *Notes* (19-001, 19-002). Footnote-like text should be tagged as a
   note. Typst 0.15.1 cannot produce a note tag, so the footer’s sources
   line is a paragraph. This is a toolchain gap, not something a template

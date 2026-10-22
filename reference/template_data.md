@@ -101,11 +101,6 @@ attr(data, "required")
 #> [69] "n_365d"                          "pct_gt365d_width"               
 #> [71] "n_gt365d"                        "lessons_learned_text"           
 #> [73] "disclaimer_text"                 "footnote_sources"               
-#> [75] "n_od_ems_denom"                  "timing_denom"                   
-#> [77] "n_eligible_decedents"            "n_unlinked_decedents"           
-#> [79] "wc_linked_median"                "wc_unlinked_median"             
-#> [81] "mean_prior_enc"                  "median_prior_enc"               
-#> [83] "pct_decedent_nax"                "timing_iqr"                     
 
 # Change just the numbers you have; every heading and label keeps its
 # default wording.

@@ -130,7 +130,8 @@ render_onepager(data, template = "overdose_spike_alert", theme = "uk", output = 
 That’s it: `alert.pdf` is a finished, accessible PDF. By default,
 [`render_onepager()`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md)
 also leaves the resolved `.typ` source next to the output
-(`alert_typst/`), so it’s never hidden away, even if you never need to
+(`alert_typst/`; `template_rendered.typ` in it is the file with your
+data filled in), so it’s never hidden away, even if you never need to
 look at it. That’s deliberate: it’s useful for troubleshooting, and it
 means a real, working template is always sitting somewhere you can hand
 it to an AI coding assistant (or a collaborator) to build out further,
@@ -276,11 +277,11 @@ not a conformance check) may flag two findings on the built-in templates
 that are already investigated and are not accessibility defects:
 
 - **“H/P element detected, but no corresponding structural element
-  exists,” on the header/footer logos.** A false positive: each logo is
-  a raster image with the organization’s name already carried as its alt
-  text, and the heuristic appears to independently read that same name
-  from the image’s pixels, expecting matching text that correctly
-  doesn’t exist.
+  exists,” on the header/footer logos.** A false positive on the
+  fixed-page templates: each logo is a raster image with the
+  organization’s name already carried as its alt text, and the heuristic
+  appears to independently read that same name from the image’s pixels,
+  expecting matching text that correctly doesn’t exist.
 - **“Table element detected, but no table structure exists,” on a
   template’s bar-chart rows.** Technically correct: those rows use
   Typst’s `#grid()`, not `#table()`, so there is no `/Table` tag. Left
@@ -290,6 +291,15 @@ that are already investigated and are not accessibility defects:
 Neither affects the PDF/UA or WCAG tabs, which is the actual conformance
 bar every built-in template is held to and where “100% passing” refers
 to.
+
+One real limitation is not something PAC flags: on the two alert
+templates (`overdose_spike_alert` and `syndromic_alert`) the page footer
+is a pagination artifact, so its logos, organization name and contact
+details are not in the document’s structure tree and a screen reader
+does not read them. PDF/UA allows this, which is why every checker
+passes it. Put contact details in the body text of those templates (for
+example in `footnote_sources`). The fixed-page templates do not have
+this limitation.
 
 **Scope of these claims.** Every built-in template, rendered with each
 built-in theme from the bundled example data, has been checked with PAC
@@ -398,55 +408,77 @@ Machine-readable citation metadata is also available in
 
 # Package index
 
-## All functions
+## Render a report
 
-- [`check_quarto()`](https://andrew-farrey.github.io/onepagr/reference/check_quarto.md)
-  : Check whether Quarto is installed and its bundled Typst is new
-  enough
-- [`check_theme()`](https://andrew-farrey.github.io/onepagr/reference/check_theme.md)
-  : Check a theme's dictionary structure against onepagr's real contract
+Turn a data list into a finished, accessible PDF.
+
+- [`render_onepager()`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md)
+  : Render a onepagr one-pager to PDF
 - [`compile_typst()`](https://andrew-farrey.github.io/onepagr/reference/compile_typst.md)
   : Compile a .typ file with whisker-substituted data via Quarto/Typst
-- [`example_data()`](https://andrew-farrey.github.io/onepagr/reference/example_data.md)
-  : Example data for a built-in template
 - [`export_template()`](https://andrew-farrey.github.io/onepagr/reference/export_template.md)
   : Export a built-in template for customization
-- [`extract_required_tokens()`](https://andrew-farrey.github.io/onepagr/reference/extract_required_tokens.md)
-  : Extract required whisker tokens from a .typ file
-- [`fmt_n()`](https://andrew-farrey.github.io/onepagr/reference/fmt_n.md)
-  : Format a number with comma grouping
-- [`fmt_pct()`](https://andrew-farrey.github.io/onepagr/reference/fmt_pct.md)
-  : Format a value as a percent string
-- [`install_quarto()`](https://andrew-farrey.github.io/onepagr/reference/install_quarto.md)
-  : Install Quarto to a user-local directory
+
+## Templates and themes
+
+What ships with the package, and how to see what a template takes.
+
 - [`list_templates()`](https://andrew-farrey.github.io/onepagr/reference/list_templates.md)
   : List built-in template names
 - [`list_themes()`](https://andrew-farrey.github.io/onepagr/reference/list_themes.md)
   : List built-in theme names
-- [`render_onepager()`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md)
-  : Render a onepagr one-pager to PDF
 - [`resolve_template()`](https://andrew-farrey.github.io/onepagr/reference/resolve_template.md)
   : Resolve a built-in template name to its installed template.typ path
 - [`resolve_theme()`](https://andrew-farrey.github.io/onepagr/reference/resolve_theme.md)
   : Resolve a theme name or path to an installed .typ file
-- [`set_quarto_path()`](https://andrew-farrey.github.io/onepagr/reference/set_quarto_path.md)
-  : Point onepagr (and Quarto) at a specific Quarto binary
-- [`template_data()`](https://andrew-farrey.github.io/onepagr/reference/template_data.md)
-  : Build a starter data list for a template
 - [`template_tokens()`](https://andrew-farrey.github.io/onepagr/reference/template_tokens.md)
   : List the tokens a template takes
+- [`template_data()`](https://andrew-farrey.github.io/onepagr/reference/template_data.md)
+  : Build a starter data list for a template
+- [`example_data()`](https://andrew-farrey.github.io/onepagr/reference/example_data.md)
+  : Example data for a built-in template
+- [`check_theme()`](https://andrew-farrey.github.io/onepagr/reference/check_theme.md)
+  : Check a theme's dictionary structure against onepagr's real contract
+
+## Preparing your data
+
+Format values and check them before rendering.
+
+- [`fmt_n()`](https://andrew-farrey.github.io/onepagr/reference/fmt_n.md)
+  : Format a number with comma grouping
+- [`fmt_pct()`](https://andrew-farrey.github.io/onepagr/reference/fmt_pct.md)
+  : Format a value as a percent string
+- [`typst_escape()`](https://andrew-farrey.github.io/onepagr/reference/typst_escape.md)
+  : Escape plain text for use in a content token
 - [`validate_template_data()`](https://andrew-farrey.github.io/onepagr/reference/validate_template_data.md)
   : Validate whisker data against a template's required tokens
+- [`extract_required_tokens()`](https://andrew-farrey.github.io/onepagr/reference/extract_required_tokens.md)
+  : Extract required whisker tokens from a .typ file
+
+## Set up Quarto and Typst
+
+Check for, install and point onepagr at the toolchain it needs.
+
+- [`check_quarto()`](https://andrew-farrey.github.io/onepagr/reference/check_quarto.md)
+  : Check whether Quarto is installed and its bundled Typst is new
+  enough
+- [`install_quarto()`](https://andrew-farrey.github.io/onepagr/reference/install_quarto.md)
+  : Install Quarto to a user-local directory
+- [`set_quarto_path()`](https://andrew-farrey.github.io/onepagr/reference/set_quarto_path.md)
+  : Point onepagr (and Quarto) at a specific Quarto binary
 
 # Articles
 
-### All vignettes
+### Get started
 
-- [Accessibility: what is checked, and what you
-  check](https://andrew-farrey.github.io/onepagr/articles/accessibility-checks.md):
-- [An end-to-end workflow: from data to
-  PDF](https://andrew-farrey.github.io/onepagr/articles/end-to-end-workflow.md):
 - [Getting started with
   onepagr](https://andrew-farrey.github.io/onepagr/articles/getting-started.md):
+- [An end-to-end workflow: from data to
+  PDF](https://andrew-farrey.github.io/onepagr/articles/end-to-end-workflow.md):
+
+### Customize and verify
+
 - [Theming: colors and
   logos](https://andrew-farrey.github.io/onepagr/articles/theming.md):
+- [Accessibility: what is checked, and what you
+  check](https://andrew-farrey.github.io/onepagr/articles/accessibility-checks.md):

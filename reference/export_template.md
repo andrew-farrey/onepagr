@@ -17,7 +17,13 @@ with
 ## Usage
 
 ``` r
-export_template(template, dest, theme = "default")
+export_template(
+  template,
+  dest,
+  theme = "default",
+  theme_path = NULL,
+  overwrite = FALSE
+)
 ```
 
 ## Arguments
@@ -36,6 +42,18 @@ export_template(template, dest, theme = "default")
 
   Character. A built-in theme name, or a path to a custom theme .typ
   file, to resolve and copy in as `theme.typ`. Default `"default"`.
+
+- theme_path:
+
+  Character or `NULL`. Explicit theme file path override, as in
+  [`render_onepager()`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md);
+  when supplied, `theme` is ignored.
+
+- overwrite:
+
+  Logical. If `dest` already holds an exported template, `FALSE` (the
+  default) stops with an error so hand edits are not lost; `TRUE`
+  replaces the files.
 
 ## Value
 

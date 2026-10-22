@@ -388,6 +388,9 @@ names) come first, then the optional ones with their current text:
 tokens <- onepagr::template_tokens("overdose_spike_alert")
 tokens[!tokens$required, c("token", "default")]
 #>                    token
+#> 19           window_days
+#> 20     spike_window_days
+#> 21             threshold
 #> 22         min_font_size
 #> 23            font_scale
 #> 24           space_scale
@@ -408,10 +411,14 @@ tokens[!tokens$required, c("token", "default")]
 #> 39   logo_partner_a_path
 #> 40    logo_partner_a_alt
 #> 41        show_partner_b
-#> 42   logo_partner_b_path
-#> 43    logo_partner_b_alt
-#> 44   header_texture_path
+#> 42              doc_lang
+#> 43   logo_partner_b_path
+#> 44    logo_partner_b_alt
+#> 45   header_texture_path
 #>                                                                                                                           default
+#> 19                                                                                                                           <NA>
+#> 20                                                                                                                           <NA>
+#> 21                                                                                                                           <NA>
 #> 22                                                                                                                               
 #> 23                                                                                                                               
 #> 24                                                                                                                               
@@ -432,9 +439,10 @@ tokens[!tokens$required, c("token", "default")]
 #> 39                                                                                                                               
 #> 40                                                                                                                               
 #> 41                                                                                                                          false
-#> 42                                                                                                                               
+#> 42                                                                                                                             en
 #> 43                                                                                                                               
-#> 44                                                                                                      assets/header-texture.png
+#> 44                                                                                                                               
+#> 45                                                                                                      assets/header-texture.png
 ```
 
 Optional tokens are named by what they set, so you can filter on the
@@ -495,9 +503,16 @@ A few things to know:
   double quote.
 - The number in a default is filled from your data. A default such as
   `Results (N = {{{n_total}}})` uses your `n_total`. Your own
-  replacement is used exactly as written, so type any numbers into it
-  yourself. The token in the default is still required, because the
-  template needs it whether or not you keep the default text.
+  replacement can refer to a token the same way (`{{{n_total}}}` is
+  filled from your data), or you can type the number into it yourself. A
+  token that only a default refers to is needed only while that default
+  is in use: reword the default and you no longer have to supply that
+  token.
+- A bar-chart `*_width` token (such as `pct_linked_male_width`) takes a
+  plain number from 0 to 100, for example `"64.6"`. A value with a `%`
+  sign, a decimal comma, or a number above 100 is rejected with an error
+  naming the token. The label printed beside the bar shows the number as
+  Typst formats it, so `"10.0"` prints as `10%`.
 - Headings stay real headings in the PDF’s structure whatever text you
   give them, so screen readers and the document outline keep working.
   Update the `alt_*` text whenever you change what a chart or map shows.

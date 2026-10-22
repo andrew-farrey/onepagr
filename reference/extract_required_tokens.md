@@ -26,19 +26,18 @@ Character vector of unique token names, in first-appearance order.
 
 `//` line comments are stripped before scanning: Typst templates
 routinely document the triple-brace convention with a literal
-`{{{token}}}` example in a header comment (this is a real case, not
-hypothetical; the reference trend-snapshot template does exactly this),
-and without stripping comments first, that illustrative example is
-indistinguishable from a real required token. `//` is unambiguously a
-comment marker in Typst (division is a single `/`), so this is safe for
-any Typst source: the one caveat is a literal `//` inside a string
-constant in the template's own code (not data, which arrives via
-tokens), which onepagr's built-in templates never do.
+`{{{token}}}` example in a header comment, and without stripping
+comments first, that illustrative example is indistinguishable from a
+real required token. A `//` inside a quoted string, or directly after a
+colon (the `://` of a URL), is text, not a comment, so a token after a
+URL on the same line is still found.
 
 A token with a declared default (see the optional-token marker in
 [`compile_typst()`](https://andrew-farrey.github.io/onepagr/reference/compile_typst.md))
-is not required, so it is left out of the result. A default can refer to
-other tokens (`{{{token}}}`); those are required.
+is not required, so it is left out of the result. A token that only a
+default refers to is not listed here either: it is needed only while
+that default is in use (see
+[`template_tokens()`](https://andrew-farrey.github.io/onepagr/reference/template_tokens.md)).
 
 ## Examples
 
@@ -82,9 +81,4 @@ extract_required_tokens(path)
 #> [69] "n_365d"                          "pct_gt365d_width"               
 #> [71] "n_gt365d"                        "lessons_learned_text"           
 #> [73] "disclaimer_text"                 "footnote_sources"               
-#> [75] "n_od_ems_denom"                  "timing_denom"                   
-#> [77] "n_eligible_decedents"            "n_unlinked_decedents"           
-#> [79] "wc_linked_median"                "wc_unlinked_median"             
-#> [81] "mean_prior_enc"                  "median_prior_enc"               
-#> [83] "pct_decedent_nax"                "timing_iqr"                     
 ```

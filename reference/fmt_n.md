@@ -21,6 +21,13 @@ fmt_n(x)
 
 Character vector.
 
+## Details
+
+A value exactly halfway between two integers is rounded to the even one,
+as R's own [`round()`](https://rdrr.io/r/base/Round.html) does (IEC
+60559): `2.5` gives `"2"` and `1.5` gives `"2"`. Round half up yourself
+first if a style guide asks for that.
+
 ## Examples
 
 ``` r

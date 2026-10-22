@@ -1,14 +1,13 @@
 # The exact key -\> Typst type contract onepagr's shipped templates and `components.typ` rely on
 
-Internal. Derived by grep-ing every real `theme.<key>` /
-`theme-grad.<key>` reference across `inst/typst/components.typ` and
-every `inst/typst/templates/*/template.typ` (not assumed), then
-cross-checked directly against both shipped theme files' own key sets
-via a real `typst eval` run: confirmed identical key-for-key between
-`default.typ` and `uk.typ`. If a future template or component introduces
-a new theme token, add it here too; `test-themes.R` diffs this list
-against both shipped theme files' real key sets and fails loudly if they
-diverge.
+Internal. The required keys are the ones `inst/typst/components.typ` and
+every `inst/typst/templates/*/template.typ` actually read as
+`theme.<key>` / `theme-grad.<key>` (counted by script, not assumed); the
+`optional_theme` keys are allowed but not read directly. All three
+shipped themes (`default.typ`, `uk.typ`, `kdph.typ`) define exactly
+these keys, which `test-themes.R` checks with a real `typst eval` run,
+so a key added to a component or template has to be added here too or
+that test fails.
 
 ## Usage
 
@@ -20,6 +19,6 @@ onepagr_theme_schema()
 
 A list with `theme` (named character vector, key -\> Typst `type()`
 name; `|` separates accepted alternatives, so `body-font` is
-`"str|array"` to allow a font fallback list), `theme_grad` (same shape),
-and `radius_card` (the nested dictionary `theme$radius-card` must
-contain).
+`"str|array"` to allow a font fallback list), `optional_theme` (same
+shape, keys that may be present), `theme_grad` (same shape), and
+`radius_card` (the nested dictionary `theme$radius-card` must contain).

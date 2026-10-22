@@ -33,9 +33,10 @@ at all, in which case every field below is empty/`NA`), `missing` /
 / `theme-grad`), `type_mismatches` / `type_mismatches_grad` (data frames
 with `key`, `expected`, `actual` columns), `radius_card_missing` /
 `radius_card_type_mismatches` (same shape, for the nested `radius-card`
-dictionary), and `unknown` (character vector of keys present in `theme`
-but outside onepagr's known schema, informational only, not a failure;
-could be a typo, or a key your own templates read directly).
+dictionary), and `unknown` / `unknown_grad` (character vectors of keys
+present in `theme` / `theme-grad` but outside onepagr's known schema,
+informational only, not a failure; could be a typo, or a key your own
+templates read directly).
 
 ## Details
 

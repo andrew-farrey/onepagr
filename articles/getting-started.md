@@ -115,12 +115,7 @@ attr(data, "required")
 #> [67] "n_90d"                           "pct_365d_width"                 
 #> [69] "n_365d"                          "pct_gt365d_width"               
 #> [71] "n_gt365d"                        "lessons_learned_text"           
-#> [73] "disclaimer_text"                 "footnote_sources"               
-#> [75] "n_od_ems_denom"                  "timing_denom"                   
-#> [77] "n_eligible_decedents"            "n_unlinked_decedents"           
-#> [79] "wc_linked_median"                "wc_unlinked_median"             
-#> [81] "mean_prior_enc"                  "median_prior_enc"               
-#> [83] "pct_decedent_nax"                "timing_iqr"
+#> [73] "disclaimer_text"                 "footnote_sources"
 ```
 
 You’d typically build those values from your analysis output using
@@ -149,8 +144,11 @@ leaves the resolved `.typ` source (and everything it needs to recompile:
 the theme, shared components, and assets) next to your output PDF, in a
 folder named after it, here something like `<tempfile>_typst/`. That’s
 deliberate: the actual Typst source is never hidden, even if you never
-open it. If you want only the PDF and nothing else, pass
-`keep_typst = FALSE`.
+open it. In that folder, `template_rendered.typ` is the file with your
+data filled in (compile that one); `template.typ` is the template as
+shipped, placeholders and all, and will not compile on its own. Each
+render replaces the folder. If you want only the PDF and nothing else,
+pass `keep_typst = FALSE`.
 
 ## Picking a theme
 
@@ -214,15 +212,15 @@ onepagr::list_templates()
 # Every token a template takes: required ones first, then optional ones
 # with their default text.
 head(onepagr::template_tokens("overdose_spike_alert"), 8)
-#>               token required default
-#> 1     contact_email     TRUE    <NA>
-#> 2 logo_primary_path     TRUE    <NA>
-#> 3  logo_primary_alt     TRUE    <NA>
-#> 4          org_full     TRUE    <NA>
-#> 5       contact_url     TRUE    <NA>
-#> 6    severity_level     TRUE    <NA>
-#> 7         doc_title     TRUE    <NA>
-#> 8      doc_subtitle     TRUE    <NA>
+#>               token required default needed_by
+#> 1     contact_email     TRUE    <NA>      <NA>
+#> 2 logo_primary_path     TRUE    <NA>      <NA>
+#> 3  logo_primary_alt     TRUE    <NA>      <NA>
+#> 4          org_full     TRUE    <NA>      <NA>
+#> 5       contact_url     TRUE    <NA>      <NA>
+#> 6    severity_level     TRUE    <NA>      <NA>
+#> 7         doc_title     TRUE    <NA>      <NA>
+#> 8      doc_subtitle     TRUE    <NA>      <NA>
 ```
 
 The optional tokens are the template’s own wording (headings, captions,

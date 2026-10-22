@@ -8,7 +8,7 @@ alike.
 ## Usage
 
 ``` r
-check_theme_dict(actual_matrix, expected_types)
+check_theme_dict(actual_matrix, expected_types, optional_types = character(0))
 ```
 
 ## Arguments
