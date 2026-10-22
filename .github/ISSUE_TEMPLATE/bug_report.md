@@ -12,7 +12,8 @@ assignees: ''
 
 ## Minimal example
 
-<!-- Use example_data() where you can, so nobody needs your data. -->
+<!-- Use example_data() where you can, so nobody needs your data. Never paste
+real, record-level, or sensitive data here. -->
 
 ```r
 library(onepagr)
