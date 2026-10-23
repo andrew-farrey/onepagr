@@ -1,4 +1,4 @@
-# onepagr (development version)
+# onepagr 0.2.0
 
 This release folds in fixes from an external code review and a round of
 accessibility evidence work. All 15 built-in template and theme combinations

@@ -1,15 +1,28 @@
 ## Submission
 
-This is a new submission (onepagr 0.1.1).
+This is a new submission (onepagr 0.2.0).
+
+An earlier version, 0.1.1, was submitted on 2026-10-16 and withdrawn on
+2026-10-21 at my request, with CRAN's agreement by email, after an external code
+review found bugs in how data values reach a template. This version fixes them,
+so it has a new version number. The user-visible changes are listed in
+`NEWS.md`.
 
 ## Test environments
 
-* Local: Windows 11, R 4.6.1 (release)
-* win-builder: Windows Server 2022, R Under development (2026-10-14 r90673 ucrt)
+* Local: Windows 11, R 4.6.1 (release), Quarto 1.10.18 with Typst 0.15.1
 * GitHub Actions (on every push): macOS (R release), Windows (R release),
   Ubuntu (R devel, R release, R oldrel-1)
+* win-builder: [TO FILL IN after the final run on the release sources: platform,
+  R version and date]
+* R-hub: [TO FILL IN after the final run on the release sources: platforms and
+  date]
 
 ## R CMD check results
+
+[TO FILL IN after the final runs. Local `devtools::check(cran = TRUE)` on the
+development sources gave 0 errors | 0 warnings | 0 notes. The expected result on
+win-builder is the one note below.]
 
 0 errors | 0 warnings | 1 note
 
@@ -49,4 +62,4 @@ in `SystemRequirements`. It is not installed on CRAN's check machines, so:
 
 ## Downstream dependencies
 
-There are none (new package).
+There are none on CRAN (new package).
