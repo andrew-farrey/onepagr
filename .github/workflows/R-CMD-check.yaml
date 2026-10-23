@@ -30,7 +30,7 @@ jobs:
       R_KEEP_PKG_SOURCE: yes
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       # onepagr's whole purpose is producing accessible PDFs, which
       # needs Quarto/Typst to actually happen -- without this, every
