@@ -23,7 +23,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       # Without Quarto, every render_onepager() chunk in the published
       # vignettes (gated on quarto::quarto_available()) silently skips,
