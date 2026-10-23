@@ -47,15 +47,18 @@ render_onepager(data, template = "trend_snapshot", theme = "kdph", output = "rep
 Same template, same data, only `theme` changed between the three calls
 above (`default`, `uk`, `kdph`, left to right):
 
-```{r, echo = FALSE, fig.show = "hold", out.width = "32%", fig.alt = c("trend_snapshot rendered with the default, brand-neutral theme.", "The same trend_snapshot report rendered with the uk theme instead, showing only colors and typography changed.", "The same trend_snapshot report rendered with the kdph theme: navy header, indigo bars, and Calibri type.")}
-knitr::include_graphics(file.path(
+```{r theme-comparison, echo = FALSE, fig.show = "hold", out.width = "32%", fig.alt = c("trend_snapshot rendered with the default, brand-neutral theme.", "The same trend_snapshot report rendered with the uk theme instead, showing only colors and typography changed.", "The same trend_snapshot report rendered with the kdph theme: navy header, indigo bars, and Calibri type.")}
+themes <- c("default", "uk", "kdph")
+source_png <- file.path(
   system.file("help", "figures", package = "onepagr"),
-  c(
-    "example-trend-snapshot-theme-default.png",
-    "example-trend-snapshot-theme-uk.png",
-    "example-trend-snapshot-theme-kdph.png"
-  )
-))
+  paste0("example-trend-snapshot-theme-", themes, ".png")
+)
+# Copied under knitr's figure path: the installed library path does not exist
+# where the published site is served, so the page would show broken images.
+theme_png <- knitr::fig_path(paste0("-", themes, ".png"))
+dir.create(dirname(theme_png[1]), recursive = TRUE, showWarnings = FALSE)
+invisible(file.copy(source_png, theme_png, overwrite = TRUE))
+knitr::include_graphics(theme_png)
 ```
 
 The `kdph` theme is an unofficial implementation of the Kentucky
