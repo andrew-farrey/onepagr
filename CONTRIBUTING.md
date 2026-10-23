@@ -18,6 +18,10 @@ For an accessibility problem, attach the PDF and say which checker or screen
 reader reported it. A problem that passes the automated checkers but fails a
 person is exactly what we want to hear about.
 
+Please never post real, record-level, or sensitive data in an issue, a comment,
+or an attachment. Use `example_data()` or made-up values. To report a security
+problem, follow `.github/SECURITY.md` instead of opening a public issue.
+
 ## Setting up
 
 ```r
