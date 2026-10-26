@@ -24,7 +24,7 @@ test_that("export_template errors clearly for an unknown template", {
 })
 
 test_that("an exported template compiles standalone via compile_typst", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   dest <- tempfile()
   on.exit(unlink(dest, recursive = TRUE))
   export_template("cohort_summary", dest, theme = "default")

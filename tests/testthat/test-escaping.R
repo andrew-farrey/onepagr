@@ -83,7 +83,7 @@ test_that("balanced, escaped, and string-context brackets are accepted", {
 })
 
 test_that("a quote or backslash in header and alt text renders", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   skip_if_not_installed("pdftools")
   data <- example_data("overdose_spike_alert")
   data$org_full <- "Sample \"North\" Health Department"
@@ -97,7 +97,7 @@ test_that("a quote or backslash in header and alt text renders", {
 })
 
 test_that("values pre-escaped for markup render exactly as before", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   skip_if_not_installed("pdftools")
   data <- example_data("overdose_spike_alert")
   data$footnote_sources <- "Source: Sample System\\*"

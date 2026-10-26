@@ -76,7 +76,7 @@ test_that("template_data's optional defaults carry no leftover {{{ markup", {
 })
 
 test_that("template_data alone is enough to render every built-in template", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   out_dir <- tempfile()
   dir.create(out_dir)
   on.exit(unlink(out_dir, recursive = TRUE))

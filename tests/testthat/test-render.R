@@ -63,7 +63,7 @@ test_that("render_onepager errors clearly for an unknown template", {
 })
 
 test_that("render_onepager keep_typst = TRUE leaves a tree next to the PDF", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   out_dir <- tempfile()
   dir.create(out_dir)
   on.exit(unlink(out_dir, recursive = TRUE))
@@ -83,7 +83,7 @@ test_that("render_onepager keep_typst = TRUE leaves a tree next to the PDF", {
 })
 
 test_that("render_onepager creates a nested output dir that doesn't exist", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   out_dir <- tempfile()
   on.exit(unlink(out_dir, recursive = TRUE))
   # Deliberately do NOT pre-create out_dir (or its parent "nested"
@@ -103,7 +103,7 @@ test_that("render_onepager creates a nested output dir that doesn't exist", {
 })
 
 test_that("render_onepager keep_typst = FALSE leaves only the PDF", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   out_dir <- tempfile()
   dir.create(out_dir)
   on.exit(unlink(out_dir, recursive = TRUE))
@@ -253,7 +253,7 @@ test_that("an unrelated folder at the work-folder path is not deleted", {
 })
 
 test_that("a re-render replaces the previous work folder", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   out <- tempfile(fileext = ".pdf")
   work <- sub(".pdf", "_typst", out, fixed = TRUE)
   on.exit(unlink(c(out, work), recursive = TRUE))
@@ -285,7 +285,7 @@ test_that("doc_lang reaches the Typst document language", {
 })
 
 test_that("a Spanish document compiles", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   out <- tempfile(fileext = ".pdf")
   on.exit(unlink(c(out, sub(".pdf", "_typst", out, fixed = TRUE)), recursive = TRUE))
   data <- utils::modifyList(

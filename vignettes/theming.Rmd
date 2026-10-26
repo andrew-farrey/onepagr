@@ -10,7 +10,7 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 quarto_ready <- requireNamespace("quarto", quietly = TRUE) &&
-  quarto::quarto_available()
+  isTRUE(suppressMessages(onepagr::check_quarto())$ok)
 ```
 
 onepagr's visual identity splits into two genuinely separate mechanisms,

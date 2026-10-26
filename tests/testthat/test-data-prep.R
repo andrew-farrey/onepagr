@@ -65,7 +65,7 @@ test_that("an unsupported type is rejected naming the token", {
 })
 
 test_that("compile_typst formats a numeric value without scientific notation", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   skip_if_not_installed("pdftools")
   data <- example_data("overdose_spike_alert")
   data$n_events <- 100000
