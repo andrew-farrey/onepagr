@@ -39,7 +39,11 @@ write_typ <- function(lines, env = parent.frame()) {
 # own logic were broken.
 skip_if_no_typst_eval <- function() {
   quarto_bin <- quarto::quarto_path()
-  testthat::skip_if(is.null(quarto_bin), "Quarto not found")
+  # quarto_path() gives NULL, or an empty string on some platforms, when
+  # Quarto is not found.
+  testthat::skip_if(
+    length(quarto_bin) == 0 || !nzchar(quarto_bin[1]), "Quarto not found"
+  )
   testthat::skip_if_not(
     typst_eval_supported(quarto_bin),
     "typst eval is not supported by the installed Typst"
