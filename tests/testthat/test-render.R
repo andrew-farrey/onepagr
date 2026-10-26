@@ -11,6 +11,47 @@ test_that("render_onepager raises the missing-token error without Quarto", {
   expect_false(file.exists(out_pdf))
 })
 
+test_that("a data error does not create the output folder", {
+  out_pdf <- file.path(tempfile("never-made"), "deeper", "report.pdf")
+  expect_error(
+    render_onepager(list(), "cohort_summary", output = out_pdf),
+    "Missing or NA required token"
+  )
+  expect_false(dir.exists(dirname(out_pdf)))
+  expect_false(dir.exists(dirname(dirname(out_pdf))))
+})
+
+test_that("a data error leaves the previous render's work folder intact", {
+  skip_if_no_onepagr_typst()
+  out_dir <- tempfile()
+  dir.create(out_dir)
+  on.exit(unlink(out_dir, recursive = TRUE), add = TRUE)
+  out_pdf <- file.path(out_dir, "report.pdf")
+  data <- example_data("cohort_summary")
+  render_onepager(data, "cohort_summary", output = out_pdf)
+  work <- file.path(out_dir, "report_typst")
+  before <- sort(list.files(work, recursive = TRUE))
+  expect_true("template_rendered.typ" %in% before)
+
+  data$doc_title <- NULL
+  expect_error(
+    render_onepager(data, "cohort_summary", output = out_pdf),
+    "Missing or NA required token"
+  )
+  expect_identical(sort(list.files(work, recursive = TRUE)), before)
+  expect_true(file.exists(out_pdf))
+})
+
+test_that("a bracket error is reported before any folder is touched", {
+  out_pdf <- file.path(tempfile("never-made"), "report.pdf")
+  data <- example_data("cohort_summary")
+  data$doc_subtitle <- "Counts rose (see note 1]"
+  expect_error(
+    render_onepager(data, "cohort_summary", output = out_pdf), "unbalanced"
+  )
+  expect_false(dir.exists(dirname(out_pdf)))
+})
+
 test_that("render_onepager errors clearly for an unknown template", {
   out_pdf <- tempfile(fileext = ".pdf")
   expect_error(
