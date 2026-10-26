@@ -126,7 +126,6 @@ render_onepager <- function(data, template, theme = "default",
   spec <- template_spec(template_path)
   suppressWarnings(check_template_data(spec, checked))
   check_bracket_balance(spec, fill_token_defaults(template_path, checked))
-  quarto_bin_or_stop()
 
   if (!dir.exists(dirname(output))) {
     dir.create(dirname(output), recursive = TRUE)
