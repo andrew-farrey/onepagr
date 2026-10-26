@@ -12,7 +12,8 @@ install_quarto(version = "1.10.18")
 }
 \value{
 Character, the install directory (macOS/Linux) or the
-downloaded installer path (Windows), invisibly.
+downloaded installer path (Windows), invisibly; \code{NULL}, invisibly, if
+you decline the download.
 }
 \description{
 Downloads the official Quarto release for this OS from
@@ -50,6 +51,15 @@ templates were actually developed and tested against; re-verify
 this default against a live install (\verb{quarto typst --version}) before
 bumping it, rather than assuming a newer Quarto version number implies
 a newer bundled Typst.
+
+In an interactive session it asks before the download, which is large
+(roughly 100 to 250 MB depending on the system); answering no installs
+nothing. After a successful install it removes the older copies it put in
+the install directory before (the \verb{quarto-<version>} folders, and any older
+installer or archive left there), so the folder does not grow with every
+version. It never removes a copy that \code{QUARTO_PATH} points into, in this
+session or in \verb{~/.Renviron}, and it never touches a file or folder whose
+name does not match what it creates.
 }
 \examples{
 \dontrun{
