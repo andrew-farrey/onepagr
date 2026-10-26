@@ -19,8 +19,9 @@ A value for a token that sits in the body of a template is Typst markup:
 what you want for formatted text. For plain text from a database or a
 free-text field, use \code{typst_escape()} so that characters Typst would
 treat as markup (\verb{#}, \code{$}, \code{*}, \verb{_}, a backtick, \code{<}, \code{>}, \code{@}, \code{[}, \verb{]},
-\code{~} and the backslash itself) show up literally instead of breaking the
-compile.
+\code{~}, \code{/} and the backslash itself) show up literally instead of breaking
+the compile. A slash is escaped so that \verb{//} in the text, which Typst
+reads as the start of a comment, cannot drop the rest of the line.
 }
 \details{
 Tokens that sit inside a quoted string in a template (organization names,

@@ -21,6 +21,31 @@ test_that("typst_escape makes plain text safe in a content token", {
   expect_identical(typst_escape(c("a", NA)), c("a", NA))
 })
 
+test_that("typst_escape escapes a slash so // cannot start a comment", {
+  expect_identical(
+    typst_escape("Rates rose 5% // provisional"),
+    "Rates rose 5% \\/\\/ provisional"
+  )
+  expect_identical(typst_escape("a/b and /* c"), "a\\/b and \\/\\* c")
+  expect_identical(typst_escape("https://x.org/a"), "https:\\/\\/x.org\\/a")
+})
+
+test_that("plain text with // renders in full once escaped", {
+  skip_if_no_onepagr_typst()
+  skip_if_not_installed("pdftools")
+  path <- write_typ(c("#set document(title: [T])", "A: {{{note}}} END-A"))
+  out <- tempfile(fileext = ".pdf")
+  on.exit(unlink(out), add = TRUE)
+  compile_typst(
+    path,
+    list(note = typst_escape("Rates rose 5% // provisional, see https://x.org")),
+    out
+  )
+  text <- gsub("\\s+", " ", paste(pdftools::pdf_text(out), collapse = " "))
+  expect_match(text, "Rates rose 5% // provisional, see https://x.org END-A",
+               fixed = TRUE)
+})
+
 test_that("a string-context token is escaped and a content token is not", {
   path <- write_typ(
     c("#let f(a) = a", "#f(\"{{{s}}}\")", "[{{{c}}}]", "\"{{{both}}}\" {{{both}}}")
