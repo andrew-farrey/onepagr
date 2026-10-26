@@ -45,11 +45,7 @@ test_that("every built-in template renders under every built-in theme", {
   # and sandboxes file access to its own compile directory -- see
   # R/render.R's extra_assets documentation). Every other template gets
   # character(0), the default.
-  extra_assets_for <- list(
-    county_choropleth = file.path(
-      "fixtures", "maps", sprintf("map%d.png", 0:4)
-    )
-  )
+  extra_assets_for <- list(county_choropleth = example_maps())
 
   out_dir <- tempfile()
   dir.create(out_dir)
@@ -257,7 +253,7 @@ test_that("a single-logo data list needs only the primary logo tokens", {
 test_that("every template renders from a single-logo data list", {
   skip_if_no_onepagr_typst()
   fixtures <- single_logo_fixtures()
-  maps <- file.path("fixtures", "maps", sprintf("map%d.png", 0:4))
+  maps <- example_maps()
   out_dir <- tempfile()
   dir.create(out_dir)
   on.exit(unlink(out_dir, recursive = TRUE))
@@ -310,7 +306,7 @@ scaled_render <- function(template, extra = list(), theme = "default") {
     syndromic_alert = sample_data_syndromic_alert,
     county_choropleth = sample_data_county_choropleth
   )
-  maps <- file.path("fixtures", "maps", sprintf("map%d.png", 0:4))
+  maps <- example_maps()
   out <- tempfile(fileext = ".pdf")
   render_onepager(
     utils::modifyList(data, extra), template = template, theme = theme,

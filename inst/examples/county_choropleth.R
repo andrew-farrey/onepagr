@@ -2,10 +2,9 @@
 # compiler sandboxes file access to its own compile directory and
 # rejects absolute paths outright, so these must resolve to files
 # render_onepager()'s extra_assets parameter stages into that directory
-# (see R/render.R). The actual PNG files live in
-# tests/testthat/fixtures/maps/ and are passed to render_onepager()'s
-# extra_assets argument by tests that use this fixture, not referenced
-# by path here.
+# (see R/render.R). The actual PNG files ship in inst/extdata/maps/
+# (system.file("extdata", "maps", package = "onepagr")) and are passed to
+# render_onepager()'s extra_assets argument, not referenced by path here.
 example_data <- list(
   doc_title = "SAMPLE COUNTY VULNERABILITY SNAPSHOT",
   doc_subtitle = "Social Vulnerability and Overdose Mortality . Sample Region",

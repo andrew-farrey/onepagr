@@ -10,6 +10,16 @@ skip_if_no_onepagr_typst <- function() {
   )
 }
 
+# The five placeholder map images that example_data("county_choropleth") points
+# at; they ship with the package and are passed to render_onepager() as
+# extra_assets.
+example_maps <- function() {
+  list.files(
+    system.file("extdata", "maps", package = "onepagr"),
+    pattern = "^map[0-4][.]png$", full.names = TRUE
+  )
+}
+
 # Write lines to a temporary .typ file that is removed when the calling test
 # ends.
 write_typ <- function(lines, env = parent.frame()) {

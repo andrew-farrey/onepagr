@@ -16,8 +16,10 @@ suppressMessages(devtools::load_all(".", quiet = TRUE))
 out_dir <- "man/figures"
 work <- file.path(tempdir(), "gallery")
 dir.create(work, showWarnings = FALSE, recursive = TRUE)
-maps <- normalizePath(file.path("tests", "testthat", "fixtures", "maps",
-                                sprintf("map%d.png", 0:4)))
+maps <- normalizePath(list.files(
+  system.file("extdata", "maps", package = "onepagr"),
+  pattern = "^map[0-4][.]png$", full.names = TRUE
+))
 
 render <- function(template, theme) {
   pdf <- file.path(work, paste0(template, "__", theme, ".pdf"))
