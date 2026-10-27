@@ -119,17 +119,57 @@ test_that("quarto_paths_in_use reads QUARTO_PATH and ~/.Renviron", {
   ), renviron)
   withr::defer(unlink(renviron))
   withr::local_envvar(QUARTO_PATH = "C:/session/quarto-1.7.32/bin/quarto")
-  found <- quarto_paths_in_use(renviron_path = renviron)
+  found <- quarto_paths_in_use(renviron_files = renviron)
   expect_true("C:/session/quarto-1.7.32/bin/quarto" %in% found)
   expect_true("C:/Users/x/quarto-1.9.1/bin/quarto" %in% found)
   expect_false(any(grepl("old", found)))
 })
 
+test_that("quarto_paths_in_use reads every .Renviron it is given", {
+  user <- tempfile(".Renviron-user-")
+  project <- tempfile(".Renviron-project-")
+  writeLines("QUARTO_PATH=C:/user/quarto-1.9.1/bin/quarto", user)
+  writeLines("QUARTO_PATH='C:/project/quarto-1.8.0/bin/quarto'", project)
+  withr::defer(unlink(c(user, project)))
+  withr::local_envvar(QUARTO_PATH = NA)
+  found <- quarto_paths_in_use(renviron_files = c(user, project, "", NA))
+  expect_setequal(
+    found,
+    c("C:/user/quarto-1.9.1/bin/quarto", "C:/project/quarto-1.8.0/bin/quarto")
+  )
+})
+
+test_that("the .Renviron files read include the project's and R_ENVIRON_USER", {
+  withr::local_envvar(R_ENVIRON_USER = "C:/custom/my-renviron")
+  files <- renviron_files_to_read()
+  expect_true(path.expand("~/.Renviron") %in% files)
+  expect_true(file.path(getwd(), ".Renviron") %in% files)
+  expect_true("C:/custom/my-renviron" %in% files)
+  withr::local_envvar(R_ENVIRON_USER = NA)
+  expect_false("" %in% renviron_files_to_read())
+})
+
 test_that("quarto_paths_in_use is empty when nothing is set", {
   withr::local_envvar(QUARTO_PATH = NA)
   expect_identical(
-    quarto_paths_in_use(renviron_path = tempfile("missing-")), character(0)
+    quarto_paths_in_use(renviron_files = tempfile("missing-")), character(0)
   )
+})
+
+test_that("a copy named in a project .Renviron is kept by the clean-up", {
+  dir <- make_install_dir(c("quarto-1.8.0", "quarto-1.10.18"))
+  project <- tempfile(".Renviron-project-")
+  writeLines(
+    paste0("QUARTO_PATH=", file.path(dir, "quarto-1.8.0", "bin", "quarto")),
+    project
+  )
+  withr::defer(unlink(project))
+  withr::local_envvar(QUARTO_PATH = NA)
+  suppressMessages(remove_old_quarto_installs(
+    dir, keep = "quarto-1.10.18",
+    in_use = quarto_paths_in_use(renviron_files = project)
+  ))
+  expect_setequal(contents(dir), c("quarto-1.8.0", "quarto-1.10.18"))
 })
 
 test_that("the download prompt never fires outside an interactive session", {
