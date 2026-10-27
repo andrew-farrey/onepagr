@@ -175,6 +175,22 @@ check_bracket_balance <- function(spec, data) {
   invisible(TRUE)
 }
 
+# Names that the values of `start` refer to as {{{name}}}, directly or through
+# another value, not counting the starting names themselves. One data list can
+# be shared across templates, so this is what limits a check or a substitution
+# to what a template's own values can actually reach.
+tokens_reachable <- function(data, start) {
+  found <- character(0)
+  repeat {
+    refs <- tokens_referenced_in_values(data[names(data) %in% c(start, found)])
+    added <- setdiff(refs, c(start, found))
+    if (length(added) == 0) {
+      return(found)
+    }
+    found <- c(found, added)
+  }
+}
+
 # A value counts as missing when it is absent, empty, or NA.
 value_missing <- function(data, tok) {
   value <- data[[tok]]
@@ -212,11 +228,11 @@ check_template_data <- function(spec, data) {
   uses_omitted_default <- vapply(tokens$needed_by, function(by) {
     !is.na(by) && any(trimws(strsplit(by, ",", fixed = TRUE)[[1]]) %in% omitted)
   }, logical(1))
-  # Only this template's own tokens: one data list can be shared across
-  # templates, and what another template's value refers to is not needed here.
-  own_values <- data[names(data) %in% tokens$token]
+  # Only what this template's own tokens lead to, through any chain of values:
+  # one data list can be shared across templates, and what another template's
+  # value refers to is not needed here.
   referenced <- setdiff(
-    tokens_referenced_in_values(own_values), names(spec$defaults)
+    tokens_reachable(data, tokens$token), names(spec$defaults)
   )
   needed <- unique(c(
     tokens$token[tokens$kind == "required"],
