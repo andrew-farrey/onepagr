@@ -395,7 +395,10 @@ neutralize_comment_tokens <- function(line) {
     return(line)
   }
   comment <- substr(line, nchar(code) + 1L, nchar(line))
-  paste0(code, gsub(token_pattern, "<\\1>", comment, perl = TRUE))
+  comment <- gsub(token_pattern, "<\\1>", comment, perl = TRUE)
+  # A double-brace {{name}}, a {{#section}} and a stray {{ are tags to whisker
+  # too, so no two braces are left side by side in comment text.
+  paste0(code, gsub("[{](?=[{])", "{ ", comment, perl = TRUE))
 }
 
 #' Render a template with whisker and write the result next to it
