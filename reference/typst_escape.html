@@ -4,14 +4,16 @@
 what you want for formatted text. For plain text from a database or a
 free-text field, use typst_escape() so that characters Typst would
 treat as markup (#, $, *, _, a backtick, &amp;lt;, &amp;gt;, @, [, ],
-~ and the backslash itself) show up literally instead of breaking the
-compile."><meta property="og:description" content="A value for a token that sits in the body of a template is Typst markup:
+~, / and the backslash itself) show up literally instead of breaking
+the compile. A slash is escaped so that // in the text, which Typst
+reads as the start of a comment, cannot drop the rest of the line."><meta property="og:description" content="A value for a token that sits in the body of a template is Typst markup:
 *bold* and _italic_ work, and #link(...) embeds a link. That is
 what you want for formatted text. For plain text from a database or a
 free-text field, use typst_escape() so that characters Typst would
 treat as markup (#, $, *, _, a backtick, &amp;lt;, &amp;gt;, @, [, ],
-~ and the backslash itself) show up literally instead of breaking the
-compile."><meta property="og:image" content="https://andrew-farrey.github.io/onepagr/logo.png"></head><body>
+~, / and the backslash itself) show up literally instead of breaking
+the compile. A slash is escaped so that // in the text, which Typst
+reads as the start of a comment, cannot drop the rest of the line."><meta property="og:image" content="https://andrew-farrey.github.io/onepagr/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -57,8 +59,9 @@ compile."><meta property="og:image" content="https://andrew-farrey.github.io/one
 what you want for formatted text. For plain text from a database or a
 free-text field, use <code>typst_escape()</code> so that characters Typst would
 treat as markup (<code>#</code>, <code>$</code>, <code>*</code>, <code>_</code>, a backtick, <code>&lt;</code>, <code>&gt;</code>, <code>@</code>, <code>[</code>, <code>]</code>,
-<code>~</code> and the backslash itself) show up literally instead of breaking the
-compile.</p>
+<code>~</code>, <code>/</code> and the backslash itself) show up literally instead of breaking
+the compile. A slash is escaped so that <code>//</code> in the text, which Typst
+reads as the start of a comment, cannot drop the rest of the line.</p>
     </div>
 
     <div class="section level2">

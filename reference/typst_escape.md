@@ -5,8 +5,9 @@ A value for a token that sits in the body of a template is Typst markup:
 what you want for formatted text. For plain text from a database or a
 free-text field, use `typst_escape()` so that characters Typst would
 treat as markup (`#`, `$`, `*`, `_`, a backtick, `<`, `>`, `@`, `[`,
-`]`, `~` and the backslash itself) show up literally instead of breaking
-the compile.
+`]`, `~`, `/` and the backslash itself) show up literally instead of
+breaking the compile. A slash is escaped so that `//` in the text, which
+Typst reads as the start of a comment, cannot drop the rest of the line.
 
 ## Usage
 

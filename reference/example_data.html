@@ -3,11 +3,17 @@
 long list of values. This returns a complete, working example – the
 same one this package's own tests render – so you can see a real
 value for every token before writing your own, or render immediately
-to see what the template produces."><meta property="og:description" content="Every built-in template's render_onepager() data argument needs a
+to see what the template produces. county_choropleth also needs five
+map images, which Typst can only read from its own compile folder: pass
+the placeholder maps that ship with the package as extra_assets (see the
+example below)."><meta property="og:description" content="Every built-in template's render_onepager() data argument needs a
 long list of values. This returns a complete, working example – the
 same one this package's own tests render – so you can see a real
 value for every token before writing your own, or render immediately
-to see what the template produces."><meta property="og:image" content="https://andrew-farrey.github.io/onepagr/logo.png"></head><body>
+to see what the template produces. county_choropleth also needs five
+map images, which Typst can only read from its own compile folder: pass
+the placeholder maps that ship with the package as extra_assets (see the
+example below)."><meta property="og:image" content="https://andrew-farrey.github.io/onepagr/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -52,7 +58,10 @@ to see what the template produces."><meta property="og:image" content="https://a
 long list of values. This returns a complete, working example – the
 same one this package's own tests render – so you can see a real
 value for every token before writing your own, or render immediately
-to see what the template produces.</p>
+to see what the template produces. <code>county_choropleth</code> also needs five
+map images, which Typst can only read from its own compile folder: pass
+the placeholder maps that ship with the package as <code>extra_assets</code> (see the
+example below).</p>
     </div>
 
     <div class="section level2">
@@ -118,6 +127,18 @@ format.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ show_resources     : chr "true"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ resources_text     : chr "Sample County Health Department, 123 Main Street, (555) 123-4567. #link(\"https://example.org/naloxone\")[Nalox"| __truncated__</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ footnote_sources   : chr "Sample Overdose Detection Mapping System"</span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="co"># county_choropleth takes five map images as extra_assets; placeholders</span></span></span>
+<span class="r-in"><span><span class="co"># ship with the package. Needs Quarto: see check_quarto().</span></span></span>
+<span class="r-in"><span><span class="va">maps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"maps"</span>, package <span class="op">=</span> <span class="st">"onepagr"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  pattern <span class="op">=</span> <span class="st">"^map[0-4][.]png$"</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="render_onepager.html">render_onepager</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu">example_data</span><span class="op">(</span><span class="st">"county_choropleth"</span><span class="op">)</span>, <span class="st">"county_choropleth"</span>,</span></span>
+<span class="r-in"><span>  output <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"choropleth.pdf"</span><span class="op">)</span>, extra_assets <span class="op">=</span> <span class="va">maps</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -40,15 +40,19 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="onepagr-development-version">onepagr (development version)<a class="anchor" aria-label="anchor" href="#onepagr-development-version"></a></h2>
-<p>This release folds in fixes from an external code review and a round of accessibility evidence work. All 15 built-in template and theme combinations render the same as before the review fixes (same text, same pixels).</p>
+<p>This release folds in fixes from two external code reviews and a round of accessibility evidence work. Apart from the header subtitle change described under Themes, all 15 built-in template and theme combinations render the same as before these fixes (same text, same pixels).</p>
 <div class="section level3">
 <h3 id="data-and-tokens-development-version">Data and tokens<a class="anchor" aria-label="anchor" href="#data-and-tokens-development-version"></a></h3>
 <ul><li>
 <code><a href="../reference/compile_typst.html">compile_typst()</a></code> and <code><a href="../reference/render_onepager.html">render_onepager()</a></code> escape a double quote, backslash or newline in a value that a template places inside a quoted string (organization names, alt text, contact details, file paths), so <code>Sample "North" Health Department</code> renders instead of failing in Typst. A value in the body of a template is still Typst markup, as before.</li>
 <li>
-<code><a href="../reference/typst_escape.html">typst_escape()</a></code> is new. It makes plain text safe for a body token: <code>#</code>, <code>$</code>, <code>*</code>, <code>_</code>, a backtick, <code>&lt;</code>, <code>&gt;</code>, <code>@</code>, brackets and <code>~</code> show up literally.</li>
+<code><a href="../reference/typst_escape.html">typst_escape()</a></code> is new. It makes plain text safe for a body token: <code>#</code>, <code>$</code>, <code>*</code>, <code>_</code>, a backtick, <code>&lt;</code>, <code>&gt;</code>, <code>@</code>, <code>/</code>, brackets and <code>~</code> show up literally. Escaping the slash keeps <code>//</code> in the text from starting a Typst comment, which would drop the rest of the line.</li>
 <li>
-<code><a href="../reference/compile_typst.html">compile_typst()</a></code> reports a lone <code>]</code> or an unclosed <code>[</code> in a body value in R, naming the token, instead of as a Typst error about a generated file.</li>
+<code><a href="../reference/compile_typst.html">compile_typst()</a></code> reports a lone <code>]</code> or an unclosed <code>[</code> in a body value in R, naming the token, instead of as a Typst error about a generated file. The check runs after defaults and references are filled in, so a bracket that arrives through either is caught too.</li>
+<li>A token in a <code>//</code> comment of a template no longer receives its value. A value with a newline in it used to end the comment and turn the rest of the line into live markup, which could add a page.</li>
+<li>A default can refer to an optional token declared below it, and a chain of references (a refers to b, b refers to c) is followed to the end. Defaults or values that refer to each other in a loop are an error. Only <code>{{{token}}}</code> references are filled in; a <code>{{name}}</code> or <code>{{#section}}</code> in a value stays literal text.</li>
+<li>A name that one of your values refers to is no longer reported as ignored.</li>
+<li>An error about a missing token names the built-in template, such as <code>cohort_summary</code>, not <code>template.typ</code>.</li>
 <li>Numbers are formatted without scientific notation, so <code>100000</code> prints as <code>100000</code>, not <code>1e+05</code>. A number with more digits than a short decimal, an R logical, or a vector longer than one is an error that points to <code><a href="../reference/fmt_n.html">fmt_n()</a></code> and <code><a href="../reference/fmt_pct.html">fmt_pct()</a></code> or to the accepted spelling.</li>
 <li>A value that refers to a token (<code>{{{n_total}}}</code>), including a value from <code>template_data(tokens = "optional")</code>, is filled from your data, so literal <code>{{{token}}}</code> text no longer reaches the PDF.</li>
 <li>
@@ -69,7 +73,11 @@
 <code><a href="../reference/render_onepager.html">render_onepager()</a></code> stops on an <code>extra_assets</code> file that would replace <code>theme.typ</code>, <code>components.typ</code> or a template file, or that two assets share a name, and stops on a failed file copy. It replaces its <code>_typst</code> work folder on each render, but only one that onepagr created (it holds a hidden marker file). Any other folder at that path, including an <code><a href="../reference/export_template.html">export_template()</a></code> copy or a work folder left by an earlier version, is left alone and the render stops, so delete an old one once.</li>
 <li>The documentation for <code><a href="../reference/render_onepager.html">render_onepager()</a></code> and <code><a href="../reference/compile_typst.html">compile_typst()</a></code> now says that <code>template_rendered.typ</code>, not <code>template.typ</code>, is the file that compiles.</li>
 <li>
+<code><a href="../reference/render_onepager.html">render_onepager()</a></code> checks the data before it creates the output folder or replaces the work folder, so a data error no longer removes the previous render’s work folder or leaves a new empty folder behind.</li>
+<li>
 <code><a href="../reference/install_quarto.html">install_quarto()</a></code> finds <code>bin/quarto</code> wherever the archive put it (the macOS archive has no <code>quarto-&lt;version&gt;/</code> folder) and downloads the arm64 build on 64-bit ARM Linux. <code><a href="../reference/set_quarto_path.html">set_quarto_path()</a></code> saves an absolute path.</li>
+<li>
+<code><a href="../reference/install_quarto.html">install_quarto()</a></code> asks before the download in an interactive session, and after installing it removes the older copies it put in its folder, so the folder does not grow with every version. A copy that <code>QUARTO_PATH</code> points into is kept, and so is anything the function did not create.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="themes-development-version">Themes<a class="anchor" aria-label="anchor" href="#themes-development-version"></a></h3>
@@ -92,7 +100,12 @@
 <li>
 <code><a href="../reference/example_data.html">example_data()</a></code> names the missing file when a template has no example. Templates are read and written as UTF-8.</li>
 <li>
-<code>DESCRIPTION</code> now says the templates are designed to meet WCAG 2.2 level AA and PDF/UA-1, quotes ‘Typst’, spells out both acronyms, adds the copyright holder role to <code>Authors@R</code>, declares <code>R (&gt;= 4.0.0)</code>, and lists <code>stats</code> in Imports.</li>
+<code>DESCRIPTION</code> now says the templates are designed to meet WCAG 2.2 level AA and PDF/UA-1, quotes ‘Typst’, spells out both acronyms, adds the copyright holder role to <code>Authors@R</code>, declares <code>R (&gt;= 4.1.0)</code> and <code>quarto (&gt;= 1.5.0)</code> (the first quarto release that exports <code>quarto_available()</code>, which needs R 4.1.0), and lists <code>stats</code> in Imports.</li>
+<li>
+<code>example_data("county_choropleth")</code> can be rendered: its five placeholder maps ship in <code>inst/extdata/maps</code>, and the help page shows how to pass them as <code>extra_assets</code>.</li>
+<li>
+<code><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation()</a></code> takes its year from the package’s publication date, so it no longer changes every January.</li>
+<li>Tests and vignettes that render a PDF run only when <code><a href="../reference/check_quarto.html">check_quarto()</a></code> reports a Quarto whose bundled Typst is new enough, so an older Quarto skips them instead of failing.</li>
 <li>The bundled header texture is an original generated pattern, and the bundled Fluent icon in the hex logo is credited in <code>inst/COPYRIGHTS</code>.</li>
 <li>The README gains a Background section on where the templates came from, and the gallery images are regenerated from the current templates and themes.</li>
 <li>Corrected references to unshipped design documents and to theme keys that do not exist.</li>

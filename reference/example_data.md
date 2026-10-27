@@ -5,7 +5,10 @@ Every built-in template's
 `data` argument needs a long list of values. This returns a complete,
 working example – the same one this package's own tests render – so you
 can see a real value for every token before writing your own, or render
-immediately to see what the template produces.
+immediately to see what the template produces. `county_choropleth` also
+needs five map images, which Typst can only read from its own compile
+folder: pass the placeholder maps that ship with the package as
+`extra_assets` (see the example below).
 
 ## Usage
 
@@ -71,4 +74,16 @@ str(example_data("overdose_spike_alert"))
 #>  $ show_resources     : chr "true"
 #>  $ resources_text     : chr "Sample County Health Department, 123 Main Street, (555) 123-4567. #link(\"https://example.org/naloxone\")[Nalox"| __truncated__
 #>  $ footnote_sources   : chr "Sample Overdose Detection Mapping System"
+if (FALSE) { # \dontrun{
+# county_choropleth takes five map images as extra_assets; placeholders
+# ship with the package. Needs Quarto: see check_quarto().
+maps <- list.files(
+  system.file("extdata", "maps", package = "onepagr"),
+  pattern = "^map[0-4][.]png$", full.names = TRUE
+)
+render_onepager(
+  example_data("county_choropleth"), "county_choropleth",
+  output = file.path(tempdir(), "choropleth.pdf"), extra_assets = maps
+)
+} # }
 ```

@@ -2,10 +2,10 @@
 
 ## onepagr (development version)
 
-This release folds in fixes from an external code review and a round of
-accessibility evidence work. All 15 built-in template and theme
-combinations render the same as before the review fixes (same text, same
-pixels).
+This release folds in fixes from two external code reviews and a round
+of accessibility evidence work. Apart from the header subtitle change
+described under Themes, all 15 built-in template and theme combinations
+render the same as before these fixes (same text, same pixels).
 
 ### Data and tokens
 
@@ -19,10 +19,26 @@ pixels).
   still Typst markup, as before.
 - [`typst_escape()`](https://andrew-farrey.github.io/onepagr/reference/typst_escape.md)
   is new. It makes plain text safe for a body token: `#`, `$`, `*`, `_`,
-  a backtick, `<`, `>`, `@`, brackets and `~` show up literally.
+  a backtick, `<`, `>`, `@`, `/`, brackets and `~` show up literally.
+  Escaping the slash keeps `//` in the text from starting a Typst
+  comment, which would drop the rest of the line.
 - [`compile_typst()`](https://andrew-farrey.github.io/onepagr/reference/compile_typst.md)
   reports a lone `]` or an unclosed `[` in a body value in R, naming the
-  token, instead of as a Typst error about a generated file.
+  token, instead of as a Typst error about a generated file. The check
+  runs after defaults and references are filled in, so a bracket that
+  arrives through either is caught too.
+- A token in a `//` comment of a template no longer receives its value.
+  A value with a newline in it used to end the comment and turn the rest
+  of the line into live markup, which could add a page.
+- A default can refer to an optional token declared below it, and a
+  chain of references (a refers to b, b refers to c) is followed to the
+  end. Defaults or values that refer to each other in a loop are an
+  error. Only `{{{token}}}` references are filled in; a `{{name}}` or
+  `{{#section}}` in a value stays literal text.
+- A name that one of your values refers to is no longer reported as
+  ignored.
+- An error about a missing token names the built-in template, such as
+  `cohort_summary`, not `template.typ`.
 - Numbers are formatted without scientific notation, so `100000` prints
   as `100000`, not `1e+05`. A number with more digits than a short
   decimal, an R logical, or a vector longer than one is an error that
@@ -80,12 +96,21 @@ pixels).
   [`compile_typst()`](https://andrew-farrey.github.io/onepagr/reference/compile_typst.md)
   now says that `template_rendered.typ`, not `template.typ`, is the file
   that compiles.
+- [`render_onepager()`](https://andrew-farrey.github.io/onepagr/reference/render_onepager.md)
+  checks the data before it creates the output folder or replaces the
+  work folder, so a data error no longer removes the previous render’s
+  work folder or leaves a new empty folder behind.
 - [`install_quarto()`](https://andrew-farrey.github.io/onepagr/reference/install_quarto.md)
   finds `bin/quarto` wherever the archive put it (the macOS archive has
   no `quarto-<version>/` folder) and downloads the arm64 build on 64-bit
   ARM Linux.
   [`set_quarto_path()`](https://andrew-farrey.github.io/onepagr/reference/set_quarto_path.md)
   saves an absolute path.
+- [`install_quarto()`](https://andrew-farrey.github.io/onepagr/reference/install_quarto.md)
+  asks before the download in an interactive session, and after
+  installing it removes the older copies it put in its folder, so the
+  folder does not grow with every version. A copy that `QUARTO_PATH`
+  points into is kept, and so is anything the function did not create.
 
 ### Themes
 
@@ -130,8 +155,20 @@ pixels).
   read and written as UTF-8.
 - `DESCRIPTION` now says the templates are designed to meet WCAG 2.2
   level AA and PDF/UA-1, quotes ‘Typst’, spells out both acronyms, adds
-  the copyright holder role to `Authors@R`, declares `R (>= 4.0.0)`, and
-  lists `stats` in Imports.
+  the copyright holder role to `Authors@R`, declares `R (>= 4.1.0)` and
+  `quarto (>= 1.5.0)` (the first quarto release that exports
+  `quarto_available()`, which needs R 4.1.0), and lists `stats` in
+  Imports.
+- `example_data("county_choropleth")` can be rendered: its five
+  placeholder maps ship in `inst/extdata/maps`, and the help page shows
+  how to pass them as `extra_assets`.
+- [`citation()`](https://rdrr.io/r/utils/citation.html) takes its year
+  from the package’s publication date, so it no longer changes every
+  January.
+- Tests and vignettes that render a PDF run only when
+  [`check_quarto()`](https://andrew-farrey.github.io/onepagr/reference/check_quarto.md)
+  reports a Quarto whose bundled Typst is new enough, so an older Quarto
+  skips them instead of failing.
 - The bundled header texture is an original generated pattern, and the
   bundled Fluent icon in the hex logo is credited in `inst/COPYRIGHTS`.
 - The README gains a Background section on where the templates came

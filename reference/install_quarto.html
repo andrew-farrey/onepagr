@@ -78,7 +78,8 @@ system-wide.</p>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>Character, the install directory (macOS/Linux) or the
-downloaded installer path (Windows), invisibly.</p>
+downloaded installer path (Windows), invisibly; <code>NULL</code>, invisibly, if
+you decline the download.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -105,6 +106,14 @@ templates were actually developed and tested against; re-verify
 this default against a live install (<code>quarto typst --version</code>) before
 bumping it, rather than assuming a newer Quarto version number implies
 a newer bundled Typst.</p>
+<p>In an interactive session it asks before the download, which is large
+(roughly 100 to 250 MB depending on the system); answering no installs
+nothing. After a successful install it removes the older copies it put in
+the install directory before (the <code>quarto-&lt;version&gt;</code> folders, and any older
+installer or archive left there), so the folder does not grow with every
+version. It never removes a copy that <code>QUARTO_PATH</code> points into, in this
+session or in <code>~/.Renviron</code>, and it never touches a file or folder whose
+name does not match what it creates.</p>
     </div>
 
     <div class="section level2">
