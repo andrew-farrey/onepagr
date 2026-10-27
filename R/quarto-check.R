@@ -542,10 +542,24 @@ update_renviron_line <- function(key, value, renviron_path) {
 #' @noRd
 quarto_bin_or_stop <- function() {
   quarto_bin <- quarto::quarto_path()
-  if (is.null(quarto_bin)) {
+  # quarto_path() gives NULL, or an empty string on some platforms, when Quarto
+  # is not found.
+  if (length(quarto_bin) == 0 || !nzchar(quarto_bin[1])) {
     stop(
       "Quarto was not found. Run onepagr::check_quarto() for details, or ",
       "onepagr::install_quarto() to install it.",
+      call. = FALSE
+    )
+  }
+  # A QUARTO_PATH can outlive the copy it names (deleted by hand, or removed
+  # when a project's .Renviron could not be seen). Stop here, where the
+  # message is clear and before compile_typst() clears the previous PDF. A bare
+  # command name that is on the PATH is fine.
+  if (!file.exists(quarto_bin) && !nzchar(Sys.which(quarto_bin))) {
+    stop(
+      "QUARTO_PATH points at ", quarto_bin, ", which does not exist. Point it ",
+      "at a current Quarto with onepagr::set_quarto_path(), or run ",
+      "onepagr::install_quarto().",
       call. = FALSE
     )
   }

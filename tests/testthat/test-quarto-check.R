@@ -1,3 +1,33 @@
+test_that("a QUARTO_PATH naming a missing file stops before the PDF is cleared", {
+  out <- tempfile(fileext = ".pdf")
+  file.create(out)
+  on.exit(unlink(out), add = TRUE)
+  path <- write_typ(c("#set document(title: [T])", "#text[{{{note}}}]"))
+  withr::local_envvar(QUARTO_PATH = file.path(tempdir(), "no-such-quarto"))
+  expect_error(
+    compile_typst(path, list(note = "x"), out), "QUARTO_PATH points at"
+  )
+  expect_true(file.exists(out))
+})
+
+test_that("quarto_bin_or_stop accepts a command name that is on the PATH", {
+  testthat::local_mocked_bindings(
+    quarto_path = function() "Rscript", .package = "quarto"
+  )
+  expect_identical(quarto_bin_or_stop(), "Rscript")
+})
+
+test_that("quarto_bin_or_stop reports an empty or missing path as not found", {
+  testthat::local_mocked_bindings(
+    quarto_path = function() "", .package = "quarto"
+  )
+  expect_error(quarto_bin_or_stop(), "Quarto was not found")
+  testthat::local_mocked_bindings(
+    quarto_path = function() NULL, .package = "quarto"
+  )
+  expect_error(quarto_bin_or_stop(), "Quarto was not found")
+})
+
 test_that("rendering tests skip when Quarto's Typst is too old", {
   # quarto_available() is TRUE for such a Quarto, which is why the gate asks
   # check_quarto() about the bundled Typst instead.
