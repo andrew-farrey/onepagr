@@ -51,7 +51,9 @@
 <code><a href="../reference/compile_typst.html">compile_typst()</a></code> reports a lone <code>]</code> or an unclosed <code>[</code> in a body value in R, naming the token, instead of as a Typst error about a generated file. The check runs after defaults and references are filled in, so a bracket that arrives through either is caught too.</li>
 <li>A token in a <code>//</code> comment of a template no longer receives its value. A value with a newline in it used to end the comment and turn the rest of the line into live markup, which could add a page.</li>
 <li>A default can refer to an optional token declared below it, and a chain of references (a refers to b, b refers to c) is followed to the end. Defaults or values that refer to each other in a loop are an error. Only <code>{{{token}}}</code> references are filled in; a <code>{{name}}</code> or <code>{{#section}}</code> in a value stays literal text.</li>
-<li>A name that one of your values refers to is no longer reported as ignored.</li>
+<li>A name that one of your values refers to is no longer reported as ignored. A missing token at the end of a chain of references (a refers to b, b refers to c, and there is no value for c) is reported by name instead of rendering blank.</li>
+<li>One data list can still be shared across templates: a value that only another template uses is not resolved, so a reference loop among those values no longer stops this render.</li>
+<li>A double-brace <code>{{name}}</code>, a <code>{{#section}}</code> or a stray <code>{{</code> in the comment text of a template is neutralized as well, not only the triple-brace form.</li>
 <li>An error about a missing token names the built-in template, such as <code>cohort_summary</code>, not <code>template.typ</code>.</li>
 <li>Numbers are formatted without scientific notation, so <code>100000</code> prints as <code>100000</code>, not <code>1e+05</code>. A number with more digits than a short decimal, an R logical, or a vector longer than one is an error that points to <code><a href="../reference/fmt_n.html">fmt_n()</a></code> and <code><a href="../reference/fmt_pct.html">fmt_pct()</a></code> or to the accepted spelling.</li>
 <li>A value that refers to a token (<code>{{{n_total}}}</code>), including a value from <code>template_data(tokens = "optional")</code>, is filled from your data, so literal <code>{{{token}}}</code> text no longer reaches the PDF.</li>
@@ -77,7 +79,8 @@
 <li>
 <code><a href="../reference/install_quarto.html">install_quarto()</a></code> finds <code>bin/quarto</code> wherever the archive put it (the macOS archive has no <code>quarto-&lt;version&gt;/</code> folder) and downloads the arm64 build on 64-bit ARM Linux. <code><a href="../reference/set_quarto_path.html">set_quarto_path()</a></code> saves an absolute path.</li>
 <li>
-<code><a href="../reference/install_quarto.html">install_quarto()</a></code> asks before the download in an interactive session, and after installing it removes the older copies it put in its folder, so the folder does not grow with every version. A copy that <code>QUARTO_PATH</code> points into is kept, and so is anything the function did not create.</li>
+<code><a href="../reference/install_quarto.html">install_quarto()</a></code> asks before the download in an interactive session, and after installing it removes the older copies it put in its folder, so the folder does not grow with every version. A copy that <code>QUARTO_PATH</code> points into (in this session, or in the home or working-directory <code>.Renviron</code>) is kept, and so is anything the function did not create.</li>
+<li>A <code>QUARTO_PATH</code> that names a file that is not there stops with a message that says so, before the previous PDF is replaced, instead of “error in running command” after it has been deleted.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="themes-development-version">Themes<a class="anchor" aria-label="anchor" href="#themes-development-version"></a></h3>

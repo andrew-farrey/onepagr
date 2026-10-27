@@ -36,7 +36,15 @@ render the same as before these fixes (same text, same pixels).
   error. Only `{{{token}}}` references are filled in; a `{{name}}` or
   `{{#section}}` in a value stays literal text.
 - A name that one of your values refers to is no longer reported as
-  ignored.
+  ignored. A missing token at the end of a chain of references (a refers
+  to b, b refers to c, and there is no value for c) is reported by name
+  instead of rendering blank.
+- One data list can still be shared across templates: a value that only
+  another template uses is not resolved, so a reference loop among those
+  values no longer stops this render.
+- A double-brace `{{name}}`, a `{{#section}}` or a stray `{{` in the
+  comment text of a template is neutralized as well, not only the
+  triple-brace form.
 - An error about a missing token names the built-in template, such as
   `cohort_summary`, not `template.typ`.
 - Numbers are formatted without scientific notation, so `100000` prints
@@ -110,7 +118,11 @@ render the same as before these fixes (same text, same pixels).
   asks before the download in an interactive session, and after
   installing it removes the older copies it put in its folder, so the
   folder does not grow with every version. A copy that `QUARTO_PATH`
-  points into is kept, and so is anything the function did not create.
+  points into (in this session, or in the home or working-directory
+  `.Renviron`) is kept, and so is anything the function did not create.
+- A `QUARTO_PATH` that names a file that is not there stops with a
+  message that says so, before the previous PDF is replaced, instead of
+  “error in running command” after it has been deleted.
 
 ### Themes
 
