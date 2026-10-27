@@ -1,5 +1,5 @@
 test_that("syndromic_alert renders end-to-end", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   out_dir <- tempfile()
   dir.create(out_dir)
   on.exit(unlink(out_dir, recursive = TRUE))
@@ -17,7 +17,7 @@ test_that("syndromic_alert renders end-to-end", {
 })
 
 test_that("syndromic_alert respects show_cluster = true", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   out_dir <- tempfile()
   dir.create(out_dir)
   on.exit(unlink(out_dir, recursive = TRUE))

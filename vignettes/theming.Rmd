@@ -10,7 +10,7 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 quarto_ready <- requireNamespace("quarto", quietly = TRUE) &&
-  quarto::quarto_available()
+  isTRUE(suppressMessages(onepagr::check_quarto())$ok)
 ```
 
 onepagr's visual identity splits into two genuinely separate mechanisms,
@@ -55,7 +55,11 @@ source_png <- file.path(
 )
 # Copied under knitr's figure path: the installed library path does not exist
 # where the published site is served, so the page would show broken images.
-theme_png <- knitr::fig_path(paste0("-", themes, ".png"))
+# fig_path() is called once per theme: older knitr does not vectorise it.
+theme_png <- vapply(
+  themes, function(t) knitr::fig_path(paste0("-", t, ".png")), character(1),
+  USE.NAMES = FALSE
+)
 dir.create(dirname(theme_png[1]), recursive = TRUE, showWarnings = FALSE)
 invisible(file.copy(source_png, theme_png, overwrite = TRUE))
 knitr::include_graphics(theme_png)

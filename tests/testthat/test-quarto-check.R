@@ -1,3 +1,19 @@
+test_that("rendering tests skip when Quarto's Typst is too old", {
+  # quarto_available() is TRUE for such a Quarto, which is why the gate asks
+  # check_quarto() about the bundled Typst instead.
+  testthat::local_mocked_bindings(
+    check_quarto = function(...) invisible(list(available = TRUE, ok = FALSE))
+  )
+  expect_condition(skip_if_no_onepagr_typst(), class = "skip")
+})
+
+test_that("rendering tests run when Quarto's Typst is new enough", {
+  testthat::local_mocked_bindings(
+    check_quarto = function(...) invisible(list(available = TRUE, ok = TRUE))
+  )
+  expect_no_condition(skip_if_no_onepagr_typst(), class = "skip")
+})
+
 test_that("check_quarto reports ok when the bundled Typst meets the minimum", {
   testthat::local_mocked_bindings(
     quarto_available = function() TRUE,
@@ -70,7 +86,7 @@ test_that("check_quarto handles an unparseable Typst version gracefully", {
 })
 
 test_that("typst_version_via_quarto parses the real bundled Typst version", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   version <- typst_version_via_quarto(quarto::quarto_path())
   expect_s3_class(version, "package_version")
 })

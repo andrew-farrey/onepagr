@@ -4,7 +4,10 @@
 #' long list of values. This returns a complete, working example -- the
 #' same one this package's own tests render -- so you can see a real
 #' value for every token before writing your own, or render immediately
-#' to see what the template produces.
+#' to see what the template produces. `county_choropleth` also needs five
+#' map images, which Typst can only read from its own compile folder: pass
+#' the placeholder maps that ship with the package as `extra_assets` (see the
+#' example below).
 #'
 #' [template_data()] builds on this: it returns only the tokens you'd
 #' actually pass to `render_onepager()`, matching [template_tokens()]'s
@@ -21,6 +24,18 @@
 #'   `template.typ` header comment for why).
 #' @examples
 #' str(example_data("overdose_spike_alert"))
+#' \dontrun{
+#' # county_choropleth takes five map images as extra_assets; placeholders
+#' # ship with the package. Needs Quarto: see check_quarto().
+#' maps <- list.files(
+#'   system.file("extdata", "maps", package = "onepagr"),
+#'   pattern = "^map[0-4][.]png$", full.names = TRUE
+#' )
+#' render_onepager(
+#'   example_data("county_choropleth"), "county_choropleth",
+#'   output = file.path(tempdir(), "choropleth.pdf"), extra_assets = maps
+#' )
+#' }
 #' @export
 example_data <- function(template) {
   # Validates template and gives the same error resolve_template() does

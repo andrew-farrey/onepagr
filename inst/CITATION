@@ -1,10 +1,23 @@
 citHeader("To cite onepagr in publications, methods sections, or reports, use:")
 
+# The year a citation gives should not move each January, so it comes from the
+# package's own dates: CRAN adds Date/Publication to the package it publishes,
+# a Date field would be next, and R CMD build records Packaged. The current
+# year is only a fallback for a source checkout that has none of them.
+cited_year <- function(meta) {
+  stamp <- c(meta[["Date/Publication"]], meta$Date, meta$Packaged)
+  if (length(stamp) > 0 && grepl("^[0-9]{4}", stamp[1])) {
+    substr(stamp[1], 1, 4)
+  } else {
+    format(Sys.Date(), "%Y")
+  }
+}
+
 bibentry(
   bibtype = "Manual",
   title   = "onepagr: Accessible One-Page Reports from 'Typst' Templates",
   author  = person("Andrew", "Farrey", email = "afarrey11@outlook.com"),
-  year    = format(Sys.Date(), "%Y"),
+  year    = cited_year(meta),
   # meta$Version (supplied by citation() when it sources this file, read
   # straight from DESCRIPTION) works whether or not onepagr is actually
   # installed -- utils::packageVersion("onepagr") errors with "there is

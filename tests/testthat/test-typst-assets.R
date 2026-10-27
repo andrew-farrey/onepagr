@@ -61,7 +61,7 @@ test_that("page-footer takes per-logo heights and dy with 32pt/0pt defaults", {
 })
 
 test_that("page-footer defaults match explicit 32pt/0pt and overrides change output", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   skip_if_not(requireNamespace("pdftools", quietly = TRUE))
   dir <- tempfile()
   on.exit(unlink(dir, recursive = TRUE))
@@ -154,7 +154,7 @@ test_that("Typst sources avoid constructs win-builder's Typst rejects", {
 })
 
 test_that("apply-scales, fs, and sp adjust text size and spacing", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   skip_if_not(requireNamespace("pdftools", quietly = TRUE))
   dir <- tempfile()
   on.exit(unlink(dir, recursive = TRUE))
@@ -219,7 +219,7 @@ test_that("apply-scales, fs, and sp adjust text size and spacing", {
 })
 
 test_that("a per-render data token overrides the theme's own scale", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   skip_if_not(requireNamespace("pdftools", quietly = TRUE))
   dir <- tempfile()
   on.exit(unlink(dir, recursive = TRUE))
@@ -301,7 +301,7 @@ test_that("no size, tracking, inset, gutter, or #v literal bypasses fs, fd, sp",
 })
 
 test_that("fd and the adjusted theme keys follow the scales", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   skip_if_not(requireNamespace("pdftools", quietly = TRUE))
   dir <- tempfile()
   on.exit(unlink(dir, recursive = TRUE))
@@ -362,7 +362,7 @@ test_that("fd and the adjusted theme keys follow the scales", {
 })
 
 test_that("scale values are validated after resolution, including the theme's own", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   dir <- tempfile()
   on.exit(unlink(dir, recursive = TRUE))
   export_template("county_choropleth", dir)

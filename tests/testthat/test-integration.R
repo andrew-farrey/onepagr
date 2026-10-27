@@ -26,7 +26,7 @@ test_that("each built-in template's fixture satisfies its required tokens", {
 })
 
 test_that("every built-in template renders under every built-in theme", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   source("fixtures/sample_data.R", local = TRUE)
   source("fixtures/sample_data_overdose_spike_alert.R", local = TRUE)
   source("fixtures/sample_data_syndromic_alert.R", local = TRUE)
@@ -45,11 +45,7 @@ test_that("every built-in template renders under every built-in theme", {
   # and sandboxes file access to its own compile directory -- see
   # R/render.R's extra_assets documentation). Every other template gets
   # character(0), the default.
-  extra_assets_for <- list(
-    county_choropleth = file.path(
-      "fixtures", "maps", sprintf("map%d.png", 0:4)
-    )
-  )
+  extra_assets_for <- list(county_choropleth = example_maps())
 
   out_dir <- tempfile()
   dir.create(out_dir)
@@ -96,7 +92,7 @@ test_that("logos are actually swappable, not just token-shaped", {
   # resolved .typ actually references the custom file -- not just that
   # the default-logo fixtures still compile (which every other test here
   # already covers and would pass even if overriding did nothing).
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   source("fixtures/sample_data.R", local = TRUE)
 
   custom_logo <- test_path("fixtures", "custom_logo_test.png")
@@ -145,7 +141,7 @@ test_that("a single-logo jurisdiction can drop both partner logos", {
   # proves show_partner_a/show_partner_b = "false" actually removes those
   # slots from the footer's logo lockup rather than merely hiding broken
   # image references.
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   source("fixtures/sample_data.R", local = TRUE)
 
   one_logo_data <- sample_data
@@ -170,7 +166,7 @@ test_that("a single-logo jurisdiction can drop both partner logos", {
 })
 
 test_that("a two-agency partnership can show exactly one partner logo", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   source("fixtures/sample_data.R", local = TRUE)
 
   two_logo_data <- sample_data
@@ -195,7 +191,7 @@ test_that("a two-agency partnership can show exactly one partner logo", {
 })
 
 test_that("an invalid show_partner_a value fails loudly, not silently", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   source("fixtures/sample_data.R", local = TRUE)
 
   bad_data <- sample_data
@@ -255,9 +251,9 @@ test_that("a single-logo data list needs only the primary logo tokens", {
 })
 
 test_that("every template renders from a single-logo data list", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   fixtures <- single_logo_fixtures()
-  maps <- file.path("fixtures", "maps", sprintf("map%d.png", 0:4))
+  maps <- example_maps()
   out_dir <- tempfile()
   dir.create(out_dir)
   on.exit(unlink(out_dir, recursive = TRUE))
@@ -273,7 +269,7 @@ test_that("every template renders from a single-logo data list", {
 })
 
 test_that("a shown partner without a path or alt text fails loudly", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   data <- single_logo_fixtures()$cohort_summary
   out_pdf <- tempfile(fileext = ".pdf")
 
@@ -310,7 +306,7 @@ scaled_render <- function(template, extra = list(), theme = "default") {
     syndromic_alert = sample_data_syndromic_alert,
     county_choropleth = sample_data_county_choropleth
   )
-  maps <- file.path("fixtures", "maps", sprintf("map%d.png", 0:4))
+  maps <- example_maps()
   out <- tempfile(fileext = ".pdf")
   render_onepager(
     utils::modifyList(data, extra), template = template, theme = theme,
@@ -330,7 +326,7 @@ smallest_text_height <- function(pdf) {
 }
 
 test_that("the fixed-page templates render at exactly 2 pages under every theme", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   skip_if_not(requireNamespace("pdftools", quietly = TRUE))
   for (theme in list_themes()) {
     for (template in c("cohort_summary", "trend_snapshot", "county_choropleth")) {
@@ -344,7 +340,7 @@ test_that("the fixed-page templates render at exactly 2 pages under every theme"
 })
 
 test_that("every text token rewords its text, in every template", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   skip_if_not(requireNamespace("pdftools", quietly = TRUE))
   # Everything template_tokens() documents as reader-facing text that shows
   # up in the PDF's text layer. alt_* is checked separately, below.
@@ -386,7 +382,7 @@ test_that("every text token rewords its text, in every template", {
 })
 
 test_that("min_font_size 12 leaves no text smaller than the floor, in every template", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   skip_if_not(requireNamespace("pdftools", quietly = TRUE))
   for (template in list_templates()) {
     pdf <- suppressMessages(scaled_render(template, list(min_font_size = "12")))
@@ -398,14 +394,14 @@ test_that("min_font_size 12 leaves no text smaller than the floor, in every temp
 })
 
 test_that("min_font_size 10 leaves no text smaller than 10pt", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   skip_if_not(requireNamespace("pdftools", quietly = TRUE))
   pdf <- scaled_render("trend_snapshot", list(min_font_size = "10"))
   expect_gte(smallest_text_height(pdf), 10 * 0.75)
 })
 
 test_that("scaling down keeps the fixed templates at 2 pages", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   skip_if_not(requireNamespace("pdftools", quietly = TRUE))
   for (template in c("cohort_summary", "trend_snapshot", "county_choropleth")) {
     pdf <- scaled_render(template, list(font_scale = "0.9", space_scale = "0.9"))
@@ -414,7 +410,7 @@ test_that("scaling down keeps the fixed templates at 2 pages", {
 })
 
 test_that("scaling up past the design overflows and says so", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   skip_if_not(requireNamespace("pdftools", quietly = TRUE))
   expect_message(
     pdf <- scaled_render("cohort_summary", list(font_scale = "1.3")),
@@ -424,13 +420,13 @@ test_that("scaling up past the design overflows and says so", {
 })
 
 test_that("a default render of a fixed template is silent about page count", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   skip_if_not(requireNamespace("pdftools", quietly = TRUE))
   expect_no_message(scaled_render("trend_snapshot"))
 })
 
 test_that("an invalid scale stops the render with a clear error", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   expect_error(
     scaled_render("trend_snapshot", list(font_scale = "0")),
     "font_scale must be a positive number"

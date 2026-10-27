@@ -19,7 +19,10 @@ Internal. For every optional token that \code{data} lacks (or holds as
 \code{NULL}, empty, or \code{NA}), sets the declared default. A default is
 rendered against \code{data} first, so it can refer to other tokens: a
 section heading's default can carry a sample size, as in
-\code{Results (N = {{{n_total}}})}. A value the caller supplies is used
-as given and never rendered again.
+\code{Results (N = {{{n_total}}})}. A default may refer to another omitted
+default, declared above or below it; they are filled in dependency order,
+and defaults that refer to each other in a loop are an error. A value the
+caller supplies is used as given, except that a \code{{{{token}}}} in it is
+filled from \code{data} (followed through any further references).
 }
 \keyword{internal}

@@ -1,3 +1,21 @@
+test_that("errors name a built-in template, not template.typ", {
+  expect_error(
+    validate_template_data(resolve_template("cohort_summary"), list()),
+    "cohort_summary"
+  )
+  expect_error(
+    validate_template_data(resolve_template("syndromic_alert"), list()),
+    "syndromic_alert"
+  )
+})
+
+test_that("errors for a file that is not a built-in keep the file name", {
+  path <- write_typ("#text[{{{needed}}}]")
+  expect_error(
+    validate_template_data(path, list()), basename(path), fixed = TRUE
+  )
+})
+
 test_that("whole numbers are formatted without scientific notation", {
   expect_identical(coerce_data_values(list(n = 100000))$n, "100000")
   expect_identical(coerce_data_values(list(n = 14L))$n, "14")
@@ -47,7 +65,7 @@ test_that("an unsupported type is rejected naming the token", {
 })
 
 test_that("compile_typst formats a numeric value without scientific notation", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   skip_if_not_installed("pdftools")
   data <- example_data("overdose_spike_alert")
   data$n_events <- 100000

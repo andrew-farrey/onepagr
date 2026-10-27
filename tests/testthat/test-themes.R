@@ -143,7 +143,7 @@ test_that("check_theme errors clearly when Quarto is not found", {
 })
 
 test_that("check_theme errors clearly when typst eval isn't supported", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   testthat::local_mocked_bindings(
     typst_eval_supported = function(quarto_bin) FALSE
   )
@@ -329,7 +329,7 @@ test_that("an optional theme key of the wrong type is reported", {
 })
 
 test_that("a theme without callout-text still renders a callout", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   src <- default_theme_lines()
   src <- src[!grepl("^[[:space:]]*callout-text:", src)]
   path <- tempfile(fileext = ".typ")

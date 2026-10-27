@@ -119,6 +119,14 @@ render_onepager <- function(data, template, theme = "default",
   theme_src <- resolve_theme(theme, theme_path)
   check_extra_assets(extra_assets, template_path)
 
+  # Check the data before any folder is created or replaced, so a typo cannot
+  # destroy the previous render's work folder. compile_typst() repeats these
+  # checks on the staged copy, and reports their warnings there, once.
+  checked <- coerce_data_values(data)
+  spec <- template_spec(template_path)
+  suppressWarnings(check_template_data(spec, checked))
+  check_bracket_balance(spec, fill_token_defaults(template_path, checked))
+
   if (!dir.exists(dirname(output))) {
     dir.create(dirname(output), recursive = TRUE)
   }
