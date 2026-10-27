@@ -102,8 +102,9 @@ typst_escape_string <- function(x) {
 #' what you want for formatted text. For plain text from a database or a
 #' free-text field, use `typst_escape()` so that characters Typst would
 #' treat as markup (`#`, `$`, `*`, `_`, a backtick, `<`, `>`, `@`, `[`, `]`,
-#' `~` and the backslash itself) show up literally instead of breaking the
-#' compile.
+#' `~`, `/` and the backslash itself) show up literally instead of breaking
+#' the compile. A slash is escaped so that `//` in the text, which Typst
+#' reads as the start of a comment, cannot drop the rest of the line.
 #'
 #' Tokens that sit inside a quoted string in a template (organization names,
 #' alt text, contact details, file paths) are escaped for you and do not
@@ -116,7 +117,15 @@ typst_escape_string <- function(x) {
 #' typst_escape("Cost: $5 (see #3) [draft]")
 #' @export
 typst_escape <- function(x) {
-  gsub("([\\\\#$*_`<>@\\[\\]~])", "\\\\\\1", x, perl = TRUE)
+  gsub("([\\\\#$*_`<>@\\[\\]~/])", "\\\\\\1", x, perl = TRUE)
+}
+
+# The name an error gives a template: a built-in's own name, since every
+# built-in's file is called template.typ, and the file name for anything else.
+template_label <- function(path) {
+  in_registry <- basename(path) == "template.typ" &&
+    basename(dirname(dirname(path))) == "templates"
+  if (in_registry) basename(dirname(path)) else basename(path)
 }
 
 brackets_balanced <- function(x) {
@@ -218,7 +227,7 @@ check_template_data <- function(spec, data) {
   missing <- needed[vapply(needed, function(tok) value_missing(data, tok), NA)]
   if (length(missing) > 0) {
     stop(
-      "Missing or NA required token(s) for ", basename(spec$path), ": ",
+      "Missing or NA required token(s) for ", template_label(spec$path), ": ",
       paste(missing, collapse = ", "),
       call. = FALSE
     )

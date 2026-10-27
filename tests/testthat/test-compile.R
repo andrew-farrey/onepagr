@@ -60,7 +60,7 @@ test_that("validate_template_data treats NA as missing", {
 })
 
 test_that("compile_typst produces a PDF end-to-end", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   tmp_dir <- tempfile()
   dir.create(tmp_dir)
   on.exit(unlink(tmp_dir, recursive = TRUE))
@@ -113,7 +113,7 @@ test_that("compile_typst errors clearly when Quarto isn't found", {
 })
 
 test_that("compile_typst rejects a font_dir that does not exist", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   tmp_dir <- tempfile()
   dir.create(tmp_dir)
   on.exit(unlink(tmp_dir, recursive = TRUE))
@@ -133,7 +133,7 @@ test_that("compile_typst rejects a font_dir that does not exist", {
 })
 
 test_that("compile_typst compiles successfully with a font_dir supplied", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   tmp_dir <- tempfile()
   dir.create(tmp_dir)
   on.exit(unlink(tmp_dir, recursive = TRUE))
@@ -308,7 +308,7 @@ test_that("fill_token_defaults renders a default against the data", {
 })
 
 test_that("compile_typst fills an omitted optional token from its default", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   dir <- tempfile()
   dir.create(dir)
   on.exit(unlink(dir, recursive = TRUE))
@@ -338,7 +338,7 @@ test_that("compile_typst fills an omitted optional token from its default", {
 })
 
 test_that("compile_typst does not report success from a stale output file", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   dir <- tempfile()
   dir.create(dir)
   on.exit(unlink(dir, recursive = TRUE))
@@ -356,7 +356,7 @@ test_that("compile_typst does not report success from a stale output file", {
 })
 
 test_that("compile_typst errors when it cannot clear the existing output path", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   dir <- tempfile()
   dir.create(dir)
   on.exit(unlink(dir, recursive = TRUE))
@@ -455,7 +455,7 @@ test_that("optional defaults merged over example data leave no braces", {
 })
 
 test_that("rendering template_data('optional') values leaves no literal braces", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   skip_if_not_installed("pdftools")
   base <- template_data("overdose_spike_alert", "optional")
   merged <- utils::modifyList(base, example_data("overdose_spike_alert"))

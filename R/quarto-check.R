@@ -186,10 +186,20 @@ download_with_timeout <- function(url, dest, min_timeout = 600) {
 #' bumping it, rather than assuming a newer Quarto version number implies
 #' a newer bundled Typst.
 #'
+#' In an interactive session it asks before the download, which is large
+#' (roughly 100 to 250 MB depending on the system); answering no installs
+#' nothing. After a successful install it removes the older copies it put in
+#' the install directory before (the `quarto-<version>` folders, and any older
+#' installer or archive left there), so the folder does not grow with every
+#' version. It never removes a copy that `QUARTO_PATH` points into, in this
+#' session or in `~/.Renviron`, and it never touches a file or folder whose
+#' name does not match what it creates.
+#'
 #' @param version Character. Quarto version to install. Default
 #'   `"1.10.18"`.
 #' @return Character, the install directory (macOS/Linux) or the
-#'   downloaded installer path (Windows), invisibly.
+#'   downloaded installer path (Windows), invisibly; `NULL`, invisibly, if
+#'   you decline the download.
 #' @examples
 #' \dontrun{
 #' # Never run automatically: downloads ~100+ MB and (on Windows) opens
@@ -200,6 +210,13 @@ download_with_timeout <- function(url, dest, min_timeout = 600) {
 install_quarto <- function(version = "1.10.18") {
   sysname <- Sys.info()[["sysname"]]
   install_dir <- tools::R_user_dir("onepagr", which = "data")
+  if (!confirm_quarto_download(version, install_dir)) {
+    message("Quarto was not installed.")
+    return(invisible(NULL))
+  }
+  # Read before anything changes, so a QUARTO_PATH that still points at an
+  # older copy protects that copy from the clean-up below.
+  in_use <- quarto_paths_in_use()
   dir.create(install_dir, recursive = TRUE, showWarnings = FALSE)
 
   base_url <- sprintf(
@@ -216,6 +233,9 @@ install_quarto <- function(version = "1.10.18") {
       ". Opening it now: complete the installer, then restart R."
     )
     utils::browseURL(dest)
+    remove_old_quarto_installs(
+      install_dir, keep = NULL, keep_file = file_name, in_use = character(0)
+    )
     return(invisible(dest))
   }
 
@@ -239,7 +259,124 @@ install_quarto <- function(version = "1.10.18") {
   bin_path <- find_quarto_binary(exdir)
   message("Quarto ", version, " installed to ", dirname(dirname(bin_path)), ".")
   set_quarto_path(bin_path)
+  remove_old_quarto_installs(install_dir, keep = basename(exdir), in_use = in_use)
   invisible(install_dir)
+}
+
+#' Ask before a large Quarto download
+#'
+#' Internal. Only an interactive session is asked; a script or a test goes
+#' ahead, as it did before, because there is nobody to answer. Anything other
+#' than a clear yes (including a cancelled prompt) is a no.
+#'
+#' @param version Character. The Quarto version about to be downloaded.
+#' @param install_dir Character. Where it will be installed.
+#' @param is_interactive Logical. Whether someone can answer.
+#' @param ask Function taking the question, returning `TRUE`, `FALSE` or `NA`.
+#' @return `TRUE` to go ahead, `FALSE` to stop.
+#' @noRd
+confirm_quarto_download <- function(version, install_dir,
+                                    is_interactive = interactive(),
+                                    ask = utils::askYesNo) {
+  if (!is_interactive) {
+    return(TRUE)
+  }
+  isTRUE(ask(sprintf(
+    "Download Quarto %s (a large file, roughly 100 to 250 MB) and install it into %s?",
+    version, install_dir
+  )))
+}
+
+#' Paths that `QUARTO_PATH` points at, now or in a future session
+#'
+#' Internal. The value set in this session, and the one saved in `.Renviron`
+#' (which a new session will use). Read-only.
+#'
+#' @param renviron_path Character. The `.Renviron` file to read.
+#' @return Character vector of normalized paths, possibly empty.
+#' @noRd
+quarto_paths_in_use <- function(renviron_path = path.expand("~/.Renviron")) {
+  found <- Sys.getenv("QUARTO_PATH", unset = "")
+  if (file.exists(renviron_path)) {
+    lines <- readLines(renviron_path, warn = FALSE)
+    saved <- grep("^\\s*QUARTO_PATH\\s*=", lines, value = TRUE)
+    saved <- sub("^\\s*QUARTO_PATH\\s*=\\s*", "", saved)
+    found <- c(found, gsub("^[\"']|[\"']\\s*$", "", trimws(saved)))
+  }
+  found <- found[nzchar(found)]
+  unique(normalizePath(found, winslash = "/", mustWork = FALSE))
+}
+
+# A path inside a folder, compared by whole folder (quarto-1.9 is not inside
+# quarto-1.9.1) and ignoring case on Windows.
+path_is_inside <- function(path, folder) {
+  path <- normalizePath(path, winslash = "/", mustWork = FALSE)
+  folder <- paste0(normalizePath(folder, winslash = "/", mustWork = FALSE), "/")
+  if (.Platform$OS.type == "windows") {
+    path <- tolower(path)
+    folder <- tolower(folder)
+  }
+  startsWith(path, folder)
+}
+
+#' Remove the older Quarto copies that `install_quarto()` left behind
+#'
+#' Internal. Looks only directly inside `install_dir` and only at names this
+#' package creates: `quarto-<version>` folders, and `quarto-<version>`
+#' installers and archives. A copy that `in_use` points into is kept, a linked
+#' folder is never followed, and anything else is left alone.
+#'
+#' @param install_dir Character. The `R_user_dir()` data folder.
+#' @param keep Character or `NULL`. Folder names to keep (the new install).
+#' @param keep_file Character or `NULL`. File names to keep (the new installer).
+#' @param in_use Character. Paths `QUARTO_PATH` points at, from
+#'   `quarto_paths_in_use()`.
+#' @param dry_run Logical. Report what would be removed, remove nothing.
+#' @return Invisibly, the names removed (or, for a dry run, that would be).
+#' @noRd
+remove_old_quarto_installs <- function(install_dir, keep = NULL, keep_file = NULL,
+                                       in_use = quarto_paths_in_use(),
+                                       dry_run = FALSE) {
+  if (!dir.exists(install_dir)) {
+    return(invisible(character(0)))
+  }
+  version <- "[0-9]+([.][0-9]+)*"
+  dirs <- list.dirs(install_dir, recursive = FALSE, full.names = TRUE)
+  dirs <- dirs[grepl(paste0("^quarto-", version, "$"), basename(dirs)) &
+                 !basename(dirs) %in% keep]
+  files <- list.files(install_dir, full.names = TRUE)
+  installer <- paste0(
+    "^quarto-", version,
+    "-(win[.]msi|macos[.]tar[.]gz|linux-(amd64|arm64)[.]tar[.]gz)$"
+  )
+  files <- files[
+    grepl(installer, basename(files)) & !dir.exists(files) &
+      !basename(files) %in% keep_file
+  ]
+  # Never follow a link out of the install directory.
+  dirs <- dirs[!nzchar(Sys.readlink(dirs))]
+  files <- files[!nzchar(Sys.readlink(files))]
+
+  protected <- dirs[vapply(dirs, function(d) {
+    any(vapply(in_use, path_is_inside, logical(1), folder = d))
+  }, logical(1))]
+  dirs <- setdiff(dirs, protected)
+  if (length(protected) > 0) {
+    message(
+      "Kept ", paste(basename(protected), collapse = ", "),
+      ": QUARTO_PATH still points into it. Delete it yourself once you no ",
+      "longer use it."
+    )
+  }
+
+  targets <- c(dirs, files)
+  if (!dry_run && length(targets) > 0) {
+    unlink(targets, recursive = TRUE)
+    message(
+      "Removed older Quarto copies: ", paste(basename(targets), collapse = ", ")
+    )
+  }
+  invisible(basename(targets))
 }
 
 #' Find `bin/quarto` inside an extracted Quarto archive

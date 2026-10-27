@@ -193,6 +193,15 @@ template_data <- function(
 #' @keywords internal
 warn_unknown_tokens <- function(path, data) {
   own <- template_tokens(path)$token
+  # A name that one of this template's values refers to as {{{name}}}, directly
+  # or through another value, is used, so it is not an ignored name.
+  repeat {
+    added <- setdiff(tokens_referenced_in_values(data[names(data) %in% own]), own)
+    if (length(added) == 0) {
+      break
+    }
+    own <- c(own, added)
+  }
   builtin <- unlist(lapply(
     list_templates(), function(t) template_tokens(t)$token
   ))
@@ -244,8 +253,11 @@ extract_token_defaults <- function(path) {
 #' `NULL`, empty, or `NA`), sets the declared default. A default is
 #' rendered against `data` first, so it can refer to other tokens: a
 #' section heading's default can carry a sample size, as in
-#' `Results (N = {{{n_total}}})`. A value the caller supplies is used
-#' as given and never rendered again.
+#' `Results (N = {{{n_total}}})`. A default may refer to another omitted
+#' default, declared above or below it; they are filled in dependency order,
+#' and defaults that refer to each other in a loop are an error. A value the
+#' caller supplies is used as given, except that a `{{{token}}}` in it is
+#' filled from `data` (followed through any further references).
 #'
 #' @param path Character. Path to a .typ file.
 #' @param data Named list of whisker substitution values.
@@ -253,26 +265,86 @@ extract_token_defaults <- function(path) {
 #' @keywords internal
 fill_token_defaults <- function(path, data) {
   defaults <- extract_token_defaults(path)
-  omitted <- names(defaults)[vapply(names(defaults), function(tok) {
-    value <- data[[tok]]
-    length(value) == 0 || is.na(value)[1]
-  }, logical(1))]
-  for (tok in omitted) {
-    data[[tok]] <- whisker::whisker.render(defaults[[tok]], data)
+  pending <- names(defaults)[vapply(
+    names(defaults), function(tok) value_missing(data, tok), logical(1)
+  )]
+  # A default may refer to another default, declared above or below it, so each
+  # is filled once every default it refers to has been. A loop never finishes.
+  while (length(pending) > 0) {
+    ready <- pending[vapply(pending, function(tok) {
+      !any(unlist(tokens_in(defaults[[tok]], path)) %in% pending)
+    }, logical(1))]
+    if (length(ready) == 0) {
+      stop(
+        "The defaults of these optional tokens refer to each other in a loop: ",
+        paste(pending, collapse = ", "), ".",
+        call. = FALSE
+      )
+    }
+    for (tok in ready) {
+      data[[tok]] <- resolve_token_refs(defaults[[tok]], data)
+    }
+    pending <- setdiff(pending, ready)
   }
-  # Any other value that still refers to a token (one the caller typed, or one
-  # from template_data("optional")) is resolved the same way, once, against
-  # the data as it stands, so literal {{{token}}} markup never reaches the PDF.
-  snapshot <- data
-  for (name in names(data)) {
-    value <- data[[name]]
-    refers_to_token <- is.character(value) && length(value) == 1L &&
-      !is.na(value) && grepl("{{{", value, fixed = TRUE)
-    if (refers_to_token) {
-      data[[name]] <- whisker::whisker.render(value, snapshot)
+  resolve_value_references(data)
+}
+
+#' Replace each `{{{token}}}` in a value with that token's value
+#'
+#' Internal. Only the triple-brace form is substituted: the value is never
+#' handed to whisker as a template, so a `{{name}}` or a `{{#section}}` in it
+#' stays literal text. A name with no value becomes blank.
+#'
+#' @param value Character. One string.
+#' @param data Named list of values.
+#' @return Character, the string with its references filled.
+#' @noRd
+resolve_token_refs <- function(value, data) {
+  found <- gregexpr(token_pattern, value, perl = TRUE)
+  hits <- regmatches(value, found)[[1]]
+  if (length(hits) == 0) {
+    return(value)
+  }
+  names_in <- sub(token_pattern, "\\1", hits, perl = TRUE)
+  replacement <- vapply(names_in, function(name) {
+    v <- data[[name]]
+    if (length(v) == 0L || is.na(v[1])) "" else as.character(v[1])
+  }, character(1), USE.NAMES = FALSE)
+  regmatches(value, found) <- list(replacement)
+  value
+}
+
+refers_to_token <- function(value) {
+  is.character(value) && length(value) == 1L && !is.na(value) &&
+    grepl(token_pattern, value, perl = TRUE)
+}
+
+#' Resolve every value that still refers to a token, until none does
+#'
+#' Internal. A value the caller typed, or one from `template_data("optional")`,
+#' can refer to a token whose own value refers to another, so references are
+#' followed until nothing changes and literal `{{{token}}}` markup never
+#' reaches the PDF. Values that refer to each other in a loop are an error.
+#'
+#' @param data Named list of values.
+#' @return `data` with every reference filled.
+#' @noRd
+resolve_value_references <- function(data) {
+  for (pass in seq_len(length(data) + 1L)) {
+    referring <- names(data)[vapply(data, refers_to_token, logical(1))]
+    if (length(referring) == 0) {
+      return(data)
+    }
+    snapshot <- data
+    for (name in referring) {
+      data[[name]] <- resolve_token_refs(data[[name]], snapshot)
     }
   }
-  data
+  stop(
+    "These values refer to each other in a loop: ",
+    paste(referring, collapse = ", "), ".",
+    call. = FALSE
+  )
 }
 
 #' Read a template's designed page count
@@ -309,6 +381,23 @@ validate_template_data <- function(path, data) {
   check_template_data(template_spec(path), data)
 }
 
+#' Rewrite the tokens in a line's comment text so whisker leaves them alone
+#'
+#' Internal. Only the part of the line from its `//` on changes; `{{{name}}}`
+#' there becomes `<name>`.
+#'
+#' @param line Character. One line of Typst source.
+#' @return Character, the line.
+#' @noRd
+neutralize_comment_tokens <- function(line) {
+  code <- strip_typst_comment(line)
+  if (nchar(code) == nchar(line)) {
+    return(line)
+  }
+  comment <- substr(line, nchar(code) + 1L, nchar(line))
+  paste0(code, gsub(token_pattern, "<\\1>", comment, perl = TRUE))
+}
+
 #' Render a template with whisker and write the result next to it
 #'
 #' Internal. Writes `<name>_rendered.typ` beside `path`.
@@ -320,6 +409,11 @@ validate_template_data <- function(path, data) {
 write_rendered_typ <- function(path, data) {
   spec <- template_spec(path)
   lines <- readLines(path, warn = FALSE, encoding = "UTF-8")
+  # whisker fills every {{{token}}} on a line, comments included, but a comment
+  # is text to Typst. A value with a newline in it would end the comment and
+  # leave the rest of the line as live markup, so a token in comment text is
+  # rewritten as <token> before whisker runs.
+  lines <- vapply(lines, neutralize_comment_tokens, character(1), USE.NAMES = FALSE)
   occ <- spec$occurrences
   # A token inside a "string literal" gets its own escaped copy of the value,
   # chosen per occurrence: the same token can also sit in the body, where its
@@ -420,11 +514,13 @@ compile_typst <- function(path, data, output, font_dir = NULL) {
   data <- coerce_data_values(data)
   warn_unknown_tokens(path, data)
   spec <- template_spec(path)
-  check_bracket_balance(spec, data)
   # Checked before the defaults are filled in, so it is known which optional
   # tokens were left out and which default-only tokens that makes necessary.
   check_template_data(spec, data)
   data <- fill_token_defaults(path, data)
+  # After the defaults and references are filled, so a bracket that arrives
+  # through either is caught too.
+  check_bracket_balance(spec, data)
 
   quarto_bin <- quarto_bin_or_stop()
 

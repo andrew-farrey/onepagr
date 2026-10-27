@@ -75,17 +75,36 @@ test_that("template_data's optional defaults carry no leftover {{{ markup", {
   }
 })
 
+test_that("the five example maps ship with the package", {
+  maps <- system.file("extdata", "maps", package = "onepagr")
+  expect_true(nzchar(maps))
+  expect_setequal(
+    list.files(maps, pattern = "[.]png$"), sprintf("map%d.png", 0:4)
+  )
+})
+
+test_that("a user can render the county_choropleth example from the package", {
+  skip_if_no_onepagr_typst()
+  maps <- list.files(
+    system.file("extdata", "maps", package = "onepagr"),
+    pattern = "^map[0-4][.]png$", full.names = TRUE
+  )
+  out <- tempfile(fileext = ".pdf")
+  on.exit(unlink(out), add = TRUE)
+  render_onepager(
+    example_data("county_choropleth"), "county_choropleth",
+    output = out, keep_typst = FALSE, extra_assets = maps
+  )
+  expect_true(file.exists(out))
+})
+
 test_that("template_data alone is enough to render every built-in template", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   out_dir <- tempfile()
   dir.create(out_dir)
   on.exit(unlink(out_dir, recursive = TRUE))
 
-  extra_assets_for <- list(
-    county_choropleth = file.path(
-      "fixtures", "maps", sprintf("map%d.png", 0:4)
-    )
-  )
+  extra_assets_for <- list(county_choropleth = example_maps())
 
   for (t in list_templates()) {
     out_pdf <- file.path(out_dir, paste0(t, ".pdf"))

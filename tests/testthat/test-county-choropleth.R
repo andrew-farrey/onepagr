@@ -1,12 +1,12 @@
 test_that("county_choropleth renders end-to-end with extra_assets", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   out_dir <- tempfile()
   dir.create(out_dir)
   on.exit(unlink(out_dir, recursive = TRUE))
   out_pdf <- file.path(out_dir, "choropleth.pdf")
 
   source("fixtures/sample_data_county_choropleth.R", local = TRUE)
-  maps <- file.path("fixtures", "maps", sprintf("map%d.png", 0:4))
+  maps <- example_maps()
   render_onepager(
     sample_data_county_choropleth,
     template = "county_choropleth", theme = "uk",
@@ -24,11 +24,11 @@ test_that("county_choropleth stays at exactly 2 pages", {
   # checked the page count: adding the WHAT SVI MEASURES section pushed
   # the front page's content past one page with zero error or warning
   # from render_onepager(), just an unwanted third page in the output.
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   skip_if_not(requireNamespace("pdftools", quietly = TRUE))
   out_pdf <- tempfile(fileext = ".pdf")
   source("fixtures/sample_data_county_choropleth.R", local = TRUE)
-  maps <- file.path("fixtures", "maps", sprintf("map%d.png", 0:4))
+  maps <- example_maps()
   render_onepager(
     sample_data_county_choropleth,
     template = "county_choropleth", theme = "default",
@@ -47,7 +47,7 @@ test_that("county_choropleth stays at 2 pages with an unusual aspect ratio", {
   # extreme tall/narrow (1:2) placeholder to prove that cap actually
   # holds, not just that today's roughly-square test fixtures happen to
   # fit.
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   skip_if_not(requireNamespace("pdftools", quietly = TRUE))
   map_dir <- tempfile()
   dir.create(map_dir)
@@ -79,17 +79,17 @@ test_that("county_choropleth errors clearly on a missing extra_assets file", {
       sample_data_county_choropleth,
       template = "county_choropleth", theme = "uk",
       output = out_pdf, keep_typst = FALSE,
-      extra_assets = "fixtures/maps/does-not-exist.png"
+      extra_assets = file.path(tempdir(), "does-not-exist.png")
     ),
     "extra_assets file"
   )
 })
 
 test_that("county_choropleth footer sizing defaults, explicit values, and overrides", {
-  skip_if_not(quarto::quarto_available())
+  skip_if_no_onepagr_typst()
   skip_if_not(requireNamespace("pdftools", quietly = TRUE))
   source("fixtures/sample_data_county_choropleth.R", local = TRUE)
-  maps <- file.path("fixtures", "maps", sprintf("map%d.png", 0:4))
+  maps <- example_maps()
   out_dir <- tempfile()
   dir.create(out_dir)
   on.exit(unlink(out_dir, recursive = TRUE))
