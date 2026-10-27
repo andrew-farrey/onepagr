@@ -195,13 +195,7 @@ warn_unknown_tokens <- function(path, data) {
   own <- template_tokens(path)$token
   # A name that one of this template's values refers to as {{{name}}}, directly
   # or through another value, is used, so it is not an ignored name.
-  repeat {
-    added <- setdiff(tokens_referenced_in_values(data[names(data) %in% own]), own)
-    if (length(added) == 0) {
-      break
-    }
-    own <- c(own, added)
-  }
+  own <- c(own, tokens_reachable(data, own))
   builtin <- unlist(lapply(
     list_templates(), function(t) template_tokens(t)$token
   ))
@@ -286,7 +280,13 @@ fill_token_defaults <- function(path, data) {
     }
     pending <- setdiff(pending, ready)
   }
-  resolve_value_references(data)
+  # Only the values this template can reach: another template's values in a
+  # shared data list are not this render's concern, and a loop among them must
+  # not stop it.
+  own <- template_spec(path)$tokens$token
+  reach <- names(data) %in% c(own, tokens_reachable(data, own))
+  data[reach] <- resolve_value_references(data[reach])
+  data
 }
 
 #' Replace each `{{{token}}}` in a value with that token's value
@@ -395,7 +395,10 @@ neutralize_comment_tokens <- function(line) {
     return(line)
   }
   comment <- substr(line, nchar(code) + 1L, nchar(line))
-  paste0(code, gsub(token_pattern, "<\\1>", comment, perl = TRUE))
+  comment <- gsub(token_pattern, "<\\1>", comment, perl = TRUE)
+  # A double-brace {{name}}, a {{#section}} and a stray {{ are tags to whisker
+  # too, so no two braces are left side by side in comment text.
+  paste0(code, gsub("[{](?=[{])", "{ ", comment, perl = TRUE))
 }
 
 #' Render a template with whisker and write the result next to it

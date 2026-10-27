@@ -94,6 +94,46 @@ test_that("a bracket that arrives through a reference is caught in R", {
   )
 })
 
+test_that("a missing token at the end of a chain of references is an error", {
+  path <- write_typ("#text[{{{note}}}]")
+  data <- list(note = "A {{{b}}}", b = "B {{{c}}}")
+  expect_error(
+    validate_template_data(path, data), "required token\\(s\\) for .*: c$"
+  )
+  data$c <- "C"
+  expect_no_error(validate_template_data(path, data))
+  expect_identical(fill_token_defaults(path, data)$note, "A B C")
+})
+
+test_that("a value only another template uses cannot stop this render", {
+  path <- write_typ("#text[{{{note}}}]")
+  data <- list(note = "fine", other = "see {{{other}}}")
+  filled <- fill_token_defaults(path, data)
+  expect_identical(filled$note, "fine")
+  expect_identical(filled$other, "see {{{other}}}")
+  expect_no_error(validate_template_data(path, data))
+})
+
+test_that("a loop this template reaches is still an error", {
+  path <- write_typ("#text[{{{note}}}]")
+  expect_error(
+    fill_token_defaults(path, list(note = "x {{{b}}}", b = "y {{{note}}}")),
+    "loop"
+  )
+  expect_error(fill_token_defaults(path, list(note = "x {{{note}}}")), "loop")
+})
+
+test_that("a shared data list renders every built-in template's own values", {
+  # One list holding two templates' values, with a value that refers to itself
+  # in a token the other template does not use.
+  data <- c(
+    example_data("cohort_summary"),
+    list(only_for_another_template = "see {{{only_for_another_template}}}")
+  )
+  path <- resolve_template("cohort_summary")
+  expect_no_error(fill_token_defaults(path, data))
+})
+
 test_that("a bracket in a default that is used is caught in R", {
   path <- write_typ(c(
     "#set document(title: [T])",

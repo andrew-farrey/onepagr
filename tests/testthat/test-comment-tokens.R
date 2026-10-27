@@ -12,6 +12,38 @@ test_that("a token in a // comment never receives the raw value", {
   expect_match(rendered[2], "^// The value, ")
 })
 
+test_that("a double-brace tag in a comment does not receive a value", {
+  path <- write_typ(c(
+    "// Never write {{contact}} here; use the triple form.",
+    "#let c = \"{{{contact}}}\"",
+    "#text(c)"
+  ))
+  out <- write_rendered_typ(path, list(contact = "a@b.org\n#text[STRAY]"))
+  on.exit(unlink(out), add = TRUE)
+  rendered <- readLines(out, warn = FALSE)
+  expect_false(any(grepl("^#text\\[STRAY\\]", rendered)))
+  expect_length(rendered, 3L)
+  expect_match(rendered[1], "^// Never write ")
+  expect_false(grepl("{{", rendered[1], fixed = TRUE))
+})
+
+test_that("a section tag or an unclosed brace in a comment stays inert", {
+  path <- write_typ(c(
+    "// {{#flag}}hidden{{/flag}} and an unclosed {{{ brace, and {{{ three }}}",
+    "#text[{{{note}}}]"
+  ))
+  out <- write_rendered_typ(path, list(note = "n", flag = "yes"))
+  on.exit(unlink(out), add = TRUE)
+  rendered <- readLines(out, warn = FALSE)
+  expect_length(rendered, 2L)
+  # Nothing in the comment is left for whisker to read as a tag, and the
+  # section it would have evaluated is still there as plain text.
+  expect_false(grepl("{{", rendered[1], fixed = TRUE))
+  expect_match(rendered[1], "#flag", fixed = TRUE)
+  expect_match(rendered[1], "hidden", fixed = TRUE)
+  expect_identical(rendered[2], "#text[n]")
+})
+
 test_that("a token after code on the same line is still filled", {
   path <- write_typ("#let a = \"{{{s}}}\" // see {{{s}}}")
   out <- write_rendered_typ(path, list(s = "x\ny"))

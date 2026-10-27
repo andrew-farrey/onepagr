@@ -287,18 +287,41 @@ confirm_quarto_download <- function(version, install_dir,
   )))
 }
 
+#' The `.Renviron` files an R session could read its settings from
+#'
+#' Internal. R reads `R_ENVIRON_USER` if it is set, otherwise a `.Renviron` in
+#' the working directory, otherwise the one in the home folder, so a session
+#' started from a project folder can use a different file than one started
+#' elsewhere. All three are listed.
+#'
+#' @return Character vector of file paths.
+#' @noRd
+renviron_files_to_read <- function() {
+  files <- c(
+    path.expand("~/.Renviron"),
+    file.path(getwd(), ".Renviron"),
+    Sys.getenv("R_ENVIRON_USER", unset = "")
+  )
+  unique(files[nzchar(files)])
+}
+
 #' Paths that `QUARTO_PATH` points at, now or in a future session
 #'
-#' Internal. The value set in this session, and the one saved in `.Renviron`
-#' (which a new session will use). Read-only.
+#' Internal. The value set in this session, and the ones saved in the
+#' `.Renviron` files a new session could read. Read-only. A `.Renviron` in some
+#' other project's folder cannot be seen from here; a path it names that is
+#' gone is reported by `quarto_bin_or_stop()`.
 #'
-#' @param renviron_path Character. The `.Renviron` file to read.
+#' @param renviron_files Character vector of `.Renviron` files to read.
 #' @return Character vector of normalized paths, possibly empty.
 #' @noRd
-quarto_paths_in_use <- function(renviron_path = path.expand("~/.Renviron")) {
+quarto_paths_in_use <- function(renviron_files = renviron_files_to_read()) {
   found <- Sys.getenv("QUARTO_PATH", unset = "")
-  if (file.exists(renviron_path)) {
-    lines <- readLines(renviron_path, warn = FALSE)
+  for (file in renviron_files[!is.na(renviron_files) & nzchar(renviron_files)]) {
+    if (!file.exists(file)) {
+      next
+    }
+    lines <- readLines(file, warn = FALSE)
     saved <- grep("^\\s*QUARTO_PATH\\s*=", lines, value = TRUE)
     saved <- sub("^\\s*QUARTO_PATH\\s*=\\s*", "", saved)
     found <- c(found, gsub("^[\"']|[\"']\\s*$", "", trimws(saved)))
@@ -519,10 +542,24 @@ update_renviron_line <- function(key, value, renviron_path) {
 #' @noRd
 quarto_bin_or_stop <- function() {
   quarto_bin <- quarto::quarto_path()
-  if (is.null(quarto_bin)) {
+  # quarto_path() gives NULL, or an empty string on some platforms, when Quarto
+  # is not found.
+  if (length(quarto_bin) == 0 || !nzchar(quarto_bin[1])) {
     stop(
       "Quarto was not found. Run onepagr::check_quarto() for details, or ",
       "onepagr::install_quarto() to install it.",
+      call. = FALSE
+    )
+  }
+  # A QUARTO_PATH can outlive the copy it names (deleted by hand, or removed
+  # when a project's .Renviron could not be seen). Stop here, where the
+  # message is clear and before compile_typst() clears the previous PDF. A bare
+  # command name that is on the PATH is fine.
+  if (!file.exists(quarto_bin) && !nzchar(Sys.which(quarto_bin))) {
+    stop(
+      "QUARTO_PATH points at ", quarto_bin, ", which does not exist. Point it ",
+      "at a current Quarto with onepagr::set_quarto_path(), or run ",
+      "onepagr::install_quarto().",
       call. = FALSE
     )
   }
