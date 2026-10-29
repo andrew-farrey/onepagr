@@ -1,6 +1,6 @@
 Package: onepagr
 Title: Accessible One-Page Reports from 'Typst' Templates
-Version: 0.1.1.9000
+Version: 0.2.0
 Authors@R: c(person("Andrew", "Farrey", email = "afarrey11@outlook.com",
     role = c("aut", "cre", "cph"),
     comment = c(affiliation = "University of Kentucky, Kentucky Injury Prevention and Research Center",
