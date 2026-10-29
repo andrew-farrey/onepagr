@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">onepagr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,10 +39,10 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="development version" id="onepagr-development-version">onepagr (development version)<a class="anchor" aria-label="anchor" href="#onepagr-development-version"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.2.0" id="onepagr-020">onepagr 0.2.0<a class="anchor" aria-label="anchor" href="#onepagr-020"></a></h2>
 <p>This release folds in fixes from two external code reviews and a round of accessibility evidence work. Apart from the header subtitle change described under Themes, all 15 built-in template and theme combinations render the same as before these fixes (same text, same pixels).</p>
 <div class="section level3">
-<h3 id="data-and-tokens-development-version">Data and tokens<a class="anchor" aria-label="anchor" href="#data-and-tokens-development-version"></a></h3>
+<h3 id="data-and-tokens-0-2-0">Data and tokens<a class="anchor" aria-label="anchor" href="#data-and-tokens-0-2-0"></a></h3>
 <ul><li>
 <code><a href="../reference/compile_typst.html">compile_typst()</a></code> and <code><a href="../reference/render_onepager.html">render_onepager()</a></code> escape a double quote, backslash or newline in a value that a template places inside a quoted string (organization names, alt text, contact details, file paths), so <code>Sample "North" Health Department</code> renders instead of failing in Typst. A value in the body of a template is still Typst markup, as before.</li>
 <li>
@@ -68,7 +68,7 @@
 <li>Every template takes an optional <code>doc_lang</code> (default <code>"en"</code>) that sets the document language screen readers use.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="export-render-and-install-development-version">Export, render and install<a class="anchor" aria-label="anchor" href="#export-render-and-install-development-version"></a></h3>
+<h3 id="export-render-and-install-0-2-0">Export, render and install<a class="anchor" aria-label="anchor" href="#export-render-and-install-0-2-0"></a></h3>
 <ul><li>
 <code><a href="../reference/export_template.html">export_template()</a></code> stops if <code>dest</code> already holds an exported template, so hand edits are not lost; use <code>overwrite = TRUE</code> to replace it. It also takes <code>theme_path</code>.</li>
 <li>
@@ -83,21 +83,21 @@
 <li>A <code>QUARTO_PATH</code> that names a file that is not there stops with a message that says so, before the previous PDF is replaced, instead of “error in running command” after it has been deleted.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="themes-development-version">Themes<a class="anchor" aria-label="anchor" href="#themes-development-version"></a></h3>
+<h3 id="themes-0-2-0">Themes<a class="anchor" aria-label="anchor" href="#themes-0-2-0"></a></h3>
 <ul><li>
 <code><a href="../reference/check_theme.html">check_theme()</a></code> no longer fails a theme for lacking <code>brand-sky</code>, <code>card-bg</code>, <code>callout-bg</code>, <code>lessons-bg</code> or <code>disclaimer-bg</code>, which no component reads, and reports unknown <code>theme-grad</code> keys as <code>unknown_grad</code>.</li>
 <li>Callout body text is a theme key, <code>callout-text</code>, with the previous color as its fallback, so a custom theme with a dark callout background can set it.</li>
 <li>The header subtitle in all five templates is now solid white instead of white at 85% opacity. With the <code>default</code> theme the translucent text measured 3.93:1 against the lightest end of the header gradient, under the 4.5:1 that WCAG 2.2 AA requires for text this size. It now measures 4.95:1 there, the same margin as the title, and the <code>uk</code> and <code>kdph</code> themes pass by a wider margin (7.53:1 and 10.60:1).</li>
 </ul></div>
 <div class="section level3">
-<h3 id="accessibility-documentation-development-version">Accessibility documentation<a class="anchor" aria-label="anchor" href="#accessibility-documentation-development-version"></a></h3>
+<h3 id="accessibility-documentation-0-2-0">Accessibility documentation<a class="anchor" aria-label="anchor" href="#accessibility-documentation-0-2-0"></a></h3>
 <ul><li>
 <code><a href="../articles/accessibility-checks.html">vignette("accessibility-checks")</a></code> is new. It explains what PAC, veraPDF and Typst’s own <code>ua-1</code> compile check, which PDF/UA-1 conditions still need a person (cross-referenced to the PDF Association’s Matterhorn Protocol 1.1), and gives a checklist for them.</li>
 <li>The README states the scope of the accessibility claims: which checkers were run, that PAC was run by hand, and that onepagr does not certify legal compliance with any law or regulation. Every built-in template and theme was also checked with veraPDF (PDF/UA-1 profile).</li>
 <li>The README and the accessibility vignette now say that on the two alert templates the page footer is a pagination artifact, so its logos, organization name and contact details are not read by a screen reader.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="documentation-and-packaging-development-version">Documentation and packaging<a class="anchor" aria-label="anchor" href="#documentation-and-packaging-development-version"></a></h3>
+<h3 id="documentation-and-packaging-0-2-0">Documentation and packaging<a class="anchor" aria-label="anchor" href="#documentation-and-packaging-0-2-0"></a></h3>
 <ul><li>
 <code><a href="../reference/fmt_n.html">fmt_n()</a></code> and <code><a href="../reference/fmt_pct.html">fmt_pct()</a></code> document that a half rounds to the even digit.</li>
 <li>
@@ -114,7 +114,7 @@
 <li>Corrected references to unshipped design documents and to theme keys that do not exist.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="internal-development-version">Internal<a class="anchor" aria-label="anchor" href="#internal-development-version"></a></h3>
+<h3 id="internal-0-2-0">Internal<a class="anchor" aria-label="anchor" href="#internal-0-2-0"></a></h3>
 <ul><li>
 <code><a href="../reference/check_theme.html">check_theme()</a></code> and <code><a href="../reference/compile_typst.html">compile_typst()</a></code> are split into smaller helpers, the “Quarto was not found” error comes from one place, and <code><a href="../reference/render_onepager.html">render_onepager()</a></code> inherits parameter documentation from <code><a href="../reference/export_template.html">export_template()</a></code> and <code><a href="../reference/compile_typst.html">compile_typst()</a></code>. A <code>.lintr</code> file sets the lint settings, and a lint workflow runs on every push.</li>
 </ul></div>

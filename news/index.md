@@ -1,6 +1,6 @@
 # Changelog
 
-## onepagr (development version)
+## onepagr 0.2.0
 
 This release folds in fixes from two external code reviews and a round
 of accessibility evidence work. Apart from the header subtitle change
