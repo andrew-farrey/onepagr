@@ -105,6 +105,11 @@ typst_escape_string <- function(x) {
 #' `~`, `/` and the backslash itself) show up literally instead of breaking
 #' the compile. A slash is escaped so that `//` in the text, which Typst
 #' reads as the start of a comment, cannot drop the rest of the line.
+#' `-`, `.`, `+`, `=`, `'` and `"` are escaped too, so Typst's text shortcuts
+#' leave the text as typed: `--` stays two hyphens rather than an en dash,
+#' `-?` is not turned into an invisible soft hyphen, `...` is not an ellipsis
+#' character, quotes stay straight, and a line that starts with `-`, `+`, `=`
+#' or `1.` is not read as a list or heading.
 #'
 #' Tokens that sit inside a quoted string in a template (organization names,
 #' alt text, contact details, file paths) are escaped for you and do not
@@ -117,7 +122,7 @@ typst_escape_string <- function(x) {
 #' typst_escape("Cost: $5 (see #3) [draft]")
 #' @export
 typst_escape <- function(x) {
-  gsub("([\\\\#$*_`<>@\\[\\]~/])", "\\\\\\1", x, perl = TRUE)
+  gsub("([\\\\#$*_`<>@\\[\\]~/.'\"+=-])", "\\\\\\1", x, perl = TRUE)
 }
 
 # The name an error gives a template: a built-in's own name, since every
@@ -262,6 +267,19 @@ check_template_data <- function(spec, data) {
       stop(
         'Token "', tok, '" must be a plain number from 0 to 100 (for ',
         'example 64.6), not "', text, '".',
+        call. = FALSE
+      )
+    }
+  }
+
+  # doc_lang reaches Typst's `lang`, which takes only a two- or three-letter
+  # language code. Typst's own error names a generated file, so stop here.
+  if ("doc_lang" %in% tokens$token && !value_missing(data, "doc_lang")) {
+    lang <- trimws(as.character(data[["doc_lang"]][1]))
+    if (!grepl("^[A-Za-z]{2,3}$", lang)) {
+      stop(
+        'Token "doc_lang" must be a two- or three-letter language code such ',
+        'as "en" or "es", not "', lang, '". For "en-US", use "en".',
         call. = FALSE
       )
     }

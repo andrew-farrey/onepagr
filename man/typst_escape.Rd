@@ -22,6 +22,11 @@ treat as markup (\verb{#}, \code{$}, \code{*}, \verb{_}, a backtick, \code{<}, \
 \code{~}, \code{/} and the backslash itself) show up literally instead of breaking
 the compile. A slash is escaped so that \verb{//} in the text, which Typst
 reads as the start of a comment, cannot drop the rest of the line.
+\code{-}, \code{.}, \code{+}, \code{=}, \verb{'} and \verb{"} are escaped too, so Typst's text shortcuts
+leave the text as typed: \verb{--} stays two hyphens rather than an en dash,
+\verb{-?} is not turned into an invisible soft hyphen, \code{...} is not an ellipsis
+character, quotes stay straight, and a line that starts with \code{-}, \code{+}, \code{=}
+or \code{1.} is not read as a list or heading.
 }
 \details{
 Tokens that sit inside a quoted string in a template (organization names,

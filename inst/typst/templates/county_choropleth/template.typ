@@ -96,6 +96,10 @@
 // already-evaluated string's characters for markup syntax, so the "@" is
 // inert either way. Keep contact_email UNESCAPED in the R-side data.
 #let contact-email = "{{{contact_email}}}"
+// org_full goes through a string the same way: in the footer's markup a
+// "#", "$" or "<...>" in an organization name would otherwise be read as
+// Typst syntax, while its other uses are quoted strings that onepagr escapes.
+#let org-full = "{{{org_full}}}"
 
 // Logo paths/alt-text and the header texture are tokens, not hardcoded
 // literals -- see cohort_summary/template.typ's identical comment for
@@ -523,7 +527,7 @@
 ]
 
 #v(theme.space-xs)
-#text(size: fs(theme, 7pt), fill: theme.text-muted)[*{{{footer_label_sources}}}* {{{footnote_sources}}} #h(0.5em)|#h(0.5em) *{{{footer_label_period}}}* {{{strip_period}}} #h(0.5em)|#h(0.5em) *{{{footer_label_contact}}}* {{{org_full}}} {{{footer_contact_joiner}}} #link("mailto:" + contact-email)[#contact-email]]
+#text(size: fs(theme, 7pt), fill: theme.text-muted)[*{{{footer_label_sources}}}* {{{footnote_sources}}} #h(0.5em)|#h(0.5em) *{{{footer_label_period}}}* {{{strip_period}}} #h(0.5em)|#h(0.5em) *{{{footer_label_contact}}}* #org-full {{{footer_contact_joiner}}} #link("mailto:" + contact-email)[#contact-email]]
 ] // close body #pad(x: theme.content-pad-x)
 #place(bottom + center, float: true)[#footer]
 
