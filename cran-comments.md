@@ -14,17 +14,15 @@ so it has a new version number. The user-visible changes are listed in
 * GitHub Actions (on every push): macOS (R release), Windows (R release),
   Ubuntu (R devel, R release, R oldrel-1)
 * win-builder: Windows Server 2022, R 4.6.2 (release), 2026-10-30
-* R-hub: [TO FILL IN after the final run on the release sources: platforms and
-  date]
+* R-hub (2026-10-30, on the release sources): macOS (x86_64, R-devel),
+  macOS (arm64, R-devel), Linux with no suggested packages (R 4.6.2), Linux
+  with no long double support (R 4.6.2), and Ubuntu release (R 4.6.2)
 
 ## R CMD check results
 
-[TO FILL IN after the final runs. Local `devtools::check(cran = TRUE)` on the
-development sources gave 0 errors | 0 warnings | 0 notes, both with Quarto
-present and with Quarto hidden from the PATH (as on a machine without it). The
-expected result on win-builder is the one note below.]
+R-hub: 0 errors | 0 warnings | 0 notes on all five platforms above.
 
-0 errors | 0 warnings | 1 note
+win-builder: 0 errors | 0 warnings | 1 note
 
 * This is a new submission.
 
