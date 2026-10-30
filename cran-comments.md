@@ -13,8 +13,7 @@ so it has a new version number. The user-visible changes are listed in
 * Local: Windows 11, R 4.6.1 (release), Quarto 1.10.18 with Typst 0.15.1
 * GitHub Actions (on every push): macOS (R release), Windows (R release),
   Ubuntu (R devel, R release, R oldrel-1)
-* win-builder: [TO FILL IN after the final run on the release sources: platform,
-  R version and date]
+* win-builder: Windows Server 2022, R 4.6.2 (release), 2026-10-30
 * R-hub: [TO FILL IN after the final run on the release sources: platforms and
   date]
 
@@ -36,6 +35,11 @@ expected result on win-builder is the one note below.]
 
 * There are no published references describing the methods in this package,
   so the Description field has no reference citations.
+
+* On win-builder, the URL check also reported a timeout reaching
+  `https://CRAN.R-project.org/package=jsonlite` (linked from `README.md`),
+  which is a connection failure from the check machine. The link is valid, and
+  `urlchecker::url_check()` finds every URL in the package correct locally.
 
 ## External software
 
