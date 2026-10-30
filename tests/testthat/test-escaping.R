@@ -27,7 +27,7 @@ test_that("typst_escape escapes a slash so // cannot start a comment", {
     "Rates rose 5% \\/\\/ provisional"
   )
   expect_identical(typst_escape("a/b and /* c"), "a\\/b and \\/\\* c")
-  expect_identical(typst_escape("https://x.org/a"), "https:\\/\\/x.org\\/a")
+  expect_identical(typst_escape("https://x.org/a"), "https:\\/\\/x\\.org\\/a")
 })
 
 test_that("plain text with // renders in full once escaped", {
@@ -112,4 +112,33 @@ test_that("values pre-escaped for markup render exactly as before", {
   expect_true(grepl("@desk", text, fixed = TRUE))
   expect_true(grepl("details", text, fixed = TRUE))
   expect_false(grepl("\\", text, fixed = TRUE))
+})
+
+test_that("typst_escape leaves Typst shorthands as typed", {
+  expect_identical(typst_escape("2020--2021"), "2020\\-\\-2021")
+  expect_identical(typst_escape("Pos-?neg"), "Pos\\-?neg")
+  expect_identical(typst_escape("Wait..."), "Wait\\.\\.\\.")
+  expect_identical(typst_escape("it's \"so\""), "it\\'s \\\"so\\\"")
+  expect_identical(typst_escape("+1 = x"), "\\+1 \\= x")
+})
+
+test_that("escaped shorthands and line-start markers render literally", {
+  skip_if_no_onepagr_typst()
+  skip_if_not_installed("pdftools")
+  cases <- c(
+    "2020--2021", "N/A --- pending", "Wait...", "Pos-?neg", "He said \"no\"",
+    "it's", "+1 vs -1", "- item", "= Heading", "+ step", "1. first",
+    "see https://x.org/a_b"
+  )
+  lines <- "#set document(title: [T])"
+  for (k in seq_along(cases)) {
+    lines <- c(lines, paste0("{{{t", k, "}}}"), "")
+  }
+  path <- write_typ(lines)
+  data <- stats::setNames(as.list(typst_escape(cases)), paste0("t", seq_along(cases)))
+  out <- tempfile(fileext = ".pdf")
+  on.exit(unlink(out), add = TRUE)
+  compile_typst(path, data, out)
+  text <- trimws(strsplit(pdftools::pdf_text(out), "\n")[[1]])
+  expect_identical(text[nzchar(text)], cases)
 })
