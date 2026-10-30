@@ -64,8 +64,8 @@ overwrite fields directly, or merge your own values in with
 ``` r
 data <- template_data("cohort_summary")
 attr(data, "required")
-#>  [1] "contact_email"                   "logo_primary_path"              
-#>  [3] "logo_primary_alt"                "org_full"                       
+#>  [1] "contact_email"                   "org_full"                       
+#>  [3] "logo_primary_path"               "logo_primary_alt"               
 #>  [5] "contact_url"                     "doc_title"                      
 #>  [7] "doc_subtitle"                    "strip_data"                     
 #>  [9] "strip_period"                    "strip_design"                   

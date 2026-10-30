@@ -79,8 +79,8 @@ numbers for, as opposed to wording you can leave alone:
 ``` r
 
 attr(data, "required")
-#>  [1] "contact_email"                   "logo_primary_path"              
-#>  [3] "logo_primary_alt"                "org_full"                       
+#>  [1] "contact_email"                   "org_full"                       
+#>  [3] "logo_primary_path"               "logo_primary_alt"               
 #>  [5] "contact_url"                     "doc_title"                      
 #>  [7] "doc_subtitle"                    "strip_data"                     
 #>  [9] "strip_period"                    "strip_design"                   
@@ -214,9 +214,9 @@ onepagr::list_templates()
 head(onepagr::template_tokens("overdose_spike_alert"), 8)
 #>               token required default needed_by
 #> 1     contact_email     TRUE    <NA>      <NA>
-#> 2 logo_primary_path     TRUE    <NA>      <NA>
-#> 3  logo_primary_alt     TRUE    <NA>      <NA>
-#> 4          org_full     TRUE    <NA>      <NA>
+#> 2          org_full     TRUE    <NA>      <NA>
+#> 3 logo_primary_path     TRUE    <NA>      <NA>
+#> 4  logo_primary_alt     TRUE    <NA>      <NA>
 #> 5       contact_url     TRUE    <NA>      <NA>
 #> 6    severity_level     TRUE    <NA>      <NA>
 #> 7         doc_title     TRUE    <NA>      <NA>

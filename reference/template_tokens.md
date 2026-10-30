@@ -55,9 +55,9 @@ tokens <- template_tokens("cohort_summary")
 head(tokens)
 #>               token required default needed_by
 #> 1     contact_email     TRUE    <NA>      <NA>
-#> 2 logo_primary_path     TRUE    <NA>      <NA>
-#> 3  logo_primary_alt     TRUE    <NA>      <NA>
-#> 4          org_full     TRUE    <NA>      <NA>
+#> 2          org_full     TRUE    <NA>      <NA>
+#> 3 logo_primary_path     TRUE    <NA>      <NA>
+#> 4  logo_primary_alt     TRUE    <NA>      <NA>
 #> 5       contact_url     TRUE    <NA>      <NA>
 #> 6         doc_title     TRUE    <NA>      <NA>
 

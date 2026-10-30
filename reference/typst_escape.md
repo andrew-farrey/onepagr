@@ -8,6 +8,11 @@ treat as markup (`#`, `$`, `*`, `_`, a backtick, `<`, `>`, `@`, `[`,
 `]`, `~`, `/` and the backslash itself) show up literally instead of
 breaking the compile. A slash is escaped so that `//` in the text, which
 Typst reads as the start of a comment, cannot drop the rest of the line.
+`-`, `.`, `+`, `=`, `'` and `"` are escaped too, so Typst's text
+shortcuts leave the text as typed: `--` stays two hyphens rather than an
+en dash, `-?` is not turned into an invisible soft hyphen, `...` is not
+an ellipsis character, quotes stay straight, and a line that starts with
+`-`, `+`, `=` or `1.` is not read as a list or heading.
 
 ## Usage
 

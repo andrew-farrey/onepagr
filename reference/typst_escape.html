@@ -6,14 +6,24 @@ free-text field, use typst_escape() so that characters Typst would
 treat as markup (#, $, *, _, a backtick, &amp;lt;, &amp;gt;, @, [, ],
 ~, / and the backslash itself) show up literally instead of breaking
 the compile. A slash is escaped so that // in the text, which Typst
-reads as the start of a comment, cannot drop the rest of the line."><meta property="og:description" content="A value for a token that sits in the body of a template is Typst markup:
+reads as the start of a comment, cannot drop the rest of the line.
+-, ., +, =, ' and &quot; are escaped too, so Typst's text shortcuts
+leave the text as typed: -- stays two hyphens rather than an en dash,
+-? is not turned into an invisible soft hyphen, ... is not an ellipsis
+character, quotes stay straight, and a line that starts with -, +, =
+or 1. is not read as a list or heading."><meta property="og:description" content="A value for a token that sits in the body of a template is Typst markup:
 *bold* and _italic_ work, and #link(...) embeds a link. That is
 what you want for formatted text. For plain text from a database or a
 free-text field, use typst_escape() so that characters Typst would
 treat as markup (#, $, *, _, a backtick, &amp;lt;, &amp;gt;, @, [, ],
 ~, / and the backslash itself) show up literally instead of breaking
 the compile. A slash is escaped so that // in the text, which Typst
-reads as the start of a comment, cannot drop the rest of the line."><meta property="og:image" content="https://andrew-farrey.github.io/onepagr/logo.png"></head><body>
+reads as the start of a comment, cannot drop the rest of the line.
+-, ., +, =, ' and &quot; are escaped too, so Typst's text shortcuts
+leave the text as typed: -- stays two hyphens rather than an en dash,
+-? is not turned into an invisible soft hyphen, ... is not an ellipsis
+character, quotes stay straight, and a line that starts with -, +, =
+or 1. is not read as a list or heading."><meta property="og:image" content="https://andrew-farrey.github.io/onepagr/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -61,7 +71,12 @@ free-text field, use <code>typst_escape()</code> so that characters Typst would
 treat as markup (<code>#</code>, <code>$</code>, <code>*</code>, <code>_</code>, a backtick, <code>&lt;</code>, <code>&gt;</code>, <code>@</code>, <code>[</code>, <code>]</code>,
 <code>~</code>, <code>/</code> and the backslash itself) show up literally instead of breaking
 the compile. A slash is escaped so that <code>//</code> in the text, which Typst
-reads as the start of a comment, cannot drop the rest of the line.</p>
+reads as the start of a comment, cannot drop the rest of the line.
+<code>-</code>, <code>.</code>, <code>+</code>, <code>=</code>, <code>'</code> and <code>"</code> are escaped too, so Typst's text shortcuts
+leave the text as typed: <code>--</code> stays two hyphens rather than an en dash,
+<code>-?</code> is not turned into an invisible soft hyphen, <code>...</code> is not an ellipsis
+character, quotes stay straight, and a line that starts with <code>-</code>, <code>+</code>, <code>=</code>
+or <code>1.</code> is not read as a list or heading.</p>
     </div>
 
     <div class="section level2">
