@@ -1,6 +1,6 @@
 # onepagr 0.2.0
 
-This release folds in fixes from two external code reviews and a round of
+This release folds in fixes from external code reviews and a round of
 accessibility evidence work. Apart from the header subtitle change described
 under Themes, all 15 built-in template and theme combinations render the same
 as before these fixes (same text, same pixels).
@@ -37,6 +37,16 @@ as before these fixes (same text, same pixels).
   longer stops this render.
 * A double-brace `{{name}}`, a `{{#section}}` or a stray `{{` in the comment text
   of a template is neutralized as well, not only the triple-brace form.
+* `typst_escape()` also escapes `-`, `.`, `+`, `=`, `'` and `"`, so Typst's text
+  shortcuts no longer change plain text: `--` stays two hyphens, `-?` is no
+  longer an invisible soft hyphen, `...` stays three dots, quotes stay straight,
+  and a line starting with `-`, `+`, `=` or `1.` is no longer a list or heading.
+* An organization name (`org_full`) renders as typed in the footer of every
+  template. It sits in a quoted string elsewhere, so it had to be plain text
+  there, but the footer read it as markup: a `#` or a `<...>` part was dropped
+  and a `$` broke the compile. The footer now takes it from a string as well.
+* A `doc_lang` that is not a two- or three-letter language code (such as
+  `"en-US"`) stops in R with a message, instead of in Typst.
 * An error about a missing token names the built-in template, such as
   `cohort_summary`, not `template.typ`.
 * Numbers are formatted without scientific notation, so `100000` prints as
