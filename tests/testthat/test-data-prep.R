@@ -127,3 +127,21 @@ test_that("bar-pct clamps a bar width to the track", {
   expect_equal(eval_typst("{import \"/components.typ\": bar-pct; bar-pct(-5)}"), 0)
   expect_equal(eval_typst("{import \"/components.typ\": bar-pct; bar-pct(64.6)}"), 64.6)
 })
+
+test_that("a doc_lang that is not a language code stops in R", {
+  path <- write_typ(c(
+    "// optional-token: doc_lang = en",
+    "#set text(lang: \"{{{doc_lang}}}\")",
+    "{{{note}}}"
+  ))
+  expect_error(
+    validate_template_data(path, list(note = "x", doc_lang = "en-US")),
+    "language code"
+  )
+  expect_error(
+    validate_template_data(path, list(note = "x", doc_lang = "english")),
+    "language code"
+  )
+  expect_silent(validate_template_data(path, list(note = "x", doc_lang = "es")))
+  expect_silent(validate_template_data(path, list(note = "x")))
+})

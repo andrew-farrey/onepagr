@@ -272,6 +272,19 @@ check_template_data <- function(spec, data) {
     }
   }
 
+  # doc_lang reaches Typst's `lang`, which takes only a two- or three-letter
+  # language code. Typst's own error names a generated file, so stop here.
+  if ("doc_lang" %in% tokens$token && !value_missing(data, "doc_lang")) {
+    lang <- trimws(as.character(data[["doc_lang"]][1]))
+    if (!grepl("^[A-Za-z]{2,3}$", lang)) {
+      stop(
+        'Token "doc_lang" must be a two- or three-letter language code such ',
+        'as "en" or "es", not "', lang, '". For "en-US", use "en".',
+        call. = FALSE
+      )
+    }
+  }
+
   blank <- needed[vapply(needed, function(tok) {
     value <- data[[tok]]
     is.character(value) && !nzchar(trimws(value[1]))
