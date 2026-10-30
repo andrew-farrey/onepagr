@@ -349,6 +349,11 @@ without it.
 - [PAC](https://pac.pdf-accessibility.org/en), the PDF Accessibility
   Checker from the Access for All foundation, is what the accessibility
   claims above were checked against.
+- [veraPDF](https://verapdf.org/), the open-source PDF/UA checker from the
+  veraPDF Consortium, runs the PDF/UA-1 profile over every rendered
+  template, and [`pdfa11y`](https://github.com/speedata/pdfa11y), an
+  open-source command-line PDF/UA checker from speedata, gives a second
+  rule engine over the same files.
 - The `default` theme's palette is built on the color variables from
   [Bootstrap](https://getbootstrap.com) 5.3.
 
