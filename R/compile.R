@@ -154,7 +154,7 @@ template_data <- function(
     if (length(missing) > 0) {
       stop(
         "example_data(\"", template, "\") is missing a value for: ",
-        paste(missing, collapse = ", "), ". This is a package bug --",
+        toString(missing), ". This is a package bug --",
         " please report it.",
         call. = FALSE
       )
@@ -187,10 +187,10 @@ template_data <- function(
 #' across templates. When a name is close to one of this template's own
 #' tokens, the warning suggests it.
 #'
-#' @param path Character. Path to a .typ file.
-#' @param data Named list of whisker substitution values.
+#' @param path Character. Path to the template whose tokens are compared against `data`.
+#' @param data Named list of the values the caller supplied.
 #' @return Invisibly, the ignored names.
-#' @keywords internal
+#' @noRd
 warn_unknown_tokens <- function(path, data) {
   own <- template_tokens(path)$token
   # A name that one of this template's values refers to as {{{name}}}, directly
@@ -234,9 +234,9 @@ warn_unknown_tokens <- function(path, data) {
 #' error. The default may be empty (`// optional-token: name =`), for a
 #' token that should be present but blank unless the caller sets it.
 #'
-#' @param path Character. Path to a .typ file.
+#' @param path Character. Path to a template that may have `// optional-token:` lines.
 #' @return Named list of default values (empty if none are declared).
-#' @keywords internal
+#' @noRd
 extract_token_defaults <- function(path) {
   template_spec(path)$defaults
 }
@@ -253,10 +253,10 @@ extract_token_defaults <- function(path) {
 #' caller supplies is used as given, except that a `{{{token}}}` in it is
 #' filled from `data` (followed through any further references).
 #'
-#' @param path Character. Path to a .typ file.
-#' @param data Named list of whisker substitution values.
+#' @param path Character. Path to the template whose omitted optional tokens get filled.
+#' @param data Named list of values, possibly missing optional tokens.
 #' @return `data` with the omitted optional tokens filled in.
-#' @keywords internal
+#' @noRd
 fill_token_defaults <- function(path, data) {
   defaults <- extract_token_defaults(path)
   pending <- names(defaults)[vapply(
@@ -271,7 +271,7 @@ fill_token_defaults <- function(path, data) {
     if (length(ready) == 0) {
       stop(
         "The defaults of these optional tokens refer to each other in a loop: ",
-        paste(pending, collapse = ", "), ".",
+        toString(pending), ".",
         call. = FALSE
       )
     }
@@ -296,7 +296,7 @@ fill_token_defaults <- function(path, data) {
 #' stays literal text. A name with no value becomes blank.
 #'
 #' @param value Character. One string.
-#' @param data Named list of values.
+#' @param data Named list of values the references are looked up in.
 #' @return Character, the string with its references filled.
 #' @noRd
 resolve_token_refs <- function(value, data) {
@@ -342,7 +342,7 @@ resolve_value_references <- function(data) {
   }
   stop(
     "These values refer to each other in a loop: ",
-    paste(referring, collapse = ", "), ".",
+    toString(referring), ".",
     call. = FALSE
   )
 }
@@ -352,9 +352,9 @@ resolve_value_references <- function(data) {
 #' Internal. A template declares the page count it is designed to fill with a
 #' `//` comment line, `// designed-pages: 2`.
 #'
-#' @param path Character. Path to a .typ file.
+#' @param path Character. Path to a template that may declare `// designed-pages:`.
 #' @return Integer page count, or `NA_integer_` if the template declares none.
-#' @keywords internal
+#' @noRd
 extract_designed_pages <- function(path) {
   template_spec(path)$designed_pages
 }
@@ -369,7 +369,7 @@ extract_designed_pages <- function(path) {
 #' unless the template declares `// allow-empty: token`, and a bar-chart
 #' `*_width` token must be a plain number from 0 to 100.
 #'
-#' @param path Character. Path to a .typ file.
+#' @inheritParams extract_required_tokens
 #' @param data Named list of whisker substitution values.
 #' @return Invisibly `TRUE` if validation passes.
 #' @examples
@@ -386,7 +386,7 @@ validate_template_data <- function(path, data) {
 #' Internal. Only the part of the line from its `//` on changes; `{{{name}}}`
 #' there becomes `<name>`.
 #'
-#' @param line Character. One line of Typst source.
+#' @param line Character. One template line that may end in a comment.
 #' @return Character, the line.
 #' @noRd
 neutralize_comment_tokens <- function(line) {
@@ -405,8 +405,8 @@ neutralize_comment_tokens <- function(line) {
 #'
 #' Internal. Writes `<name>_rendered.typ` beside `path`.
 #'
-#' @param path Character. Path to a .typ file.
-#' @param data Named list of whisker substitution values.
+#' @param path Character. Path to the template `.typ` file to render.
+#' @param data Named list of values, optional defaults already filled in.
 #' @return Character, the path of the rendered `.typ` file.
 #' @noRd
 write_rendered_typ <- function(path, data) {

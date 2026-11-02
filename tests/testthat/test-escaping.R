@@ -139,6 +139,6 @@ test_that("escaped shorthands and line-start markers render literally", {
   out <- tempfile(fileext = ".pdf")
   on.exit(unlink(out), add = TRUE)
   compile_typst(path, data, out)
-  text <- trimws(strsplit(pdftools::pdf_text(out), "\n")[[1]])
+  text <- trimws(strsplit(pdftools::pdf_text(out), "\n", fixed = TRUE)[[1]])
   expect_identical(text[nzchar(text)], cases)
 })

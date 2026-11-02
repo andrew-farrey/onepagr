@@ -128,8 +128,8 @@ test_that("county_choropleth declares footer sizing tokens with neutral defaults
   }
   defaults <- extract_token_defaults(resolve_template("county_choropleth"))
   heights <- defaults[c("logo_a_height", "logo_height", "logo_b_height")]
-  expect_equal(unname(unlist(heights)), rep("32", 3))
-  expect_equal(unname(unlist(defaults[c("logo_a_dy", "logo_dy", "logo_b_dy")])), rep("0", 3))
+  expect_identical(unname(unlist(heights)), rep("32", 3))
+  expect_identical(unname(unlist(defaults[c("logo_a_dy", "logo_dy", "logo_b_dy")])), rep("0", 3))
 })
 
 test_that("Typst sources avoid constructs win-builder's Typst rejects", {
@@ -194,12 +194,13 @@ test_that("apply-scales, fs, and sp adjust text size and spacing", {
   base <- measure(list())
   # 40pt vs 80pt text: the small word is half the height of the large one.
   expect_equal(base[["small"]] / base[["large"]], 0.5, tolerance = 0.06)
-  expect_equal(base[["x"]], 46)
+  # Typst can hand back a whole number as an integer or a double, so compare by value.
+  expect_equal(base[["x"]], 46)  # nolint: expect_identical_linter
 
   # A 60pt floor lifts the 40pt word to 60pt and leaves the 80pt word alone.
   lifted <- measure(list(min_font_size = "60"))
   expect_equal(lifted[["small"]] / lifted[["large"]], 60 / 80, tolerance = 0.06)
-  expect_equal(lifted[["large"]], base[["large"]])
+  expect_identical(lifted[["large"]], base[["large"]])
 
   # font_scale 2 doubles both.
   doubled <- measure(list(font_scale = "2"))
@@ -208,10 +209,11 @@ test_that("apply-scales, fs, and sp adjust text size and spacing", {
 
   # The floor applies after the scale: scaled 40pt is 80pt, above a 60pt floor.
   both <- measure(list(min_font_size = "60", font_scale = "2"))
-  expect_equal(both[["small"]], doubled[["small"]])
+  expect_identical(both[["small"]], doubled[["small"]])
 
   # space_scale moves the inset by exactly the extra 10pt.
-  expect_equal(measure(list(space_scale = "2"))[["x"]], 56)
+  # Typst can hand back a whole number as an integer or a double, so compare by value.
+  expect_equal(measure(list(space_scale = "2"))[["x"]], 56)  # nolint: expect_identical_linter
 
   expect_error(measure(list(font_scale = "0")), "font_scale must be a positive number")
   expect_error(measure(list(space_scale = "-1")), "space_scale must be a positive number")
@@ -342,23 +344,27 @@ test_that("fd and the adjusted theme keys follow the scales", {
 
   base <- measure(list())
   # 36pt page margin plus the 100pt box; space-md is 4pt, so 36 + 4.
-  expect_equal(base[["second_x"]], 136)
-  expect_equal(base[["spaced_x"]], 40)
+  # Typst can hand back a whole number as an integer or a double, so compare by value.
+  expect_equal(base[["second_x"]], 136)  # nolint: expect_identical_linter
+  expect_equal(base[["spaced_x"]], 40)  # nolint: expect_identical_linter
 
   # font_scale 3: fd grows the box by the scale (100 -> 300pt).
   scaled <- measure(list(font_scale = "3"))
-  expect_equal(scaled[["second_x"]], 36 + 300)
+  # Typst can hand back a whole number as an integer or a double, so compare by value.
+  expect_equal(scaled[["second_x"]], 36 + 300)  # nolint: expect_identical_linter
   # body-size is scaled too: 10pt -> 30pt, so the text is about 3x taller.
   expect_equal(scaled[["body_h"]] / base[["body_h"]], 3, tolerance = 0.1)
 
   # A 14pt floor implies ratio 14 / 7 = 2 for text-adjacent dimensions, and
   # lifts body-size from 10pt to 14pt.
   floored <- measure(list(min_font_size = "14"))
-  expect_equal(floored[["second_x"]], 36 + 200)
+  # Typst can hand back a whole number as an integer or a double, so compare by value.
+  expect_equal(floored[["second_x"]], 36 + 200)  # nolint: expect_identical_linter
   expect_equal(floored[["body_h"]] / base[["body_h"]], 1.4, tolerance = 0.1)
 
   # space-md is pre-multiplied by space_scale: 4pt -> 8pt.
-  expect_equal(measure(list(space_scale = "2"))[["spaced_x"]], 44)
+  # Typst can hand back a whole number as an integer or a double, so compare by value.
+  expect_equal(measure(list(space_scale = "2"))[["spaced_x"]], 44)  # nolint: expect_identical_linter
 })
 
 test_that("scale values are validated after resolution, including the theme's own", {

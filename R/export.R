@@ -13,7 +13,7 @@
 #' auto-regenerates over it. Compile an exported template directly with
 #' [compile_typst()].
 #'
-#' @param template Character. A built-in template name (see [list_templates()]).
+#' @inheritParams example_data
 #' @param dest Character. Directory to copy the template into. Created
 #'   recursively if it doesn't exist.
 #' @param theme Character. A built-in theme name, or a path to a custom

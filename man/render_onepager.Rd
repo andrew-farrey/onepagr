@@ -38,7 +38,8 @@ paragraphs, bar labels and alt text are tokens (\verb{heading_*}, \verb{text_*},
 \code{\link[=template_tokens]{template_tokens()}} lists what a template takes, with the defaults
 (see \code{vignette("theming")}, Part 5).}
 
-\item{template}{Character. A built-in template name (see \code{\link[=list_templates]{list_templates()}}).}
+\item{template}{Character. A built-in template name (see
+\code{\link[=list_templates]{list_templates()}}).}
 
 \item{theme}{Character. A built-in theme name, or a path to a custom
 theme .typ file (see \code{\link[=resolve_theme]{resolve_theme()}}). Default \code{"default"}.}

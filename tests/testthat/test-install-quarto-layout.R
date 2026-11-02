@@ -68,9 +68,8 @@ test_that("an archive without bin/quarto is reported clearly", {
 
 test_that("set_quarto_path persists an absolute path, not a relative one", {
   old_env <- Sys.getenv("QUARTO_PATH", unset = NA)
-  old_wd <- setwd(tempdir())
+  withr::local_dir(tempdir())
   on.exit({
-    setwd(old_wd)
     if (is.na(old_env)) Sys.unsetenv("QUARTO_PATH") else Sys.setenv(QUARTO_PATH = old_env)
   })
   file.create("quarto")

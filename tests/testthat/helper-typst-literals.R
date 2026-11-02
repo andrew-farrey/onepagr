@@ -13,7 +13,7 @@ bare_scaled_literals <- function(lines) {
     "narrative-callout-gap", "columns"
   )
   value_after <- function(line, start) {
-    chars <- strsplit(substring(line, start), "")[[1]]
+    chars <- strsplit(substring(line, start), "", fixed = TRUE)[[1]]
     depth <- 0
     for (i in seq_along(chars)) {
       ch <- chars[[i]]

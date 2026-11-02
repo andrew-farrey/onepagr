@@ -7,7 +7,7 @@
 #' digits than that is rejected, so the analyst chooses the precision with
 #' [fmt_n()] or [fmt_pct()] instead of getting 15 digits by accident.
 #'
-#' @param data Named list of values.
+#' @param data Named list of values as the caller supplied them.
 #' @return The list with every value a length-one string (or `NA`/`NULL`,
 #'   which are left for the missing-value checks).
 #' @noRd
@@ -138,7 +138,7 @@ brackets_balanced <- function(x) {
   # square brackets nest and close.
   x <- gsub("\\\\.", "", x, perl = TRUE)
   x <- gsub("\"[^\"]*\"", "", x, perl = TRUE)
-  brackets <- strsplit(x, "")[[1]]
+  brackets <- strsplit(x, "", fixed = TRUE)[[1]]
   brackets <- brackets[brackets %in% c("[", "]")]
   depth <- 0L
   for (b in brackets) {
@@ -157,8 +157,8 @@ brackets_balanced <- function(x) {
 #' fails with an error about a generated file the user never wrote. Tokens
 #' that sit only inside a quoted string are exempt: a bracket is text there.
 #'
-#' @param spec A `template_spec()`.
-#' @param data Named list of values.
+#' @param spec A `template_spec()` of the template being rendered.
+#' @param data Named list of values, optional defaults filled in.
 #' @return `invisible(TRUE)`.
 #' @noRd
 check_bracket_balance <- function(spec, data) {
@@ -249,7 +249,7 @@ check_template_data <- function(spec, data) {
   if (length(missing) > 0) {
     stop(
       "Missing or NA required token(s) for ", template_label(spec$path), ": ",
-      paste(missing, collapse = ", "),
+      toString(missing),
       call. = FALSE
     )
   }
@@ -292,7 +292,7 @@ check_template_data <- function(spec, data) {
   blank <- setdiff(blank, spec$allow_empty)
   if (length(blank) > 0) {
     warning(
-      "Blank value for required token(s): ", paste(blank, collapse = ", "),
+      "Blank value for required token(s): ", toString(blank),
       '. If blank is intended, declare "// allow-empty: ', blank[1],
       '" in the template.',
       call. = FALSE

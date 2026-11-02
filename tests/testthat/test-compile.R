@@ -2,21 +2,21 @@ test_that("extract_required_tokens finds triple-brace tokens in order", {
   tmp <- tempfile(fileext = ".typ")
   writeLines(c("#text[{{{doc_title}}}]", "#text[{{{n_decedents}}} cases]"), tmp)
   on.exit(unlink(tmp))
-  expect_equal(extract_required_tokens(tmp), c("doc_title", "n_decedents"))
+  expect_identical(extract_required_tokens(tmp), c("doc_title", "n_decedents"))
 })
 
 test_that("extract_required_tokens ignores double-brace tokens", {
   tmp <- tempfile(fileext = ".typ")
   writeLines("#text[{{not_required}}] {{{is_required}}}", tmp)
   on.exit(unlink(tmp))
-  expect_equal(extract_required_tokens(tmp), "is_required")
+  expect_identical(extract_required_tokens(tmp), "is_required")
 })
 
 test_that("extract_required_tokens deduplicates repeated tokens", {
   tmp <- tempfile(fileext = ".typ")
   writeLines("{{{n_decedents}}} ... {{{n_decedents}}} again", tmp)
   on.exit(unlink(tmp))
-  expect_equal(extract_required_tokens(tmp), "n_decedents")
+  expect_identical(extract_required_tokens(tmp), "n_decedents")
 })
 
 test_that("extract_required_tokens ignores an example inside a // comment", {
@@ -29,7 +29,7 @@ test_that("extract_required_tokens ignores an example inside a // comment", {
     tmp
   )
   on.exit(unlink(tmp))
-  expect_equal(extract_required_tokens(tmp), "real_token")
+  expect_identical(extract_required_tokens(tmp), "real_token")
 })
 
 test_that("validate_template_data passes when all tokens present/non-NA", {
@@ -75,7 +75,7 @@ test_that("compile_typst produces a PDF end-to-end", {
   out_pdf <- file.path(tmp_dir, "out.pdf")
   result <- compile_typst(typ_path, list(greeting = "Hello"), out_pdf)
   expect_true(file.exists(out_pdf))
-  expect_equal(result, out_pdf)
+  expect_identical(result, out_pdf)
 })
 
 test_that("compile_typst validates before attempting to compile", {
@@ -149,7 +149,7 @@ test_that("compile_typst compiles successfully with a font_dir supplied", {
     typ_path, list(greeting = "Hello"), out_pdf, font_dir = font_dir
   )
   expect_true(file.exists(out_pdf))
-  expect_equal(result, out_pdf)
+  expect_identical(result, out_pdf)
 })
 
 test_that("extract_token_defaults reads optional-token markers only", {
@@ -165,7 +165,7 @@ test_that("extract_token_defaults reads optional-token markers only", {
     tmp
   )
   on.exit(unlink(tmp))
-  expect_equal(
+  expect_identical(
     extract_token_defaults(tmp),
     list(logo_height = "32", logo_dy = "-4", blank = "")
   )
@@ -185,7 +185,7 @@ test_that("extract_required_tokens leaves out tokens with a declared default", {
     tmp
   )
   on.exit(unlink(tmp))
-  expect_equal(extract_required_tokens(tmp), "doc_title")
+  expect_identical(extract_required_tokens(tmp), "doc_title")
   expect_true(validate_template_data(tmp, list(doc_title = "x")))
 })
 
@@ -201,11 +201,11 @@ test_that("template_tokens lists required tokens first, then defaults", {
   )
   on.exit(unlink(tmp))
   out <- template_tokens(tmp)
-  expect_equal(names(out), c("token", "required", "default", "needed_by"))
-  expect_equal(out$token, c("doc_title", "n_total", "heading_x", "blank"))
-  expect_equal(out$required, c(TRUE, FALSE, FALSE, FALSE))
-  expect_equal(out$needed_by, c(NA, "heading_x", NA, NA))
-  expect_equal(
+  expect_named(out, c("token", "required", "default", "needed_by"))
+  expect_identical(out$token, c("doc_title", "n_total", "heading_x", "blank"))
+  expect_identical(out$required, c(TRUE, FALSE, FALSE, FALSE))
+  expect_identical(out$needed_by, c(NA, "heading_x", NA, NA))
+  expect_identical(
     out$default, c(NA, NA, "Results (N = {{{n_total}}})", "")
   )
 })
@@ -213,7 +213,7 @@ test_that("template_tokens lists required tokens first, then defaults", {
 test_that("template_tokens accepts a built-in template name", {
   out <- template_tokens("cohort_summary")
   expect_true(all(c("doc_title", "heading_glance") %in% out$token))
-  expect_equal(out$default[out$token == "heading_disclaimer"], "DISCLAIMER")
+  expect_identical(out$default[out$token == "heading_disclaimer"], "DISCLAIMER")
   expect_false(anyDuplicated(out$token) > 0)
   expect_error(template_tokens("no_such_template"), "not a built-in template")
 })
@@ -282,7 +282,7 @@ test_that("extract_required_tokens leaves out tokens only a default refers to", 
     tmp
   )
   on.exit(unlink(tmp))
-  expect_equal(extract_required_tokens(tmp), "doc_title")
+  expect_identical(extract_required_tokens(tmp), "doc_title")
   # n_total is still checked while heading_x keeps its default.
   expect_error(validate_template_data(tmp, list(doc_title = "x")), "n_total")
 })
@@ -299,12 +299,12 @@ test_that("fill_token_defaults renders a default against the data", {
   )
   on.exit(unlink(tmp))
   out <- fill_token_defaults(tmp, list(n_total = "12", heading_y = "Mine"))
-  expect_equal(out$heading_x, "Results (N = 12) & more")
-  expect_equal(out$heading_y, "Mine")
+  expect_identical(out$heading_x, "Results (N = 12) & more")
+  expect_identical(out$heading_y, "Mine")
   # A supplied value that refers to a token is resolved too, so literal
   # {{{token}}} markup never reaches the PDF.
   out <- fill_token_defaults(tmp, list(n_total = "12", heading_x = "{{{n_total}}}"))
-  expect_equal(out$heading_x, "12")
+  expect_identical(out$heading_x, "12")
 })
 
 test_that("compile_typst fills an omitted optional token from its default", {
@@ -444,7 +444,7 @@ test_that("fill_token_defaults resolves token references in a supplied value", {
   out <- fill_token_defaults(
     tmp, list(n_total = "12", heading_x = "N is {{{n_total}}}")
   )
-  expect_equal(out$heading_x, "N is 12")
+  expect_identical(out$heading_x, "N is 12")
 })
 
 test_that("optional defaults merged over example data leave no braces", {

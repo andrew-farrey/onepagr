@@ -9,7 +9,7 @@ test_that("resolve_theme falls back to a path when the name isn't built-in", {
   writeLines("#let theme = (brand-blue: rgb(\"#000000\"))", tmp)
   on.exit(unlink(tmp))
   path <- resolve_theme(tmp)
-  expect_equal(normalizePath(path), normalizePath(tmp))
+  expect_identical(normalizePath(path), normalizePath(tmp))
 })
 
 test_that("resolve_theme errors when no registry name or file matches", {
@@ -28,7 +28,7 @@ test_that("theme_path overrides theme entirely", {
   writeLines("#let theme = (brand-blue: rgb(\"#000000\"))", tmp)
   on.exit(unlink(tmp))
   path <- resolve_theme("uk", theme_path = tmp)
-  expect_equal(normalizePath(path), normalizePath(tmp))
+  expect_identical(normalizePath(path), normalizePath(tmp))
 })
 
 test_that("list_themes returns the built-in theme names", {
@@ -69,8 +69,8 @@ test_that("check_theme passes both built-in themes against their own schema", {
     expect_null(result$error)
     expect_length(result$missing, 0)
     expect_length(result$missing_grad, 0)
-    expect_equal(nrow(result$type_mismatches), 0)
-    expect_equal(nrow(result$type_mismatches_grad), 0)
+    expect_identical(nrow(result$type_mismatches), 0L)
+    expect_identical(nrow(result$type_mismatches_grad), 0L)
   }
 })
 
@@ -108,16 +108,16 @@ test_that("check_theme reports wrong-type values instead of erroring", {
   mismatch_for <- function(key) {
     result$type_mismatches[result$type_mismatches$key == key, ]
   }
-  expect_equal(mismatch_for("brand-blue")$expected, "color")
-  expect_equal(mismatch_for("brand-blue")$actual, "str")
-  expect_equal(mismatch_for("body-font")$expected, "str|array")
-  expect_equal(mismatch_for("body-font")$actual, "length")
-  expect_equal(mismatch_for("radius-card")$expected, "dictionary")
-  expect_equal(mismatch_for("radius-card")$actual, "length")
+  expect_identical(mismatch_for("brand-blue")$expected, "color")
+  expect_identical(mismatch_for("brand-blue")$actual, "str")
+  expect_identical(mismatch_for("body-font")$expected, "str|array")
+  expect_identical(mismatch_for("body-font")$actual, "length")
+  expect_identical(mismatch_for("radius-card")$expected, "dictionary")
+  expect_identical(mismatch_for("radius-card")$actual, "length")
   # radius-card wasn't a real dictionary, so its sub-keys are never
   # separately reported as missing/mismatched; already covered above.
   expect_length(result$radius_card_missing, 0)
-  expect_equal(nrow(result$radius_card_type_mismatches), 0)
+  expect_identical(nrow(result$radius_card_type_mismatches), 0L)
 })
 
 test_that("check_theme surfaces the raw Typst error when eval fails", {
@@ -170,14 +170,14 @@ test_that("check_theme reports theme-grad and radius-card sub-key problems", {
   expect_false(result$ok)
   expect_null(result$error)
 
-  expect_equal(result$type_mismatches_grad$key, "card-bg-grad")
-  expect_equal(result$type_mismatches_grad$expected, "gradient")
-  expect_equal(result$type_mismatches_grad$actual, "str")
+  expect_identical(result$type_mismatches_grad$key, "card-bg-grad")
+  expect_identical(result$type_mismatches_grad$expected, "gradient")
+  expect_identical(result$type_mismatches_grad$actual, "str")
 
-  expect_equal(result$radius_card_missing, "bottom-right")
-  expect_equal(result$radius_card_type_mismatches$key, "top-right")
-  expect_equal(result$radius_card_type_mismatches$expected, "length")
-  expect_equal(result$radius_card_type_mismatches$actual, "color")
+  expect_identical(result$radius_card_missing, "bottom-right")
+  expect_identical(result$radius_card_type_mismatches$key, "top-right")
+  expect_identical(result$radius_card_type_mismatches$expected, "length")
+  expect_identical(result$radius_card_type_mismatches$actual, "color")
 })
 
 test_that("check_theme accepts a font fallback list for body-font", {
@@ -195,7 +195,7 @@ test_that("check_theme accepts a font fallback list for body-font", {
 
   result <- suppressMessages(check_theme(theme_path = tmp))
   expect_true(result$ok)
-  expect_equal(nrow(result$type_mismatches), 0)
+  expect_identical(nrow(result$type_mismatches), 0L)
 })
 
 test_that("check_theme flags an extra key as unknown without failing ok", {
@@ -269,7 +269,7 @@ test_that("check_theme accepts an integer scale factor", {
 
   result <- suppressMessages(check_theme(theme_path = tmp))
   expect_true(result$ok)
-  expect_equal(nrow(result$type_mismatches), 0)
+  expect_identical(nrow(result$type_mismatches), 0L)
 })
 
 default_theme_lines <- function() readLines(resolve_theme("default"), warn = FALSE)
@@ -325,7 +325,7 @@ test_that("an optional theme key of the wrong type is reported", {
   on.exit(unlink(path))
   result <- suppressMessages(check_theme(theme_path = path))
   expect_false(result$ok)
-  expect_equal(result$type_mismatches$key, "callout-text")
+  expect_identical(result$type_mismatches$key, "callout-text")
 })
 
 test_that("a theme without callout-text still renders a callout", {
