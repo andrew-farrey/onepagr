@@ -35,7 +35,7 @@ test_that("county_choropleth stays at exactly 2 pages", {
     output = out_pdf, keep_typst = FALSE,
     extra_assets = maps
   )
-  expect_equal(pdftools::pdf_info(out_pdf)$pages, 2)
+  expect_identical(pdftools::pdf_info(out_pdf)$pages, 2L)
 })
 
 test_that("county_choropleth stays at 2 pages with an unusual aspect ratio", {
@@ -68,7 +68,7 @@ test_that("county_choropleth stays at 2 pages with an unusual aspect ratio", {
     output = out_pdf, keep_typst = FALSE,
     extra_assets = tall_maps
   )
-  expect_equal(pdftools::pdf_info(out_pdf)$pages, 2)
+  expect_identical(pdftools::pdf_info(out_pdf)$pages, 2L)
 })
 
 test_that("county_choropleth errors clearly on a missing extra_assets file", {
@@ -110,7 +110,7 @@ test_that("county_choropleth footer sizing defaults, explicit values, and overri
   }
 
   omitted <- render_with("omitted")
-  expect_equal(pdftools::pdf_info(omitted$pdf)$pages, 2)
+  expect_identical(pdftools::pdf_info(omitted$pdf)$pages, 2L)
   expect_match(omitted$typ, "logo-a-height: float(\"32\") * 1pt", fixed = TRUE)
   expect_match(omitted$typ, "logo-b-dy: float(\"0\") * 1pt", fixed = TRUE)
 
@@ -124,7 +124,7 @@ test_that("county_choropleth footer sizing defaults, explicit values, and overri
     logo_a_height = 28, logo_height = 20, logo_b_height = 36,
     logo_b_dy = -3
   ))
-  expect_equal(pdftools::pdf_info(overridden$pdf)$pages, 2)
+  expect_identical(pdftools::pdf_info(overridden$pdf)$pages, 2L)
   expect_match(overridden$typ, "logo-height: float(\"20\") * 1pt", fixed = TRUE)
   expect_match(overridden$typ, "logo-b-dy: float(\"-3\") * 1pt", fixed = TRUE)
   expect_false(identical(omitted$page1, overridden$page1))

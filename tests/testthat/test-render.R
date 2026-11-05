@@ -135,7 +135,7 @@ test_that("the three fixed templates declare 2 designed pages, the alerts none",
     function(t) extract_designed_pages(resolve_template(t)),
     integer(1)
   )
-  expect_equal(
+  expect_identical(
     designed[c("cohort_summary", "trend_snapshot", "county_choropleth")],
     c(cohort_summary = 2L, trend_snapshot = 2L, county_choropleth = 2L)
   )

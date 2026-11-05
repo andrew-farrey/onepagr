@@ -49,10 +49,11 @@ above (`default`, `uk`, `kdph`, left to right):
 
 ```{r theme-comparison, echo = FALSE, fig.show = "hold", out.width = "32%", fig.alt = c("trend_snapshot rendered with the default, brand-neutral theme.", "The same trend_snapshot report rendered with the uk theme instead, showing only colors and typography changed.", "The same trend_snapshot report rendered with the kdph theme: navy header, indigo bars, and Calibri type.")}
 themes <- c("default", "uk", "kdph")
-source_png <- file.path(
-  system.file("help", "figures", package = "onepagr"),
-  paste0("example-trend-snapshot-theme-", themes, ".png")
+source_png <- system.file(
+  "help", "figures", paste0("example-trend-snapshot-theme-", themes, ".png"),
+  package = "onepagr"
 )
+stopifnot(length(source_png) == length(themes))
 # Copied under knitr's figure path: the installed library path does not exist
 # where the published site is served, so the page would show broken images.
 # fig_path() is called once per theme: older knitr does not vectorise it.

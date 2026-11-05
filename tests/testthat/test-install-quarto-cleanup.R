@@ -122,7 +122,7 @@ test_that("quarto_paths_in_use reads QUARTO_PATH and ~/.Renviron", {
   found <- quarto_paths_in_use(renviron_files = renviron)
   expect_true("C:/session/quarto-1.7.32/bin/quarto" %in% found)
   expect_true("C:/Users/x/quarto-1.9.1/bin/quarto" %in% found)
-  expect_false(any(grepl("old", found)))
+  expect_false(any(grepl("old", found, fixed = TRUE)))
 })
 
 test_that("quarto_paths_in_use reads every .Renviron it is given", {
@@ -180,14 +180,14 @@ test_that("the download prompt never fires outside an interactive session", {
 })
 
 test_that("an interactive session is asked, and only a yes goes ahead", {
-  asked <- NULL
+  seen <- new.env()
   yes <- function(msg, ...) {
-    asked <<- msg
+    seen$asked <- msg
     TRUE
   }
   expect_true(confirm_quarto_download("1.10.18", "dir", TRUE, yes))
-  expect_match(asked, "1.10.18", fixed = TRUE)
-  expect_match(asked, "MB", fixed = TRUE)
+  expect_match(seen$asked, "1.10.18", fixed = TRUE)
+  expect_match(seen$asked, "MB", fixed = TRUE)
   expect_false(confirm_quarto_download("1.10.18", "dir", TRUE, function(...) FALSE))
   expect_false(confirm_quarto_download("1.10.18", "dir", TRUE, function(...) NA))
 })
@@ -233,14 +233,14 @@ test_that("install_quarto removes the older copies it installed", {
 })
 
 test_that("install_quarto keeps an older copy that is still in use", {
-  dir <- make_install_dir(c("quarto-1.9.1"))
+  dir <- make_install_dir("quarto-1.9.1")
   in_use <- file.path(dir, "quarto-1.9.1", "bin", "quarto")
   run_install_into(dir, in_use = in_use)
   expect_setequal(contents(dir), c("quarto-1.9.1", "quarto-9.9.9"))
 })
 
 test_that("a declined prompt downloads nothing and changes nothing", {
-  dir <- make_install_dir(c("quarto-1.9.1"))
+  dir <- make_install_dir("quarto-1.9.1")
   res <- run_install_into(dir, confirm = FALSE)
   expect_false(res$downloaded)
   expect_null(res$result)

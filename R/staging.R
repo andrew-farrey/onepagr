@@ -11,7 +11,7 @@ copy_or_stop <- function(from, to, ...) {
   ok <- suppressWarnings(file.copy(from, to, ...))
   if (!all(ok)) {
     stop(
-      "Could not copy ", paste(basename(from)[!ok], collapse = ", "),
+      "Could not copy ", toString(basename(from)[!ok]),
       " into ", to, ". Check that the folder is writable and the disk is ",
       "not full.",
       call. = FALSE
@@ -57,7 +57,8 @@ stage_template_files <- function(template_path, theme_src, dest) {
 #' by file name and would silently replace it.
 #'
 #' @param extra_assets Character vector of file paths.
-#' @param template_path Character. Path to the template's `template.typ`.
+#' @param template_path Character. Path to the template's `template.typ`; its folder names the
+#'   files an extra asset must not replace.
 #' @return `invisible(extra_assets)`.
 #' @noRd
 check_extra_assets <- function(extra_assets, template_path) {
@@ -67,7 +68,7 @@ check_extra_assets <- function(extra_assets, template_path) {
   missing <- extra_assets[!file.exists(extra_assets)]
   if (length(missing) > 0) {
     stop(
-      "extra_assets file(s) not found: ", paste(missing, collapse = ", "),
+      "extra_assets file(s) not found: ", toString(missing),
       call. = FALSE
     )
   }
@@ -77,7 +78,7 @@ check_extra_assets <- function(extra_assets, template_path) {
   if (length(clash) > 0) {
     stop(
       "extra_assets file name(s) would replace a package file: ",
-      paste(clash, collapse = ", "), ". Rename the file(s).",
+      toString(clash), ". Rename the file(s).",
       call. = FALSE
     )
   }
@@ -85,7 +86,7 @@ check_extra_assets <- function(extra_assets, template_path) {
   if (length(duplicated_names) > 0) {
     stop(
       "Two or more extra_assets share the file name ",
-      paste(duplicated_names, collapse = ", "), ". Rename one of them.",
+      toString(duplicated_names), ". Rename one of them.",
       call. = FALSE
     )
   }

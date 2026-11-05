@@ -361,7 +361,7 @@ test_that("every text token rewords its text, in every template", {
     # real headings -- see CLAUDE.md). All whitespace is stripped from
     # both sides before matching, which defeats that stray spacing
     # regardless of whether it lands between letters or between words.
-    marker <- function(tok) paste0("Zz", gsub("_", "", tok))
+    marker <- function(tok) paste0("Zz", gsub("_", "", tok, fixed = TRUE))
     normalize_space <- function(x) gsub("\\s+", "", x)
     extra <- stats::setNames(lapply(tokens, marker), tokens)
     # syndromic_alert's cluster box is off in the fixture; switch it on so

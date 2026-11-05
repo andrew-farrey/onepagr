@@ -34,7 +34,7 @@ resolve_theme <- function(theme = "default", theme_path = NULL) {
     stop(
       "theme \"", theme, "\" is not a built-in theme and no file exists ",
       "at that path. Built-in themes: ",
-      paste(list_themes(), collapse = ", "),
+      toString(list_themes()),
       call. = FALSE
     )
   }
@@ -68,7 +68,7 @@ resolve_template <- function(template) {
   if (!nzchar(path)) {
     stop(
       "template \"", template, "\" is not a built-in template. ",
-      "Built-in templates: ", paste(list_templates(), collapse = ", "),
+      "Built-in templates: ", toString(list_templates()),
       call. = FALSE
     )
   }
@@ -103,7 +103,7 @@ list_templates <- function() {
 #'   `"str|array"` to allow a font fallback list), `optional_theme` (same
 #'   shape, keys that may be present), `theme_grad` (same shape), and
 #'   `radius_card` (the nested dictionary `theme$radius-card` must contain).
-#' @keywords internal
+#' @noRd
 onepagr_theme_schema <- function() {
   list(
     theme = c(
@@ -191,7 +191,7 @@ theme_eval_expr <- function(fname) {
 #'   character matrix of key/type pairs, or `NULL`), `theme_grad` (same
 #'   shape), and `radius_card` (same shape, or `NULL` if
 #'   `theme$radius-card` isn't a dictionary or `radius-card` is missing).
-#' @keywords internal
+#' @noRd
 introspect_theme_typ <- function(path) {
   quarto_bin <- quarto_bin_or_stop()
   if (!typst_eval_supported(quarto_bin)) {
@@ -244,7 +244,7 @@ introspect_theme_typ <- function(path) {
 #'
 #' @param m 2-column character matrix (key, type), or `NULL`/`list()`.
 #' @return Named character vector, type by key.
-#' @keywords internal
+#' @noRd
 theme_type_vector <- function(m) {
   if (is.null(m) || !is.matrix(m)) {
     return(character(0))
@@ -260,13 +260,13 @@ theme_type_vector <- function(m) {
 #' nested `radius-card` dictionary alike.
 #'
 #' @param actual_matrix 2-column character matrix from
-#'   [introspect_theme_typ()] (key, type), or `NULL`/`list()`.
+#'   `introspect_theme_typ()` (key, type), or `NULL`/`list()`.
 #' @param expected_types Named character vector, expected Typst type name
-#'   by key (from [onepagr_theme_schema()]).
+#'   by key (from `onepagr_theme_schema()`).
 #' @return A list with `missing` (character vector), `mismatches` (data
 #'   frame: `key`, `expected`, `actual`), and `unknown` (character vector
 #'   of keys present but outside `expected_types`).
-#' @keywords internal
+#' @noRd
 check_theme_dict <- function(actual_matrix, expected_types,
                              optional_types = character(0)) {
   actual_types <- theme_type_vector(actual_matrix)
@@ -360,7 +360,7 @@ describe_type_mismatches <- function(df) {
 #' @noRd
 theme_problems <- function(result) {
   keys <- function(label, x) {
-    if (length(x) > 0) paste0(label, "(s): ", paste(x, collapse = ", "))
+    if (length(x) > 0) paste0(label, "(s): ", toString(x))
   }
   wrong <- function(label, df) {
     if (nrow(df) > 0) {
@@ -385,9 +385,9 @@ theme_problems <- function(result) {
 #' evaluated to a dictionary; otherwise nothing is reported for it here
 #' (a missing `radius-card` key is already reported by the `theme` check).
 #'
-#' @param radius_card Key/type matrix from [introspect_theme_typ()], or
+#' @param radius_card Key/type matrix from `introspect_theme_typ()`, or
 #'   `NULL`.
-#' @param theme_check The [check_theme_dict()] result for `theme`.
+#' @param theme_check The `check_theme_dict()` result for `theme`.
 #' @param expected_types Named character vector, expected types by key.
 #' @return A list with `missing` (character vector) and `mismatches` (data
 #'   frame).
@@ -495,7 +495,7 @@ check_theme <- function(theme = "default", theme_path = NULL) {
   if (length(extra) > 0) {
     message(
       "Note: theme \"", path, "\" defines key(s) onepagr doesn't use: ",
-      paste(extra, collapse = ", "),
+      toString(extra),
       ". Not an error: could be a typo, or intentional for your own ",
       "templates."
     )

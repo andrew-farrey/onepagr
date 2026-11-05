@@ -78,7 +78,7 @@ test_that("a newline in a string value does not add a page", {
   on.exit(unlink(out), add = TRUE)
   render_onepager(data, "cohort_summary", output = out, keep_typst = FALSE)
   expect_identical(pdftools::pdf_info(out)$pages, 2L)
-  expect_false(grepl("urgent: call directly", pdftools::pdf_text(out)[1]))
+  expect_false(grepl("urgent: call directly", pdftools::pdf_text(out)[1], fixed = TRUE))
 })
 
 test_that("a newline in an alt text does not leak into trend_snapshot", {

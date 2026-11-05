@@ -163,7 +163,7 @@ pdftools_available <- function() {
 #' @param output Character. The compiled PDF.
 #' @param template Character. The template name, for the message.
 #' @return `invisible(NULL)`.
-#' @keywords internal
+#' @noRd
 note_page_count <- function(template_path, output, template) {
   designed <- extract_designed_pages(template_path)
   if (is.na(designed) || !pdftools_available()) {

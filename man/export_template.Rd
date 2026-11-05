@@ -13,7 +13,8 @@ export_template(
 )
 }
 \arguments{
-\item{template}{Character. A built-in template name (see \code{\link[=list_templates]{list_templates()}}).}
+\item{template}{Character. A built-in template name (see
+\code{\link[=list_templates]{list_templates()}}).}
 
 \item{dest}{Character. Directory to copy the template into. Created
 recursively if it doesn't exist.}

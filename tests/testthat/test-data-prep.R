@@ -123,8 +123,9 @@ test_that("bar-pct clamps a bar width to the track", {
     )
     jsonlite::fromJSON(paste(out, collapse = ""))
   }
-  expect_equal(eval_typst("{import \"/components.typ\": bar-pct; bar-pct(140)}"), 100)
-  expect_equal(eval_typst("{import \"/components.typ\": bar-pct; bar-pct(-5)}"), 0)
+  # Typst can hand back a whole number as an integer or a double, so compare by value.
+  expect_equal(eval_typst("{import \"/components.typ\": bar-pct; bar-pct(140)}"), 100)  # nolint: expect_identical_linter
+  expect_equal(eval_typst("{import \"/components.typ\": bar-pct; bar-pct(-5)}"), 0)  # nolint: expect_identical_linter
   expect_equal(eval_typst("{import \"/components.typ\": bar-pct; bar-pct(64.6)}"), 64.6)
 })
 

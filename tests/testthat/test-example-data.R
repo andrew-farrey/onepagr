@@ -36,7 +36,7 @@ test_that("template_data with tokens = \"required\" returns only those", {
   expect_setequal(attr(data, "required"), info$token[info$required])
   # Values come from the same example a user would otherwise have to
   # read out of a test fixture or the vignette by hand.
-  expect_equal(data$n_decedents, example_data("cohort_summary")$n_decedents)
+  expect_identical(data$n_decedents, example_data("cohort_summary")$n_decedents)
 })
 
 test_that("template_data with tokens = \"optional\" returns those at default", {
@@ -45,7 +45,7 @@ test_that("template_data with tokens = \"optional\" returns those at default", {
   optional_names <- info$token[!is.na(info$default)]
   expect_setequal(names(data), optional_names)
   expect_length(attr(data, "required"), 0)
-  expect_equal(
+  expect_identical(
     data$heading_disclaimer,
     info$default[info$token == "heading_disclaimer"]
   )
@@ -70,7 +70,7 @@ test_that("template_data's optional defaults carry no leftover {{{ markup", {
     unresolved <- vapply(
       data, function(v) grepl("{{{", v, fixed = TRUE), logical(1)
     )
-    bad <- paste(names(data)[unresolved], collapse = ", ")
+    bad <- toString(names(data)[unresolved])
     expect_false(any(unresolved), info = paste(t, ":", bad))
   }
 })

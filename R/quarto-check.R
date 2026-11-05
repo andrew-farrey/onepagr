@@ -4,7 +4,7 @@
 #'
 #' @param quarto_bin Character. Path to the quarto binary.
 #' @return `package_version`, or `NA` if the version couldn't be parsed.
-#' @keywords internal
+#' @noRd
 typst_version_via_quarto <- function(quarto_bin) {
   out <- tryCatch(
     system2(quarto_bin, c("typst", "--version"), stdout = TRUE, stderr = TRUE),
@@ -28,9 +28,9 @@ typst_version_via_quarto <- function(quarto_bin) {
 #' here: verifying the real behavior directly is more honest than
 #' assuming a version cutoff.
 #'
-#' @param quarto_bin Character. Path to the quarto binary.
+#' @param quarto_bin Character. Path to the quarto binary whose Typst is probed.
 #' @return Logical.
-#' @keywords internal
+#' @noRd
 typst_eval_supported <- function(quarto_bin) {
   out <- suppressWarnings(system2(
     quarto_bin, c("typst", "eval", shQuote("1")),
@@ -129,7 +129,7 @@ check_quarto <- function(min_typst_version = "0.15.1") {
 #'   Default `600` (10 minutes), generous for a large release archive on
 #'   a slow connection.
 #' @return Invisibly, `dest`.
-#' @keywords internal
+#' @noRd
 download_with_timeout <- function(url, dest, min_timeout = 600) {
   old_timeout <- getOption("timeout")
   on.exit(options(timeout = old_timeout), add = TRUE)
@@ -386,7 +386,7 @@ remove_old_quarto_installs <- function(install_dir, keep = NULL, keep_file = NUL
   dirs <- setdiff(dirs, protected)
   if (length(protected) > 0) {
     message(
-      "Kept ", paste(basename(protected), collapse = ", "),
+      "Kept ", toString(basename(protected)),
       ": QUARTO_PATH still points into it. Delete it yourself once you no ",
       "longer use it."
     )
@@ -396,7 +396,7 @@ remove_old_quarto_installs <- function(install_dir, keep = NULL, keep_file = NUL
   if (!dry_run && length(targets) > 0) {
     unlink(targets, recursive = TRUE)
     message(
-      "Removed older Quarto copies: ", paste(basename(targets), collapse = ", ")
+      "Removed older Quarto copies: ", toString(basename(targets))
     )
   }
   invisible(basename(targets))
@@ -510,7 +510,7 @@ set_quarto_path <- function(
 #' @param renviron_path Character. Path to the file to update. Created if
 #'   it doesn't exist yet.
 #' @return Invisibly, `renviron_path`.
-#' @keywords internal
+#' @noRd
 update_renviron_line <- function(key, value, renviron_path) {
   lines <- if (file.exists(renviron_path)) {
     readLines(renviron_path, warn = FALSE)

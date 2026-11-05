@@ -50,7 +50,7 @@ strip_typst_comment <- function(line) {
 #' of its own: needed only while that default is in use), and `optional`
 #' (declared with `// optional-token: name = default`).
 #'
-#' @param path Character. Path to a .typ file.
+#' @param path Character. Path to the template `.typ` file to parse.
 #' @return A list with `path`, `tokens` (data frame: `token`, `kind`,
 #'   `default`, `needed_by`), `defaults` (named list), `occurrences` (data
 #'   frame: `token`, `line`, `in_string`), `allow_empty` (character), and
@@ -143,7 +143,7 @@ parse_template_spec <- function(path) {
 
   needed_by <- vapply(conditional, function(tok) {
     users <- names(default_refs)[vapply(default_refs, function(r) tok %in% r, NA)]
-    paste(users, collapse = ", ")
+    toString(users)
   }, character(1))
 
   tokens <- data.frame(

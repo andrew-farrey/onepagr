@@ -57,7 +57,7 @@ test_that("check_quarto reports ok when the bundled Typst meets the minimum", {
   result <- check_quarto(min_typst_version = "0.15.1")
   expect_true(result$available)
   expect_true(result$ok)
-  expect_equal(result$typst_version, package_version("0.15.1"))
+  expect_identical(result$typst_version, package_version("0.15.1"))
 })
 
 test_that("check_quarto reports not ok when the bundled Typst is too old", {
@@ -82,7 +82,7 @@ test_that("check_quarto reports not ok when the bundled Typst is too old", {
     "needs at least Typst"
   )
   expect_false(result$ok)
-  expect_equal(result$typst_version, package_version("0.11.0"))
+  expect_identical(result$typst_version, package_version("0.11.0"))
 })
 
 test_that("check_quarto reports unavailable and messages when not found", {
@@ -126,18 +126,18 @@ test_that("download_with_timeout raises the timeout and restores it after", {
   on.exit(options(timeout = old))
   options(timeout = 5)
 
-  seen_timeout <- NULL
+  seen <- new.env()
   testthat::local_mocked_bindings(
     download.file = function(url, destfile, mode) {
-      seen_timeout <<- getOption("timeout")
+      seen$timeout <- getOption("timeout")
       invisible(0)
     },
     .package = "utils"
   )
 
   download_with_timeout("https://example.org/f", tempfile(), min_timeout = 600)
-  expect_equal(seen_timeout, 600)
-  expect_equal(getOption("timeout"), 5)
+  expect_identical(seen$timeout, 600)
+  expect_identical(getOption("timeout"), 5)
 })
 
 test_that("download_with_timeout surfaces a clear message on failure", {
@@ -199,17 +199,17 @@ test_that("install_quarto downloads the Windows .msi and opens it", {
     "Opening it now"
   )
   expect_true(grepl("quarto-9.9.9-win.msi", dest, fixed = TRUE))
-  expect_equal(
+  expect_identical(
     downloaded$url,
     paste0(
       "https://github.com/quarto-dev/quarto-cli/releases/download/",
       "v9.9.9/quarto-9.9.9-win.msi"
     )
   )
-  expect_equal(downloaded$destfile, dest)
+  expect_identical(downloaded$destfile, dest)
   # Windows installers are never silently run -- only opened for the
   # user to complete themselves (see install_quarto()'s own docs on why).
-  expect_equal(downloaded$browsed, dest)
+  expect_identical(downloaded$browsed, dest)
 })
 
 test_that("install_quarto downloads and extracts the macOS tar.gz", {
@@ -263,7 +263,7 @@ test_that("install_quarto downloads and extracts the macOS tar.gz", {
   expect_true(
     grepl("quarto-9.9.9-macos.tar.gz", calls$download_url, fixed = TRUE)
   )
-  expect_equal(calls$untar_exdir, file.path(install_dir, "quarto-9.9.9"))
+  expect_identical(calls$untar_exdir, file.path(install_dir, "quarto-9.9.9"))
 })
 
 test_that("install_quarto downloads and extracts the Linux tar.gz", {
@@ -326,7 +326,7 @@ test_that("set_quarto_path sets QUARTO_PATH for the current session", {
     set_quarto_path(quarto_bin, persist = FALSE),
     "QUARTO_PATH set to"
   )
-  expect_equal(
+  expect_identical(
     Sys.getenv("QUARTO_PATH"), normalizePath(quarto_bin, winslash = "/")
   )
 })
@@ -413,7 +413,7 @@ test_that("update_renviron_line appends a new key to a nonexistent file", {
 
   update_renviron_line("QUARTO_PATH", "/opt/quarto/bin/quarto", renviron_path)
 
-  expect_equal(
+  expect_identical(
     readLines(renviron_path), 'QUARTO_PATH="/opt/quarto/bin/quarto"'
   )
 })
@@ -429,7 +429,7 @@ test_that("update_renviron_line replaces an existing key, keeps other lines", {
 
   update_renviron_line("QUARTO_PATH", "/new/path/quarto", renviron_path)
 
-  expect_equal(readLines(renviron_path), c(
+  expect_identical(readLines(renviron_path), c(
     'SOME_OTHER_VAR="keep-me"',
     'QUARTO_PATH="/new/path/quarto"',
     'ANOTHER_VAR="also-keep-me"'
@@ -447,7 +447,7 @@ test_that("update_renviron_line collapses duplicate keys to one line", {
 
   update_renviron_line("QUARTO_PATH", "/final/path/quarto", renviron_path)
 
-  expect_equal(readLines(renviron_path), c(
+  expect_identical(readLines(renviron_path), c(
     'QUARTO_PATH="/final/path/quarto"',
     'KEEP_ME="yes"'
   ))

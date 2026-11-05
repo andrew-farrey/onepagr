@@ -41,7 +41,7 @@ test_that("export_template refuses to overwrite an exported template", {
   export_template("cohort_summary", dest)
   cat("// MY EDIT\n", file = file.path(dest, "template.typ"), append = TRUE)
   expect_error(export_template("cohort_summary", dest), "overwrite = TRUE")
-  expect_true(any(grepl("MY EDIT", readLines(file.path(dest, "template.typ")))))
+  expect_true(any(grepl("MY EDIT", readLines(file.path(dest, "template.typ")), fixed = TRUE)))
 })
 
 test_that("export_template(overwrite = TRUE) replaces an edited template", {
@@ -50,7 +50,7 @@ test_that("export_template(overwrite = TRUE) replaces an edited template", {
   export_template("cohort_summary", dest)
   cat("// MY EDIT\n", file = file.path(dest, "template.typ"), append = TRUE)
   export_template("cohort_summary", dest, overwrite = TRUE)
-  expect_false(any(grepl("MY EDIT", readLines(file.path(dest, "template.typ")))))
+  expect_false(any(grepl("MY EDIT", readLines(file.path(dest, "template.typ")), fixed = TRUE)))
 })
 
 test_that("export_template accepts a theme_path", {
