@@ -53,7 +53,8 @@ typst_eval_supported <- function(quarto_bin) {
 #' `--features a11y-extras` (this package is built and tested against
 #' Typst 0.15.1 specifically, bundled by Quarto 1.10.18, confirmed
 #' directly by running `quarto typst --version` in the dev environment
-#' every template in this package was verified against).
+#' every template in this package was verified against). A newer Quarto
+#' release does not bundle an older Typst, so Quarto 1.10.18 or later passes.
 #'
 #' @param min_typst_version Character. Minimum required Typst version
 #'   (the version Quarto's own bundled `typst` binary reports, not
@@ -176,40 +177,86 @@ download_with_timeout <- function(url, dest, min_timeout = 600) {
 #' install directory and the `bin/quarto` binary is located inside it, so the
 #' different archive layouts per platform do not matter.
 #'
-#' The default `version` below must bundle a Typst new enough for
-#' [check_quarto()]'s own minimum (see that function's docs for why
-#' Quarto's version number alone isn't a safe indicator of this).
-#' `"1.10.18"` is used here specifically because it's confirmed directly
-#' (not assumed) to bundle Typst 0.15.1, the version this package's
-#' templates were actually developed and tested against; re-verify
-#' this default against a live install (`quarto typst --version`) before
-#' bumping it, rather than assuming a newer Quarto version number implies
-#' a newer bundled Typst.
+#' By default the newest stable Quarto release is installed. It is looked up
+#' from the release list at
+#' `https://api.github.com/repos/quarto-dev/quarto-cli/releases/latest`, which
+#' leaves out releases still in testing. Quarto 1.10.18 is the first release that bundles
+#' Typst 0.15.1, the version onepagr is built and tested against, and a newer
+#' Quarto release does not bundle an older Typst, so the newest stable release
+#' always meets [check_quarto()]'s minimum. An older `version` than 1.10.18 is
+#' still installed if you ask for it, with a warning.
+#'
+#' By default the install goes into a folder onepagr manages for you
+#' ([tools::R_user_dir()]). Pass `dir` to install somewhere else, such as a
+#' shared `/opt` folder: the release is unpacked into `quarto-<version>/` inside
+#' it, next to any other copies, and you need write permission there (if you
+#' do not have it, the function stops before downloading and says so). A
+#' folder you chose is never cleaned up: older `quarto-<version>` copies in it
+#' are listed and left alone, because they may belong to someone else.
+#'
+#' Before it downloads anything, the function looks at the Quarto onepagr
+#' would use now (the `QUARTO_PATH` environment variable, set in the session
+#' or in `~/.Renviron`, or else the `PATH`). If that Quarto is already as new
+#' as the version you asked for, nothing is installed and the message says
+#' where it is; set `force = TRUE` to install anyway, for example to put a copy
+#' in `dir`. If the requested version is already unpacked in the install
+#' folder, it is reused instead of downloaded again.
 #'
 #' In an interactive session it asks before the download, which is large
 #' (roughly 100 to 250 MB depending on the system); answering no installs
-#' nothing. After a successful install it removes the older copies it put in
-#' the install directory before (the `quarto-<version>` folders, and any older
-#' installer or archive left there), so the folder does not grow with every
-#' version. It never removes a copy that `QUARTO_PATH` points into, in this
-#' session or in `~/.Renviron`, and it never touches a file or folder whose
+#' nothing. After a successful install into the default folder it removes the
+#' older copies it put there before (the `quarto-<version>` folders, and any
+#' older installer or archive left there), so the folder does not grow with
+#' every version. It never removes a copy that `QUARTO_PATH` points into, in
+#' this session or in `~/.Renviron`, and it never touches a file or folder whose
 #' name does not match what it creates.
 #'
-#' @param version Character. Quarto version to install. Default
-#'   `"1.10.18"`.
+#' @param version Character. Quarto version to install, such as `"1.10.18"`,
+#'   or `"latest"` (the default) for the newest stable release. Looking up
+#'   the newest release needs an internet connection; if that fails, the
+#'   message says so, and you can name a version yourself instead.
+#' @param dir Character or `NULL`. The folder to install into, created if it
+#'   does not exist. `NULL` (the default) uses the folder onepagr manages
+#'   under [tools::R_user_dir()]. On Windows this is where the installer is
+#'   saved; the installer itself asks where to put Quarto.
+#' @param force Logical. `FALSE` (the default) stops when the Quarto onepagr
+#'   would use is already as new as `version`. `TRUE` installs anyway.
 #' @return Character, the install directory (macOS/Linux) or the
 #'   downloaded installer path (Windows), invisibly; `NULL`, invisibly, if
-#'   you decline the download.
+#'   you decline the download or the Quarto you have is already new enough.
 #' @examples
 #' \dontrun{
 #' # Never run automatically: downloads ~100+ MB and (on Windows) opens
 #' # an installer. Only ever run this yourself, deliberately.
 #' install_quarto()
+#'
+#' # A specific release, instead of the newest:
+#' install_quarto(version = "1.10.18")
+#'
+#' # Into a shared folder you can write to, even if another Quarto is
+#' # already on the machine:
+#' install_quarto(dir = "/opt", force = TRUE)
 #' }
 #' @export
-install_quarto <- function(version = "1.10.18") {
+install_quarto <- function(version = "latest", dir = NULL, force = FALSE) {
+  if (identical(version, "latest")) {
+    version <- latest_quarto_version()
+    message("The newest stable Quarto release is ", version, ".")
+  }
+  check_quarto_version_string(version)
+  install_dir <- resolve_quarto_install_dir(dir)
   sysname <- Sys.info()[["sysname"]]
-  install_dir <- tools::R_user_dir("onepagr", which = "data")
+  folder <- file.path(install_dir, sprintf("quarto-%s", version))
+
+  unpacked <- if (sysname == "Windows") NULL else unpacked_quarto_binary(folder)
+  if (!force && !is.null(unpacked)) {
+    message("Quarto ", version, " is already installed in ", folder, ".")
+    set_quarto_path(unpacked)
+    return(invisible(install_dir))
+  }
+  if (!force && quarto_already_covers(version)) {
+    return(invisible(NULL))
+  }
   if (!confirm_quarto_download(version, install_dir)) {
     message("Quarto was not installed.")
     return(invisible(NULL))
@@ -217,28 +264,157 @@ install_quarto <- function(version = "1.10.18") {
   # Read before anything changes, so a QUARTO_PATH that still points at an
   # older copy protects that copy from the clean-up below.
   in_use <- quarto_paths_in_use()
-  dir.create(install_dir, recursive = TRUE, showWarnings = FALSE)
+  prepare_quarto_install_dir(install_dir)
 
-  base_url <- sprintf(
-    "https://github.com/quarto-dev/quarto-cli/releases/download/v%s/",
-    version
-  )
-
+  managed <- is.null(dir)
   if (sysname == "Windows") {
-    file_name <- sprintf("quarto-%s-win.msi", version)
-    dest <- file.path(install_dir, file_name)
-    download_with_timeout(paste0(base_url, file_name), dest)
-    message(
-      "Downloaded the Quarto ", version, " installer to ", dest,
-      ". Opening it now: complete the installer, then restart R."
-    )
-    utils::browseURL(dest)
-    remove_old_quarto_installs(
-      install_dir, keep = NULL, keep_file = file_name, in_use = character(0)
-    )
-    return(invisible(dest))
+    return(invisible(install_quarto_msi(version, install_dir, managed)))
   }
+  bin_path <- install_quarto_archive(version, install_dir, sysname)
+  message("Quarto ", version, " installed to ", dirname(dirname(bin_path)), ".")
+  set_quarto_path(bin_path)
+  tidy_quarto_install_dir(
+    install_dir, managed, keep = basename(folder), in_use = in_use
+  )
+  invisible(install_dir)
+}
 
+#' Where `install_quarto()` installs
+#'
+#' Internal. `NULL` is the folder onepagr manages; anything else must be a
+#' single non-empty path, which is expanded (`~`) and made absolute.
+#'
+#' @param dir Character or `NULL`. The `dir` argument of `install_quarto()`.
+#' @return Character, one folder path.
+#' @noRd
+resolve_quarto_install_dir <- function(dir) {
+  if (is.null(dir)) {
+    return(tools::R_user_dir("onepagr", which = "data"))
+  }
+  if (!is.character(dir) || length(dir) != 1 || is.na(dir) || !nzchar(dir)) {
+    stop("`dir` must be NULL or a single folder path.", call. = FALSE)
+  }
+  normalizePath(path.expand(dir), winslash = "/", mustWork = FALSE)
+}
+
+#' The binary of a Quarto release already unpacked in a folder
+#'
+#' Internal. `NULL` when the folder is missing or holds no `bin/quarto`.
+#'
+#' @param folder Character. A `quarto-<version>` folder.
+#' @return Character path to the binary, or `NULL`.
+#' @noRd
+unpacked_quarto_binary <- function(folder) {
+  if (!dir.exists(folder)) {
+    return(NULL)
+  }
+  tryCatch(find_quarto_binary(folder), error = function(e) NULL)
+}
+
+#' The Quarto onepagr would use right now
+#'
+#' Internal. Whatever `quarto::quarto_path()` finds: `QUARTO_PATH` first, then
+#' the `PATH`.
+#'
+#' @return A list with `version` (`package_version`) and `path`, or `NULL` when
+#'   there is none.
+#' @noRd
+current_quarto <- function() {
+  found <- tryCatch(quarto::quarto_available(), error = function(e) FALSE)
+  if (!isTRUE(found)) {
+    return(NULL)
+  }
+  version <- tryCatch(
+    package_version(as.character(quarto::quarto_version())),
+    error = function(e) NULL
+  )
+  if (is.null(version)) {
+    return(NULL)
+  }
+  list(version = version, path = quarto::quarto_path())
+}
+
+#' Say so, and report `TRUE`, when the Quarto in use is already new enough
+#'
+#' Internal. Prints the version, where it lives, and how to install anyway.
+#'
+#' @param version Character. The version `install_quarto()` was asked for.
+#' @return Logical.
+#' @noRd
+quarto_already_covers <- function(version) {
+  current <- current_quarto()
+  if (is.null(current) || current$version < package_version(version)) {
+    return(FALSE)
+  }
+  message(
+    "Quarto ", current$version, " (", current$path, ") is already as new as ",
+    version, ", so nothing was installed. Use force = TRUE to install anyway."
+  )
+  TRUE
+}
+
+#' Create the install folder and make sure it can be written to
+#'
+#' Internal. Stops, before anything is downloaded, when the folder cannot be
+#' created or written to, and says what to do about it.
+#'
+#' @param install_dir Character. The folder.
+#' @return Invisibly, `install_dir`.
+#' @noRd
+prepare_quarto_install_dir <- function(install_dir) {
+  dir.create(install_dir, recursive = TRUE, showWarnings = FALSE)
+  probe <- file.path(install_dir, paste0(".onepagr-write-test-", Sys.getpid()))
+  writable <- dir.exists(install_dir) &&
+    suppressWarnings(file.create(probe))
+  unlink(probe)
+  if (!writable) {
+    stop(
+      "Cannot write to ", install_dir, ". Pick a folder you can write to with ",
+      "install_quarto(dir = ...), or ask an administrator to install Quarto ",
+      "and point onepagr at it with set_quarto_path().",
+      call. = FALSE
+    )
+  }
+  invisible(install_dir)
+}
+
+#' Download and open the Windows installer
+#'
+#' Internal. Windows installers are never run silently.
+#'
+#' @param version Character. Quarto version.
+#' @param install_dir Character. Where the installer is saved.
+#' @param managed Logical. Whether `install_dir` is the folder onepagr manages.
+#' @return Character, the installer path.
+#' @noRd
+install_quarto_msi <- function(version, install_dir, managed) {
+  file_name <- sprintf("quarto-%s-win.msi", version)
+  dest <- file.path(install_dir, file_name)
+  download_with_timeout(paste0(quarto_download_base(version), file_name), dest)
+  message(
+    "Downloaded the Quarto ", version, " installer to ", dest,
+    ". Opening it now: complete the installer, then restart R."
+  )
+  utils::browseURL(dest)
+  tidy_quarto_install_dir(
+    install_dir, managed, keep = NULL, keep_file = file_name, in_use = character(0)
+  )
+  dest
+}
+
+#' Download and unpack the macOS or Linux archive
+#'
+#' Internal. The archives do not share a layout (the Linux ones unpack into a
+#' `quarto-<version>/` folder, the macOS one puts `bin/` and `share/` at its
+#' root), so the archive is extracted into a folder of our own and the binary
+#' is looked for inside it.
+#'
+#' @param version Character. Quarto version.
+#' @param install_dir Character. The install folder.
+#' @param sysname Character. `Sys.info()[["sysname"]]`.
+#' @return Character, the path to the extracted `bin/quarto`.
+#' @noRd
+install_quarto_archive <- function(version, install_dir, sysname) {
   file_name <- if (sysname == "Darwin") {
     sprintf("quarto-%s-macos.tar.gz", version)
   } else {
@@ -246,21 +422,131 @@ install_quarto <- function(version = "1.10.18") {
     sprintf("quarto-%s-linux-%s.tar.gz", version, if (arm) "arm64" else "amd64")
   }
   dest <- file.path(install_dir, file_name)
-  download_with_timeout(paste0(base_url, file_name), dest)
+  download_with_timeout(paste0(quarto_download_base(version), file_name), dest)
 
-  # The archives do not share a layout (the Linux ones unpack into a
-  # quarto-<version>/ folder, the macOS one puts bin/ and share/ at its
-  # root), so extract into a folder of our own and look for the binary.
   exdir <- file.path(install_dir, sprintf("quarto-%s", version))
   dir.create(exdir, recursive = TRUE, showWarnings = FALSE)
   utils::untar(dest, exdir = exdir)
   unlink(dest)
+  find_quarto_binary(exdir)
+}
 
-  bin_path <- find_quarto_binary(exdir)
-  message("Quarto ", version, " installed to ", dirname(dirname(bin_path)), ".")
-  set_quarto_path(bin_path)
-  remove_old_quarto_installs(install_dir, keep = basename(exdir), in_use = in_use)
-  invisible(install_dir)
+#' The release-download URL prefix for one Quarto version
+#'
+#' @param version Character. Quarto version.
+#' @return Character.
+#' @noRd
+quarto_download_base <- function(version) {
+  sprintf("https://github.com/quarto-dev/quarto-cli/releases/download/v%s/", version)
+}
+
+#' Clean up after an install, or just report what is left behind
+#'
+#' Internal. In the folder onepagr manages, older copies are removed. In a
+#' folder the user chose, nothing is deleted: older copies may belong to
+#' someone else, so they are only listed.
+#'
+#' @param install_dir Character. The install folder.
+#' @param managed Logical. Whether it is the folder onepagr manages.
+#' @param keep,keep_file Passed to `remove_old_quarto_installs()`.
+#' @param in_use Character. Paths `QUARTO_PATH` points at.
+#' @return Invisibly, `NULL`.
+#' @noRd
+tidy_quarto_install_dir <- function(install_dir, managed, keep = NULL,
+                                    keep_file = NULL, in_use = character(0)) {
+  if (managed) {
+    remove_old_quarto_installs(
+      install_dir, keep = keep, keep_file = keep_file, in_use = in_use
+    )
+    return(invisible(NULL))
+  }
+  older <- remove_old_quarto_installs(
+    install_dir, keep = keep, keep_file = keep_file, in_use = in_use, dry_run = TRUE
+  )
+  if (length(older) > 0) {
+    message(
+      "Older Quarto copies were left in ", install_dir, ": ", toString(older),
+      ". onepagr only removes copies from its own folder; delete these yourself ",
+      "if you no longer need them."
+    )
+  }
+  invisible(NULL)
+}
+
+#' The oldest Quarto release that bundles the Typst onepagr needs
+#'
+#' Internal. Quarto 1.10.18 bundles Typst 0.15.1, the floor in
+#' [check_quarto()]. A newer Quarto release never bundles an older Typst, so
+#' this version or any later one is enough.
+#'
+#' @noRd
+min_quarto_version <- "1.10.18"
+
+quarto_latest_release_url <-
+  "https://api.github.com/repos/quarto-dev/quarto-cli/releases/latest"
+
+#' Look up the newest stable Quarto release
+#'
+#' Internal. Asks GitHub's `releases/latest` endpoint, which skips
+#' releases still in testing and drafts, for the newest stable quarto-cli release. A
+#' failed lookup (offline, or GitHub's rate limit for anonymous requests)
+#' stops with a message that names the way out.
+#'
+#' @param url Character. The `releases/latest` endpoint.
+#' @return Character, a version such as `"1.11.9"`.
+#' @noRd
+latest_quarto_version <- function(url = quarto_latest_release_url) {
+  reply <- tempfile(fileext = ".json")
+  on.exit(unlink(reply), add = TRUE)
+  failed <- function(why) {
+    stop(
+      "Could not look up the newest Quarto release (", why, "). Check your ",
+      "internet connection, or name the version to install, as in ",
+      "install_quarto(version = \"<x.y.z>\"). Releases are listed at ",
+      "https://github.com/quarto-dev/quarto-cli/releases.",
+      call. = FALSE
+    )
+  }
+  tryCatch(
+    download_with_timeout(url, reply, min_timeout = 60),
+    error = function(e) failed(conditionMessage(e))
+  )
+  tag <- tryCatch(jsonlite::fromJSON(reply)$tag_name, error = function(e) NULL)
+  version <- sub("^v", "", if (is.character(tag) && length(tag) == 1) tag else "")
+  if (!grepl("^[0-9]+([.][0-9]+)+$", version)) {
+    failed("the reply had no release version in it")
+  }
+  version
+}
+
+#' Stop on a version string that is not a plain Quarto version
+#'
+#' Internal. The version goes into a download URL and a folder name, so
+#' anything but digits and dots is refused. A version older than
+#' `min_quarto_version` is allowed but warned about.
+#'
+#' @param version Character. The version to install.
+#' @return Invisibly, `version`.
+#' @noRd
+check_quarto_version_string <- function(version) {
+  plain <- is.character(version) && length(version) == 1 &&
+    grepl("^[0-9]+([.][0-9]+)+$", version)
+  if (!plain) {
+    stop(
+      "`version` must be \"latest\" or a Quarto version such as \"",
+      min_quarto_version, "\", not ", deparse(version), ".",
+      call. = FALSE
+    )
+  }
+  if (package_version(version) < package_version(min_quarto_version)) {
+    warning(
+      "Quarto ", version, " is older than ", min_quarto_version, ", the first ",
+      "release that bundles the Typst onepagr needs. check_quarto() will say ",
+      "whether it is new enough.",
+      call. = FALSE
+    )
+  }
+  invisible(version)
 }
 
 #' Ask before a large Quarto download

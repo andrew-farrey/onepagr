@@ -4,16 +4,26 @@
 \alias{install_quarto}
 \title{Install Quarto to a user-local directory}
 \usage{
-install_quarto(version = "1.10.18")
+install_quarto(version = "latest", dir = NULL, force = FALSE)
 }
 \arguments{
-\item{version}{Character. Quarto version to install. Default
-\code{"1.10.18"}.}
+\item{version}{Character. Quarto version to install, such as \code{"1.10.18"},
+or \code{"latest"} (the default) for the newest stable release. Looking up
+the newest release needs an internet connection; if that fails, the
+message says so, and you can name a version yourself instead.}
+
+\item{dir}{Character or \code{NULL}. The folder to install into, created if it
+does not exist. \code{NULL} (the default) uses the folder onepagr manages
+under \code{\link[tools:R_user_dir]{tools::R_user_dir()}}. On Windows this is where the installer is
+saved; the installer itself asks where to put Quarto.}
+
+\item{force}{Logical. \code{FALSE} (the default) stops when the Quarto onepagr
+would use is already as new as \code{version}. \code{TRUE} installs anyway.}
 }
 \value{
 Character, the install directory (macOS/Linux) or the
 downloaded installer path (Windows), invisibly; \code{NULL}, invisibly, if
-you decline the download.
+you decline the download or the Quarto you have is already new enough.
 }
 \description{
 Downloads the official Quarto release for this OS from
@@ -42,23 +52,38 @@ or \code{arm64}). The archive is extracted into \verb{quarto-<version>/} under t
 install directory and the \code{bin/quarto} binary is located inside it, so the
 different archive layouts per platform do not matter.
 
-The default \code{version} below must bundle a Typst new enough for
-\code{\link[=check_quarto]{check_quarto()}}'s own minimum (see that function's docs for why
-Quarto's version number alone isn't a safe indicator of this).
-\code{"1.10.18"} is used here specifically because it's confirmed directly
-(not assumed) to bundle Typst 0.15.1, the version this package's
-templates were actually developed and tested against; re-verify
-this default against a live install (\verb{quarto typst --version}) before
-bumping it, rather than assuming a newer Quarto version number implies
-a newer bundled Typst.
+By default the newest stable Quarto release is installed. It is looked up
+from the release list at
+\verb{https://api.github.com/repos/quarto-dev/quarto-cli/releases/latest}, which
+leaves out releases still in testing. Quarto 1.10.18 is the first release that bundles
+Typst 0.15.1, the version onepagr is built and tested against, and a newer
+Quarto release does not bundle an older Typst, so the newest stable release
+always meets \code{\link[=check_quarto]{check_quarto()}}'s minimum. An older \code{version} than 1.10.18 is
+still installed if you ask for it, with a warning.
+
+By default the install goes into a folder onepagr manages for you
+(\code{\link[tools:R_user_dir]{tools::R_user_dir()}}). Pass \code{dir} to install somewhere else, such as a
+shared \verb{/opt} folder: the release is unpacked into \verb{quarto-<version>/} inside
+it, next to any other copies, and you need write permission there (if you
+do not have it, the function stops before downloading and says so). A
+folder you chose is never cleaned up: older \verb{quarto-<version>} copies in it
+are listed and left alone, because they may belong to someone else.
+
+Before it downloads anything, the function looks at the Quarto onepagr
+would use now (the \code{QUARTO_PATH} environment variable, set in the session
+or in \verb{~/.Renviron}, or else the \code{PATH}). If that Quarto is already as new
+as the version you asked for, nothing is installed and the message says
+where it is; set \code{force = TRUE} to install anyway, for example to put a copy
+in \code{dir}. If the requested version is already unpacked in the install
+folder, it is reused instead of downloaded again.
 
 In an interactive session it asks before the download, which is large
 (roughly 100 to 250 MB depending on the system); answering no installs
-nothing. After a successful install it removes the older copies it put in
-the install directory before (the \verb{quarto-<version>} folders, and any older
-installer or archive left there), so the folder does not grow with every
-version. It never removes a copy that \code{QUARTO_PATH} points into, in this
-session or in \verb{~/.Renviron}, and it never touches a file or folder whose
+nothing. After a successful install into the default folder it removes the
+older copies it put there before (the \verb{quarto-<version>} folders, and any
+older installer or archive left there), so the folder does not grow with
+every version. It never removes a copy that \code{QUARTO_PATH} points into, in
+this session or in \verb{~/.Renviron}, and it never touches a file or folder whose
 name does not match what it creates.
 }
 \examples{
@@ -66,5 +91,12 @@ name does not match what it creates.
 # Never run automatically: downloads ~100+ MB and (on Windows) opens
 # an installer. Only ever run this yourself, deliberately.
 install_quarto()
+
+# A specific release, instead of the newest:
+install_quarto(version = "1.10.18")
+
+# Into a shared folder you can write to, even if another Quarto is
+# already on the machine:
+install_quarto(dir = "/opt", force = TRUE)
 }
 }

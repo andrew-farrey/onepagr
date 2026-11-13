@@ -41,6 +41,15 @@ hand-edit a `.Renviron` file yourself. (Windows opens the official
 installer instead, so there's no path to set until you finish that
 yourself.)
 
+`install_quarto()` installs the newest stable release, and does nothing
+(and says so) when the Quarto you already use is that new. To put it in a
+folder you choose, such as a shared `/opt`, pass `dir`; add `force = TRUE`
+to install there even though another Quarto is already on the machine:
+
+```r
+onepagr::install_quarto(dir = "/opt", force = TRUE)
+```
+
 If you already have a Quarto install elsewhere onepagr should use
 instead (an admin-managed one on Posit Workbench, for example),
 `onepagr::set_quarto_path("/path/to/quarto")` points onepagr at it the

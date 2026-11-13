@@ -69,8 +69,8 @@ if it isn't:
 onepagr::check_quarto()
 ```
 
-If it's missing, `onepagr::install_quarto()` installs a user-local copy
-without needing admin rights (you must run it yourself; onepagr never
+If it's missing, `onepagr::install_quarto()` installs a user-local copy of
+the newest stable Quarto release without needing admin rights (you must run it yourself; onepagr never
 installs software automatically). On macOS and Linux it also points
 onepagr at the copy it just installed for you: it sets `QUARTO_PATH` for
 your current session immediately, then asks whether to save that to your
