@@ -11,7 +11,8 @@ for `--pdf-standard ua-1` (added in Typst 0.14.0) or
 `--features a11y-extras` (this package is built and tested against Typst
 0.15.1 specifically, bundled by Quarto 1.10.18, confirmed directly by
 running `quarto typst --version` in the dev environment every template
-in this package was verified against).
+in this package was verified against). A newer Quarto release does not
+bundle an older Typst, so Quarto 1.10.18 or later passes.
 
 ## Usage
 

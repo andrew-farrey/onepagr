@@ -11,20 +11,36 @@ Quarto is pinned to an old version and users can't install system-wide.
 ## Usage
 
 ``` r
-install_quarto(version = "1.10.18")
+install_quarto(version = "latest", dir = NULL, force = FALSE)
 ```
 
 ## Arguments
 
 - version:
 
-  Character. Quarto version to install. Default `"1.10.18"`.
+  Character. Quarto version to install, such as `"1.10.18"`, or
+  `"latest"` (the default) for the newest stable release. Looking up the
+  newest release needs an internet connection; if that fails, the
+  message says so, and you can name a version yourself instead.
+
+- dir:
+
+  Character or `NULL`. The folder to install into, created if it does
+  not exist. `NULL` (the default) uses the folder onepagr manages under
+  [`tools::R_user_dir()`](https://rdrr.io/r/tools/userdir.html). On
+  Windows this is where the installer is saved; the installer itself
+  asks where to put Quarto.
+
+- force:
+
+  Logical. `FALSE` (the default) stops when the Quarto onepagr would use
+  is already as new as `version`. `TRUE` installs anyway.
 
 ## Value
 
 Character, the install directory (macOS/Linux) or the downloaded
 installer path (Windows), invisibly; `NULL`, invisibly, if you decline
-the download.
+the download or the Quarto you have is already new enough.
 
 ## Details
 
@@ -45,24 +61,43 @@ or `arm64`). The archive is extracted into `quarto-<version>/` under the
 install directory and the `bin/quarto` binary is located inside it, so
 the different archive layouts per platform do not matter.
 
-The default `version` below must bundle a Typst new enough for
+By default the newest stable Quarto release is installed. It is looked
+up from the release list at
+`https://api.github.com/repos/quarto-dev/quarto-cli/releases/latest`,
+which leaves out releases still in testing. Quarto 1.10.18 is the first
+release that bundles Typst 0.15.1, the version onepagr is built and
+tested against, and a newer Quarto release does not bundle an older
+Typst, so the newest stable release always meets
 [`check_quarto()`](https://andrew-farrey.github.io/onepagr/reference/check_quarto.md)'s
-own minimum (see that function's docs for why Quarto's version number
-alone isn't a safe indicator of this). `"1.10.18"` is used here
-specifically because it's confirmed directly (not assumed) to bundle
-Typst 0.15.1, the version this package's templates were actually
-developed and tested against; re-verify this default against a live
-install (`quarto typst --version`) before bumping it, rather than
-assuming a newer Quarto version number implies a newer bundled Typst.
+minimum. An older `version` than 1.10.18 is still installed if you ask
+for it, with a warning.
+
+By default the install goes into a folder onepagr manages for you
+([`tools::R_user_dir()`](https://rdrr.io/r/tools/userdir.html)). Pass
+`dir` to install somewhere else, such as a shared `/opt` folder: the
+release is unpacked into `quarto-<version>/` inside it, next to any
+other copies, and you need write permission there (if you do not have
+it, the function stops before downloading and says so). A folder you
+chose is never cleaned up: older `quarto-<version>` copies in it are
+listed and left alone, because they may belong to someone else.
+
+Before it downloads anything, the function looks at the Quarto onepagr
+would use now (the `QUARTO_PATH` environment variable, set in the
+session or in `~/.Renviron`, or else the `PATH`). If that Quarto is
+already as new as the version you asked for, nothing is installed and
+the message says where it is; set `force = TRUE` to install anyway, for
+example to put a copy in `dir`. If the requested version is already
+unpacked in the install folder, it is reused instead of downloaded
+again.
 
 In an interactive session it asks before the download, which is large
 (roughly 100 to 250 MB depending on the system); answering no installs
-nothing. After a successful install it removes the older copies it put
-in the install directory before (the `quarto-<version>` folders, and any
-older installer or archive left there), so the folder does not grow with
-every version. It never removes a copy that `QUARTO_PATH` points into,
-in this session or in `~/.Renviron`, and it never touches a file or
-folder whose name does not match what it creates.
+nothing. After a successful install into the default folder it removes
+the older copies it put there before (the `quarto-<version>` folders,
+and any older installer or archive left there), so the folder does not
+grow with every version. It never removes a copy that `QUARTO_PATH`
+points into, in this session or in `~/.Renviron`, and it never touches a
+file or folder whose name does not match what it creates.
 
 ## Examples
 
@@ -71,5 +106,12 @@ if (FALSE) { # \dontrun{
 # Never run automatically: downloads ~100+ MB and (on Windows) opens
 # an installer. Only ever run this yourself, deliberately.
 install_quarto()
+
+# A specific release, instead of the newest:
+install_quarto(version = "1.10.18")
+
+# Into a shared folder you can write to, even if another Quarto is
+# already on the machine:
+install_quarto(dir = "/opt", force = TRUE)
 } # }
 ```

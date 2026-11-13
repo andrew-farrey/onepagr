@@ -90,6 +90,13 @@ automatically. You’re never expected to hand-edit a
 <code>.Renviron</code> file yourself. (Windows opens the official
 installer instead, so there’s no path to set until you finish that
 yourself.)</p>
+<p><code><a href="../reference/install_quarto.html">install_quarto()</a></code> installs the newest stable release, and
+does nothing (and says so) when the Quarto you already use is that new.
+To put it in a folder you choose, such as a shared <code>/opt</code>,
+pass <code>dir</code>; add <code>force = TRUE</code> to install there
+even though another Quarto is already on the machine:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">onepagr</span><span class="fu">::</span><span class="fu"><a href="../reference/install_quarto.html">install_quarto</a></span><span class="op">(</span>dir <span class="op">=</span> <span class="st">"/opt"</span>, force <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>If you already have a Quarto install elsewhere onepagr should use
 instead (an admin-managed one on Posit Workbench, for example),
 <code>onepagr::set_quarto_path("/path/to/quarto")</code> points onepagr
@@ -102,7 +109,7 @@ at it the same way, with the same save-for-later prompt.</p>
 on the template. <code><a href="../reference/template_data.html">template_data()</a></code> gives you a complete,
 working starting point for any built-in template: every value is already
 filled in, a real one, not a blank you have to guess the shape of.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://andrew-farrey.github.io/onepagr/">onepagr</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/template_data.html">template_data</a></span><span class="op">(</span><span class="st">"cohort_summary"</span><span class="op">)</span></span>
@@ -117,7 +124,7 @@ filled in, a real one, not a blank you have to guess the shape of.</p>
 <code><a href="../reference/example_data.html">example_data()</a></code>), so this renders exactly the PDF shown
 below in “What you get” without changing a thing. A real project
 replaces the values it has real numbers for:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data</span><span class="op">$</span><span class="va">n_decedents</span> <span class="op">&lt;-</span> <span class="st">"6,000"</span></span>
 <span><span class="va">data</span><span class="op">$</span><span class="va">strip_period</span> <span class="op">&lt;-</span> <span class="st">"2025"</span></span>
 <span><span class="co"># Every heading, label and paragraph keeps its default wording unless</span></span>
@@ -126,7 +133,7 @@ replaces the values it has real numbers for:</p>
 <code><a href="../reference/template_data.html">template_data()</a></code> had no default for – the ones a real
 project actually needs its own numbers for, as opposed to wording you
 can leave alone:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"required"</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "contact_email"                   "org_full"                       </span></span>
 <span><span class="co">#&gt;  [3] "logo_primary_path"               "logo_primary_alt"               </span></span>
@@ -196,12 +203,12 @@ pass <code>keep_typst = FALSE</code>.</p>
 <h2 id="picking-a-theme">Picking a theme<a class="anchor" aria-label="anchor" href="#picking-a-theme"></a>
 </h2>
 <p>onepagr ships three built-in themes, selectable by name:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/render_onepager.html">render_onepager</a></span><span class="op">(</span><span class="va">data</span>, template <span class="op">=</span> <span class="st">"cohort_summary"</span>, theme <span class="op">=</span> <span class="st">"default"</span>, output <span class="op">=</span> <span class="st">"report.pdf"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/render_onepager.html">render_onepager</a></span><span class="op">(</span><span class="va">data</span>, template <span class="op">=</span> <span class="st">"cohort_summary"</span>, theme <span class="op">=</span> <span class="st">"uk"</span>, output <span class="op">=</span> <span class="st">"report.pdf"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/render_onepager.html">render_onepager</a></span><span class="op">(</span><span class="va">data</span>, template <span class="op">=</span> <span class="st">"cohort_summary"</span>, theme <span class="op">=</span> <span class="st">"kdph"</span>, output <span class="op">=</span> <span class="st">"report.pdf"</span><span class="op">)</span></span></code></pre></div>
 <p>List what’s available:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">onepagr</span><span class="fu">::</span><span class="fu"><a href="../reference/list_themes.html">list_themes</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "default" "kdph"    "uk"</span></span></code></pre></div>
 <p>Your own project can supply a fully custom theme instead. See
@@ -216,7 +223,7 @@ token schema a custom theme needs to define.</p>
 <p>To see a template’s real Typst source, or hand-edit one, export it
 into your own project rather than reading it out of the installed
 package:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/export_template.html">export_template</a></span><span class="op">(</span><span class="st">"cohort_summary"</span>, <span class="st">"my-report/"</span>, theme <span class="op">=</span> <span class="st">"uk"</span><span class="op">)</span></span></code></pre></div>
 <p>That copies the template, the resolved theme, shared components, and
 assets into <code>my-report/</code> as one self-contained, independently
@@ -231,11 +238,11 @@ again. Compile your edited copy directly with
 value is missing, <code><a href="../reference/render_onepager.html">render_onepager()</a></code> raises a clear R error
 listing exactly which ones, rather than silently producing a PDF with a
 blank spot. You can check what a template needs ahead of time:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">onepagr</span><span class="fu">::</span><span class="fu"><a href="../reference/list_templates.html">list_templates</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "cohort_summary"       "county_choropleth"    "overdose_spike_alert"</span></span>
 <span><span class="co">#&gt; [4] "syndromic_alert"      "trend_snapshot"</span></span></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Every token a template takes: required ones first, then optional ones</span></span>
 <span><span class="co"># with their default text.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">onepagr</span><span class="fu">::</span><span class="fu"><a href="../reference/template_tokens.html">template_tokens</a></span><span class="op">(</span><span class="st">"overdose_spike_alert"</span><span class="op">)</span>, <span class="fl">8</span><span class="op">)</span></span>
@@ -251,7 +258,7 @@ blank spot. You can check what a template needs ahead of time:</p>
 <p>The optional tokens are the template’s own wording (headings,
 captions, paragraphs, labels). Set any of them in <code>data</code> to
 reword it; see <code><a href="../articles/theming.html">vignette("theming")</a></code>, Part 5.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Path to a built-in template's source, if you want to read its {{{token}}} usage directly</span></span>
 <span><span class="fu">onepagr</span><span class="fu">::</span><span class="fu"><a href="../reference/resolve_template.html">resolve_template</a></span><span class="op">(</span><span class="st">"overdose_spike_alert"</span><span class="op">)</span></span></code></pre></div>
 </div>

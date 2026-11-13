@@ -83,6 +83,12 @@
 <li>
 <code><a href="../reference/install_quarto.html">install_quarto()</a></code> finds <code>bin/quarto</code> wherever the archive put it (the macOS archive has no <code>quarto-&lt;version&gt;/</code> folder) and downloads the arm64 build on 64-bit ARM Linux. <code><a href="../reference/set_quarto_path.html">set_quarto_path()</a></code> saves an absolute path.</li>
 <li>
+<code><a href="../reference/install_quarto.html">install_quarto()</a></code> installs the newest stable Quarto release by default (<code>version = "latest"</code>), looked up from GitHub’s latest-release endpoint, which skips releases still in testing. It used to install a fixed version that was already behind. A release older than 1.10.18, the first with a new enough Typst, is still installed if you name it, with a warning, and a version that is not plain digits and dots is refused. A failed lookup says so and shows how to name a version instead.</li>
+<li>
+<code><a href="../reference/install_quarto.html">install_quarto()</a></code> has a <code>dir</code> argument that installs into a folder you choose, such as a shared <code>/opt</code>, instead of the folder onepagr manages. It checks that the folder can be written to before it downloads anything. Older <code>quarto-&lt;version&gt;</code> copies in a folder you chose are listed and left alone, because only the managed folder is cleaned up.</li>
+<li>
+<code><a href="../reference/install_quarto.html">install_quarto()</a></code> looks at the Quarto onepagr would use now (<code>QUARTO_PATH</code>, or else the <code>PATH</code>) before downloading. If it is already as new as the version asked for, nothing is installed and the message says where it is; <code>force = TRUE</code> installs anyway. A release already unpacked in the install folder is reused instead of downloaded again.</li>
+<li>
 <code><a href="../reference/install_quarto.html">install_quarto()</a></code> asks before the download in an interactive session, and after installing it removes the older copies it put in its folder, so the folder does not grow with every version. A copy that <code>QUARTO_PATH</code> points into (in this session, or in the home or working-directory <code>.Renviron</code>) is kept, and so is anything the function did not create.</li>
 <li>A <code>QUARTO_PATH</code> that names a file that is not there stops with a message that says so, before the previous PDF is replaced, instead of “error in running command” after it has been deleted.</li>
 </ul></div>
