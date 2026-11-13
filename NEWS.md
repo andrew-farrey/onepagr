@@ -102,6 +102,16 @@ as before these fixes (same text, same pixels).
   still installed if you name it, with a warning, and a version that is not
   plain digits and dots is refused. A failed lookup says so and shows how to
   name a version instead.
+* `install_quarto()` has a `dir` argument that installs into a folder you
+  choose, such as a shared `/opt`, instead of the folder onepagr manages. It
+  checks that the folder can be written to before it downloads anything. Older
+  `quarto-<version>` copies in a folder you chose are listed and left alone,
+  because only the managed folder is cleaned up.
+* `install_quarto()` looks at the Quarto onepagr would use now (`QUARTO_PATH`,
+  or else the `PATH`) before downloading. If it is already as new as the
+  version asked for, nothing is installed and the message says where it is;
+  `force = TRUE` installs anyway. A release already unpacked in the install
+  folder is reused instead of downloaded again.
 * `install_quarto()` asks before the download in an interactive session, and
   after installing it removes the older copies it put in its folder, so the
   folder does not grow with every version. A copy that `QUARTO_PATH` points into
