@@ -53,7 +53,8 @@ typst_eval_supported <- function(quarto_bin) {
 #' `--features a11y-extras` (this package is built and tested against
 #' Typst 0.15.1 specifically, bundled by Quarto 1.10.18, confirmed
 #' directly by running `quarto typst --version` in the dev environment
-#' every template in this package was verified against).
+#' every template in this package was verified against). A newer Quarto
+#' release does not bundle an older Typst, so Quarto 1.10.18 or later passes.
 #'
 #' @param min_typst_version Character. Minimum required Typst version
 #'   (the version Quarto's own bundled `typst` binary reports, not
@@ -176,15 +177,14 @@ download_with_timeout <- function(url, dest, min_timeout = 600) {
 #' install directory and the `bin/quarto` binary is located inside it, so the
 #' different archive layouts per platform do not matter.
 #'
-#' The default `version` below must bundle a Typst new enough for
-#' [check_quarto()]'s own minimum (see that function's docs for why
-#' Quarto's version number alone isn't a safe indicator of this).
-#' `"1.10.18"` is used here specifically because it's confirmed directly
-#' (not assumed) to bundle Typst 0.15.1, the version this package's
-#' templates were actually developed and tested against; re-verify
-#' this default against a live install (`quarto typst --version`) before
-#' bumping it, rather than assuming a newer Quarto version number implies
-#' a newer bundled Typst.
+#' By default the newest stable Quarto release is installed. It is looked up
+#' from the release list at
+#' `https://api.github.com/repos/quarto-dev/quarto-cli/releases/latest`, which
+#' leaves out releases still in testing. Quarto 1.10.18 is the first release that bundles
+#' Typst 0.15.1, the version onepagr is built and tested against, and a newer
+#' Quarto release does not bundle an older Typst, so the newest stable release
+#' always meets [check_quarto()]'s minimum. An older `version` than 1.10.18 is
+#' still installed if you ask for it, with a warning.
 #'
 #' In an interactive session it asks before the download, which is large
 #' (roughly 100 to 250 MB depending on the system); answering no installs
@@ -195,8 +195,10 @@ download_with_timeout <- function(url, dest, min_timeout = 600) {
 #' session or in `~/.Renviron`, and it never touches a file or folder whose
 #' name does not match what it creates.
 #'
-#' @param version Character. Quarto version to install. Default
-#'   `"1.10.18"`.
+#' @param version Character. Quarto version to install, such as `"1.10.18"`,
+#'   or `"latest"` (the default) for the newest stable release. Looking up
+#'   the newest release needs an internet connection; if that fails, the
+#'   message says so, and you can name a version yourself instead.
 #' @return Character, the install directory (macOS/Linux) or the
 #'   downloaded installer path (Windows), invisibly; `NULL`, invisibly, if
 #'   you decline the download.
@@ -205,9 +207,17 @@ download_with_timeout <- function(url, dest, min_timeout = 600) {
 #' # Never run automatically: downloads ~100+ MB and (on Windows) opens
 #' # an installer. Only ever run this yourself, deliberately.
 #' install_quarto()
+#'
+#' # A specific release, instead of the newest:
+#' install_quarto(version = "1.10.18")
 #' }
 #' @export
-install_quarto <- function(version = "1.10.18") {
+install_quarto <- function(version = "latest") {
+  if (identical(version, "latest")) {
+    version <- latest_quarto_version()
+    message("The newest stable Quarto release is ", version, ".")
+  }
+  check_quarto_version_string(version)
   sysname <- Sys.info()[["sysname"]]
   install_dir <- tools::R_user_dir("onepagr", which = "data")
   if (!confirm_quarto_download(version, install_dir)) {
@@ -261,6 +271,82 @@ install_quarto <- function(version = "1.10.18") {
   set_quarto_path(bin_path)
   remove_old_quarto_installs(install_dir, keep = basename(exdir), in_use = in_use)
   invisible(install_dir)
+}
+
+#' The oldest Quarto release that bundles the Typst onepagr needs
+#'
+#' Internal. Quarto 1.10.18 bundles Typst 0.15.1, the floor in
+#' [check_quarto()]. A newer Quarto release never bundles an older Typst, so
+#' this version or any later one is enough.
+#'
+#' @noRd
+min_quarto_version <- "1.10.18"
+
+quarto_latest_release_url <-
+  "https://api.github.com/repos/quarto-dev/quarto-cli/releases/latest"
+
+#' Look up the newest stable Quarto release
+#'
+#' Internal. Asks GitHub's `releases/latest` endpoint, which skips
+#' releases still in testing and drafts, for the newest stable quarto-cli release. A
+#' failed lookup (offline, or GitHub's rate limit for anonymous requests)
+#' stops with a message that names the way out.
+#'
+#' @param url Character. The `releases/latest` endpoint.
+#' @return Character, a version such as `"1.11.9"`.
+#' @noRd
+latest_quarto_version <- function(url = quarto_latest_release_url) {
+  reply <- tempfile(fileext = ".json")
+  on.exit(unlink(reply), add = TRUE)
+  failed <- function(why) {
+    stop(
+      "Could not look up the newest Quarto release (", why, "). Check your ",
+      "internet connection, or name the version to install, as in ",
+      "install_quarto(version = \"<x.y.z>\"). Releases are listed at ",
+      "https://github.com/quarto-dev/quarto-cli/releases.",
+      call. = FALSE
+    )
+  }
+  tryCatch(
+    download_with_timeout(url, reply, min_timeout = 60),
+    error = function(e) failed(conditionMessage(e))
+  )
+  tag <- tryCatch(jsonlite::fromJSON(reply)$tag_name, error = function(e) NULL)
+  version <- sub("^v", "", if (is.character(tag) && length(tag) == 1) tag else "")
+  if (!grepl("^[0-9]+([.][0-9]+)+$", version)) {
+    failed("the reply had no release version in it")
+  }
+  version
+}
+
+#' Stop on a version string that is not a plain Quarto version
+#'
+#' Internal. The version goes into a download URL and a folder name, so
+#' anything but digits and dots is refused. A version older than
+#' `min_quarto_version` is allowed but warned about.
+#'
+#' @param version Character. The version to install.
+#' @return Invisibly, `version`.
+#' @noRd
+check_quarto_version_string <- function(version) {
+  plain <- is.character(version) && length(version) == 1 &&
+    grepl("^[0-9]+([.][0-9]+)+$", version)
+  if (!plain) {
+    stop(
+      "`version` must be \"latest\" or a Quarto version such as \"",
+      min_quarto_version, "\", not ", deparse(version), ".",
+      call. = FALSE
+    )
+  }
+  if (package_version(version) < package_version(min_quarto_version)) {
+    warning(
+      "Quarto ", version, " is older than ", min_quarto_version, ", the first ",
+      "release that bundles the Typst onepagr needs. check_quarto() will say ",
+      "whether it is new enough.",
+      call. = FALSE
+    )
+  }
+  invisible(version)
 }
 
 #' Ask before a large Quarto download

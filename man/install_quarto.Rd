@@ -4,11 +4,13 @@
 \alias{install_quarto}
 \title{Install Quarto to a user-local directory}
 \usage{
-install_quarto(version = "1.10.18")
+install_quarto(version = "latest")
 }
 \arguments{
-\item{version}{Character. Quarto version to install. Default
-\code{"1.10.18"}.}
+\item{version}{Character. Quarto version to install, such as \code{"1.10.18"},
+or \code{"latest"} (the default) for the newest stable release. Looking up
+the newest release needs an internet connection; if that fails, the
+message says so, and you can name a version yourself instead.}
 }
 \value{
 Character, the install directory (macOS/Linux) or the
@@ -42,15 +44,14 @@ or \code{arm64}). The archive is extracted into \verb{quarto-<version>/} under t
 install directory and the \code{bin/quarto} binary is located inside it, so the
 different archive layouts per platform do not matter.
 
-The default \code{version} below must bundle a Typst new enough for
-\code{\link[=check_quarto]{check_quarto()}}'s own minimum (see that function's docs for why
-Quarto's version number alone isn't a safe indicator of this).
-\code{"1.10.18"} is used here specifically because it's confirmed directly
-(not assumed) to bundle Typst 0.15.1, the version this package's
-templates were actually developed and tested against; re-verify
-this default against a live install (\verb{quarto typst --version}) before
-bumping it, rather than assuming a newer Quarto version number implies
-a newer bundled Typst.
+By default the newest stable Quarto release is installed. It is looked up
+from the release list at
+\verb{https://api.github.com/repos/quarto-dev/quarto-cli/releases/latest}, which
+leaves out releases still in testing. Quarto 1.10.18 is the first release that bundles
+Typst 0.15.1, the version onepagr is built and tested against, and a newer
+Quarto release does not bundle an older Typst, so the newest stable release
+always meets \code{\link[=check_quarto]{check_quarto()}}'s minimum. An older \code{version} than 1.10.18 is
+still installed if you ask for it, with a warning.
 
 In an interactive session it asks before the download, which is large
 (roughly 100 to 250 MB depending on the system); answering no installs
@@ -66,5 +67,8 @@ name does not match what it creates.
 # Never run automatically: downloads ~100+ MB and (on Windows) opens
 # an installer. Only ever run this yourself, deliberately.
 install_quarto()
+
+# A specific release, instead of the newest:
+install_quarto(version = "1.10.18")
 }
 }

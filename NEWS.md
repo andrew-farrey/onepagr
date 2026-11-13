@@ -95,6 +95,13 @@ as before these fixes (same text, same pixels).
 * `install_quarto()` finds `bin/quarto` wherever the archive put it (the macOS
   archive has no `quarto-<version>/` folder) and downloads the arm64 build on
   64-bit ARM Linux. `set_quarto_path()` saves an absolute path.
+* `install_quarto()` installs the newest stable Quarto release by default
+  (`version = "latest"`), looked up from GitHub's latest-release endpoint, which
+  skips releases still in testing. It used to install a fixed version that was already
+  behind. A release older than 1.10.18, the first with a new enough Typst, is
+  still installed if you name it, with a warning, and a version that is not
+  plain digits and dots is refused. A failed lookup says so and shows how to
+  name a version instead.
 * `install_quarto()` asks before the download in an interactive session, and
   after installing it removes the older copies it put in its folder, so the
   folder does not grow with every version. A copy that `QUARTO_PATH` points into
