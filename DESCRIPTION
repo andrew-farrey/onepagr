@@ -2,9 +2,10 @@ Package: onepagr
 Title: Accessible One-Page Reports from 'Typst' Templates
 Version: 0.2.0
 Authors@R: c(person("Andrew", "Farrey", email = "afarrey11@outlook.com",
-    role = c("aut", "cre", "cph"),
+    role = c("aut", "cre"),
     comment = c(affiliation = "University of Kentucky, Kentucky Injury Prevention and Research Center",
         ORCID = "0000-0003-4279-0998")),
+    person("University of Kentucky", role = "cph"),
     person("Microsoft Corporation", role = c("ctb", "cph"),
     comment = "Fluent System Icons glyph in the hex logo; see inst/COPYRIGHTS"))
 Description: Generates polished, accessible one-page (front-and-back) Portable
