@@ -13,8 +13,8 @@ so it has a new version number. The user-visible changes are listed in
 * Local: Windows 11, R 4.6.1 (release), Quarto 1.10.18 with Typst 0.15.1
 * GitHub Actions (on every push): macOS (R release), Windows (R release),
   Ubuntu (R devel, R release, R oldrel-1)
-* win-builder: Windows Server 2022, R 4.6.2 (release), 2026-11-05
-* R-hub (2026-11-05, on the release sources): macOS (x86_64, R-devel),
+* win-builder: Windows Server 2022, R 4.6.2 (release), 2026-11-13
+* R-hub (2026-11-13, on the release sources): macOS (x86_64, R-devel),
   macOS (arm64, R-devel), Linux with no suggested packages (R 4.6.2), Linux
   with no long double support (R 4.6.2), and Ubuntu release (R 4.6.2)
 
@@ -51,10 +51,14 @@ whose bundled Typst is older than the package needs (0.15.1 or newer), so:
   `install_quarto()` and `set_quarto_path()` do so only when a user calls them
   explicitly. Examples and vignettes never call them, and the tests exercise
   them only with the network download mocked.
-* `install_quarto()` keeps its files in `tools::R_user_dir("onepagr", "data")`.
-  In an interactive session it asks before the download, and after installing
-  it removes the older Quarto copies it put there, so the folder is managed
-  rather than growing with each version.
+* `install_quarto()` keeps its files in `tools::R_user_dir("onepagr", "data")`
+  unless the user passes `dir`. In an interactive session it asks before the
+  download. After installing into its own folder it removes the older Quarto
+  copies it put there, so the folder is managed rather than growing with each
+  version; in a folder the user chose it deletes nothing. By default it looks
+  up the newest stable release from GitHub's latest-release endpoint, again
+  only when the user calls it, and it installs nothing when the Quarto already
+  in use is as new as the target.
 
 ## URLs
 
