@@ -1,4 +1,4 @@
 # License
 
     YEAR: 2026
-    COPYRIGHT HOLDER: Andrew Farrey
+    COPYRIGHT HOLDER: University of Kentucky

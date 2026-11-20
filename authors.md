@@ -2,9 +2,11 @@
 
 ## Authors
 
-- **Andrew Farrey**. Author, maintainer, copyright holder.
+- **Andrew Farrey**. Author, maintainer.
   [](https://orcid.org/0000-0003-4279-0998)  
   University of Kentucky, Kentucky Injury Prevention and Research Center
+
+- **University of Kentucky**. Copyright holder.
 
 - **Microsoft Corporation**. Contributor, copyright holder.  
   Fluent System Icons glyph in the hex logo; see inst/COPYRIGHTS
